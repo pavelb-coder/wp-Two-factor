@@ -1,0 +1,89 @@
+/*
+ * WP Secure 2FA — Login page styles.
+ */
+
+.wps2fa-login-form {
+	max-width: 400px;
+	margin: 20px auto;
+	padding: 20px;
+	background: #fff;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.wps2fa-login-form h2 {
+	margin-top: 0;
+	text-align: center;
+}
+
+.wps2fa-login-form .field {
+	margin-bottom: 15px;
+}
+
+.wps2fa-login-form .field label {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: 600;
+}
+
+.wps2fa-login-form .field input {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	font-size: 14px;
+}
+
+.wps2fa-login-form .field input:focus {
+	outline: none;
+	border-color: #007017;
+	box-shadow: 0 0 0 1px #007017;
+}
+
+.wps2fa-login-form .button {
+	width: 100%;
+	padding: 10px 15px;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.wps2fa-login-error {
+	padding: 10px 15px;
+	background: #f0f0f0;
+	border-left: 4px solid #dc3232;
+	border-radius: 4px;
+	margin-bottom: 15px;
+	color: #dc3232;
+}
+
+.wps2fa-login-method-select {
+	margin-bottom: 15px;
+}
+
+.wps2fa-login-method-select select {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	font-size: 14px;
+}
+
+.wps2fa-login-resend {
+	text-align: center;
+	margin-top: 15px;
+}
+
+.wps2fa-login-resend a {
+	font-size: 13px;
+}
+
+.wps2fa-login-back {
+	text-align: center;
+	margin-top: 15px;
+	font-size: 13px;
+}
+
+.wps2fa-login-back a {
+	color: #50575e;
+}

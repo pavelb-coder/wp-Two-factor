@@ -1,0 +1,146 @@
+/*
+ * WP Secure 2FA — Admin styles.
+ */
+
+.wps2fa-wizard-card {
+	max-width: 640px;
+	padding: 30px;
+	background: #fff;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.wps2fa-wizard-steps {
+	margin: 20px 0;
+}
+
+.wps2fa-step {
+	padding: 12px 0;
+	border-bottom: 1px solid #eee;
+}
+
+.wps2fa-step:last-child {
+	border-bottom: none;
+}
+
+.wps2fa-step h3 {
+	margin: 0 0 8px 0;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.wps2fa-step p {
+	margin: 0;
+	font-size: 13px;
+	color: #50575e;
+}
+
+.wps2fa-wizard-actions {
+	display: flex;
+	gap: 10px;
+	margin-top: 20px;
+}
+
+#wps2fa-setup-container {
+	margin-top: 20px;
+	padding: 20px;
+	background: #f7f7f7;
+	border-radius: 4px;
+}
+
+.wps2fa-qr-code {
+	text-align: center;
+	margin: 15px 0;
+}
+
+.wps2fa-qr-code img {
+	border: 1px solid #ddd;
+	padding: 10px;
+	background: #fff;
+}
+
+.wps2fa-totp-secret {
+	font-family: monospace;
+	font-size: 14px;
+	padding: 8px 12px;
+	background: #fff;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	word-break: break-all;
+}
+
+.wps2fa-backup-codes {
+	font-family: monospace;
+	font-size: 13px;
+	line-height: 1.8;
+	white-space: pre;
+	padding: 12px;
+	background: #fff;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+}
+
+.wps2fa-method-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px 0;
+	border-bottom: 1px solid #eee;
+}
+
+.wps2fa-method-item:last-child {
+	border-bottom: none;
+}
+
+.wps2fa-method-label {
+	font-weight: 500;
+}
+
+.wps2fa-status-badge {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 3px;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+.wps2fa-status-badge.enabled {
+	background: #46b450;
+	color: #fff;
+}
+
+.wps2fa-status-badge.disabled {
+	background: #dc3232;
+	color: #fff;
+}
+
+.wps2fa-loading {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	border: 2px solid #ccc;
+	border-top: 2px solid #007017;
+	border-radius: 50%;
+	animation: wps2fa-spin 0.8s linear infinite;
+}
+
+@keyframes wps2fa-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* Settings page */
+.wps2fa-settings-section {
+	background: #fff;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	margin: 20px 0;
+	padding: 20px;
+}
+
+.wps2fa-settings-section h2 {
+	margin-top: 0;
+}
