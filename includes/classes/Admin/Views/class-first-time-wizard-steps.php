@@ -1,0 +1,692 @@
+<?php
+/**
+ * Settings page render class.
+ *
+ * @package    wp2fa
+ * @subpackage views
+ * @since      1.7.0
+ * @copyright  2026 Melapress
+ * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link       https://wordpress.org/plugins/wp-2fa/
+ */
+
+namespace WP2FA\Admin\Views;
+
+use WP2FA\WP2FA;
+use WP2FA\Methods\TOTP;
+use WP2FA\Methods\Backup_Codes;
+use WP2FA\Utils\Settings_Utils;
+use WP2FA\Admin\Helpers\WP_Helper;
+use WP2FA\Admin\Settings_Builder;
+
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly.
+
+if ( ! class_exists( '\WP2FA\Admin\Views\First_Time_Wizard_Steps' ) ) {
+	/**
+	 * WP2FA First Wizard Settings view controller
+	 *
+	 * @since 1.7
+	 */
+	class First_Time_Wizard_Steps {
+
+		/**
+		 * Select method step
+		 *
+		 * @since 1.7.0
+		 *
+		 * @param boolean $setup_wizard - Boolean - is that first time wizard setup or settings page call.
+		 *
+		 * @return void
+		 */
+		public static function select_method( $setup_wizard = false ) {
+
+			ob_start();
+			?>
+			<h3><?php \esc_html_e( 'Which 2FA methods can your users use?', 'wp-2fa' ); ?></h3>
+			<p class="description">
+				<?php \esc_html_e( 'Allowing users to set up a secondary 2FA method is highly recommended. You can do this in the next step of the wizard. This will allow users to log in using an alternative method should they, for example lose access to their phone.', 'wp-2fa' ); ?>
+			</p>
+				<?php
+				$data_role = 'data-role="global"';
+				if ( ! $setup_wizard ) {
+					?>
+			<table class="form-table">
+				<tbody>
+					<tr>
+						<th colspan="2"><?php \esc_html_e( 'Which of the below 2FA methods can users use?', 'wp-2fa' ); ?></th>
+					</tr>
+					<tr>
+						<th><label for="wp-2fa-method"><?php \esc_html_e( 'Select the methods', 'wp-2fa' ); ?></label></th>
+						<td>
+				<?php } ?>
+						<fieldset id="wp-2fa-method-select" class="wp-2fa-method-select">
+							<p class="method-title" style="padding-bottom: 20px;"><em><?php \esc_html_e( 'Primary 2FA methods:', 'wp-2fa' ); ?></em></p>
+							<?php
+							/**
+							 * Fired right after the TOTP method HTML rendering.
+							 *
+							 * @param bool $wizard - Is that a wizard call or settings call.
+							 * @param string $data_role - String with the JS data to add to form element.
+							 * @param string $name - The name of the role.
+							 *
+							 * @since 2.0.0
+							 */
+							\do_action( WP_2FA_PREFIX . 'methods_setup', $setup_wizard, $data_role, null );
+							?>
+							<br />
+								<?php
+								if ( ! $setup_wizard ) {
+									$class = '';
+
+									if ( '' === trim( (string) Settings_Utils::get_setting_role( null, TOTP::POLICY_SETTINGS_NAME, true ) ) && '' === trim( (string) Settings_Utils::get_setting_role( null, 'enable_email', true ) ) && '' === trim( (string) Settings_Utils::get_setting_role( null, 'enable_oob_email', true ) ) ) {
+										$class = 'disabled';
+									}
+									?>
+								<div class="method-title"><em><?php \esc_html_e( 'Secondary 2FA methods:', 'wp-2fa' ); ?></em></div>
+								<br>
+								<label for="backup-codes" class=" <?php echo \esc_attr( $class ); ?>">
+									<input type="checkbox" class="<?php echo \esc_attr( $class ); ?>" id="backup-codes" name="wp_2fa_policy[backup_codes_enabled]" 
+									<?php echo esc_attr( $data_role ); ?>
+									value="yes"
+									<?php \checked( WP2FA::get_wp2fa_setting( Backup_Codes::get_settings_name() ), Backup_Codes::get_settings_default_value() ); ?>
+									>
+									<?php
+									\esc_html_e( 'Backup codes', 'wp-2fa' );
+									if ( $setup_wizard ) {
+										echo '<p class="description">Note: ';
+									} else {
+										echo ' - ';
+									}
+									\esc_html_e( 'Backup codes are a secondary method which you can use to log in to the website in case the primary 2FA method is unavailable. Therefore they can\'t be enabled and used as a primary method.', 'wp-2fa' );
+									if ( $setup_wizard ) {
+										echo '</p>';
+									}
+									?>
+								</label>
+									<?php
+									/**
+									 * Fires after the backup methods HTML rendering is finished.
+									 *
+									 * @param bool $wizard - Is that wizard ot standard setting.
+									 * @param string $data_role - The JS data attribute for the form inputs.
+									 * @param string $role - The name of the user role.
+									 *
+									 * @since 2.0.0
+									 */
+									\do_action( WP_2FA_PREFIX . 'after_backup_methods_setup', $setup_wizard, $data_role, null );
+								}
+								?>
+						</fieldset>
+							<?php
+							if ( ! $setup_wizard ) {
+								?>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<?php } ?>
+			<?php
+			$output = ob_get_clean();
+
+			/**
+			 * At this point, none of the default providers is set / activated. This filter allows additional providers to change the behavior. Checking the input array for specific values (methods), and based on that we can raise error that none of the allowed methods has bees selected by the user, or dismiss the error otherwise.
+			 *
+			 * @param string $output - Parsed HTML with the methods.
+			 * @param bool $setup_wizard - The type of the wizard (first time wizard / settings).
+			 *
+			 * @since 2.0.0
+			 */
+			$output = apply_filters( WP_2FA_PREFIX . 'select_methods', $output, $setup_wizard );
+
+			echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		/**
+		 * Builds the backup methods html
+		 *
+		 * @param boolean $setup_wizard - Is that call from the Wizard or not.
+		 *
+		 * @return void
+		 *
+		 * @since 2.4.1
+		 */
+		public static function backup_method( $setup_wizard = false ) {
+
+			ob_start();
+			?>
+			<h3><?php \esc_html_e( 'Which secondary 2FA methods can users use?', 'wp-2fa' ); ?></h3>
+			<p class="description">
+				<?php \esc_html_e( 'A secondary 2FA method acts as a backup when the primary method cannot be used. For example, if a user loses access to their phone, the device runs out of battery, or email delivery fails. We strongly recommend allowing users to configure at least one backup method at all times.', 'wp-2fa' ); ?>
+			</p>
+			<p class="description">
+				<?php \esc_html_e( 'Available secondary 2FA methods:', 'wp-2fa' ); ?>
+			</p>
+
+			<br>
+
+			<fieldset>
+				<label for="backup-codes">
+					<input type="checkbox" id="backup-codes-global" name="wp_2fa_policy[backup_codes_enabled]" value="yes"
+					<?php checked( WP2FA::get_wp2fa_setting( Backup_Codes::get_settings_name(), true ), Backup_Codes::get_settings_default_value() ); ?>
+					>
+					<?php \esc_html_e( 'Backup codes', 'wp-2fa' ); ?>
+				</label>
+
+				<?php
+					echo '<p class="description">';
+					printf( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						'%1$s <a href="%2$s" target="_blank" rel="noopener noreferrer">%3$s</a> <br><br>',
+						\esc_html__( 'Backup codes allow users to log in to WordPress should they find themselves unable to log in via the primary 2FA method. Backup codes are enabled by default and are generated during the 2FA configuration process. Each backup code can be used only once. Once the initial list is exhausted, more backup codes can be generated through the user’s WordPress profile page -', 'wp-2fa' ),
+						esc_url( 'https://melapress.com/support/kb/wp-2fa-what-are-2fa-backup-codes/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=backup_codes_info' ),
+						\esc_html__( 'More information', 'wp-2fa' )
+					);
+					echo '</p>';
+				?>
+
+				<?php
+				// @free:start
+					echo '<label>';
+					printf( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						'%1$s <a href="%2$s" target="_blank" rel="noopener noreferrer">%3$s</a> %4$s',
+						\esc_html__( 'Upgrade to WP 2FA Premium for', 'wp-2fa' ),
+						esc_url( 'https://melapress.com/wordpress-2fa/features/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=upgrade_to_premium' ),
+						\esc_html__( 'more alternative 2FA methods', 'wp-2fa' ),
+						\esc_html__( 'to give your users more options.', 'wp-2fa' )
+					);
+					echo '<label>';
+				// @free:end
+				?>
+			</fieldset>
+				<?php
+			?>
+			<?php
+			$output = ob_get_clean();
+			$output = \apply_filters( WP_2FA_PREFIX . 'backup_methods', $output, $setup_wizard );
+
+			echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		/**
+		 * Enforcement policy step
+		 *
+		 * @since 1.7.0
+		 *
+		 * @param boolean $setup_wizard - Boolean - is that first time wizard setup or settings page call.
+		 *
+		 * @return void
+		 */
+		public static function enforcement_policy( $setup_wizard = false ) {
+			?>
+			<h3 id="enforcement_settings"><?php \esc_html_e( 'Do you want to enforce 2FA for some, or all users?', 'wp-2fa' ); ?></h3>
+			<p class="description">
+				<?php \esc_html_e( 'When 2FA is enforced, users will be prompted to configure it the next time they log in. Users are given a grace period to complete the setup before 2FA becomes mandatory. You can configure the grace period and exclude specific users or roles later from the plugin\'s settings.', 'wp-2fa' ); ?> <a href="https://melapress.com/support/kb/wp-2fa-configure-2fa-policies-enforce/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=enforcement_policy_help" target="_blank" rel=noopener><?php \esc_html_e( 'Learn more.', 'wp-2fa' ); ?></a>
+			</p>
+			<?php
+			if ( ! $setup_wizard ) {
+				?>
+				<table class="form-table js-enforcement-policy-section">
+					<tbody>
+						<tr>
+							<th><label for="enforcement-policy"><?php \esc_html_e( 'Enforce 2FA on', 'wp-2fa' ); ?></label></th>
+							<td>
+			<?php } ?>
+								<fieldset class="contains-hidden-inputs">
+									<label for="all-users" style="margin:.35em 0 .5em !important; display: block;">
+										<input type="radio" name="wp_2fa_policy[enforcement-policy]" id="all-users" value="all-users"
+										<?php checked( WP2FA::get_wp2fa_setting( 'enforcement-policy' ), 'all-users' ); ?>
+										>
+									<span><?php \esc_html_e( 'All users', 'wp-2fa' ); ?></span>
+									</label>
+
+									<?php if ( WP_Helper::is_multisite() ) { ?>
+										<label for="superadmins-only" style="margin:.35em 0 .5em !important; display: block;">
+											<input type="radio" name="wp_2fa_policy[enforcement-policy]" id="superadmins-only" value="superadmins-only"
+													<?php checked( WP2FA::get_wp2fa_setting( 'enforcement-policy' ), 'superadmins-only' ); ?> />
+											<span><?php \esc_html_e( 'Only super admins', 'wp-2fa' ); ?></span>
+										</label>
+										<label for="superadmins-siteadmins-only" style="margin:.35em 0 .5em !important; display: block;">
+											<input type="radio" name="wp_2fa_policy[enforcement-policy]" id="superadmins-siteadmins-only" value="superadmins-siteadmins-only"
+													<?php checked( WP2FA::get_wp2fa_setting( 'enforcement-policy' ), 'superadmins-siteadmins-only' ); ?> />
+											<span><?php \esc_html_e( 'Only super admins and site admins', 'wp-2fa' ); ?></span>
+										</label>
+									<?php } ?>
+
+									<label for="certain-roles-only" style="margin:.35em 0 .5em !important; display: block;">
+										<?php $checked = in_array( WP2FA::get_wp2fa_setting( 'enforcement-policy' ), array( 'certain-roles-only', 'certain-users-only' ), true ); ?>
+										<input type="radio" name="wp_2fa_policy[enforcement-policy]" id="certain-roles-only" value="certain-roles-only"
+										<?php ( $setup_wizard ) ? checked( WP2FA::get_wp2fa_setting( 'enforcement-policy' ), 'certain-roles-only' ) : checked( $checked ); ?>
+										data-unhide-when-checked=".certain-roles-only-inputs, .certain-users-only-inputs">
+										<span><?php \esc_html_e( 'Only for specific users and roles', 'wp-2fa' ); ?></span>
+									</label>
+									<fieldset class="hidden certain-users-only-inputs">
+										<div>
+											<p>
+												<label for="enforced-users"><?php \esc_html_e( 'Users :', 'wp-2fa' ); ?></label>
+												<?php
+												$enforced_users = array_values( array_filter( (array) WP2FA::get_wp2fa_setting( 'enforced_users' ) ) );
+												Settings_Builder::build_option(
+													array(
+														'id'          => 'enforced-users',
+														'type'        => 'multi-select-ajax',
+														'option_name' => 'wp_2fa_policy[enforced_users]',
+														'default'     => implode( ',', $enforced_users ),
+														'placeholder' => \esc_attr__( 'Type to search users…', 'wp-2fa' ),
+														'items'       => array_map(
+															function ( $user ) {
+																return array(
+																	'id'   => $user,
+																	'text' => $user,
+																);
+															},
+															$enforced_users
+														),
+														'data_attrs'  => array(
+															'search-type' => 'users',
+															'min-chars'   => '2',
+														),
+													)
+												);
+												?>
+											</p>
+										</div>
+									</fieldset>
+									<fieldset class="hidden certain-roles-only-inputs">
+										<div>
+											<p style="margin-top: 0;">
+												<label for="enforced-roles-multi-select"><?php \esc_html_e( 'Roles :', 'wp-2fa' ); ?></label>
+												<?php
+												$all_roles      = WP_Helper::get_roles_wp();
+												$enforced_roles = array_values( array_filter( (array) WP2FA::get_wp2fa_setting( 'enforced_roles' ) ) );
+												Settings_Builder::build_option(
+													array(
+														'id'          => 'enforced-roles',
+														'type'        => 'multi-select-ajax',
+														'option_name' => 'wp_2fa_policy[enforced_roles]',
+														'default'     => implode( ',', $enforced_roles ),
+														'placeholder' => \esc_attr__( 'Type to search roles…', 'wp-2fa' ),
+														'items'       => array_map(
+															function ( $role ) use ( $all_roles ) {
+																return array(
+																	'id'   => $role,
+																	'text' => isset( $all_roles[ $role ] ) ? $all_roles[ $role ] : ucfirst( $role ),
+																);
+															},
+															$enforced_roles
+														),
+														'data_attrs'  => array(
+															'search-type' => 'roles',
+															'min-chars'   => '2',
+														),
+													)
+												);
+												?>
+											</p>
+										</div>
+									<?php if ( WP_Helper::is_multisite() ) { ?>
+										<p class="description">
+											<input type="checkbox" name="wp_2fa_policy[superadmins-role-add]" id="superadmins-role-add" value="yes" style="position: relative; top: -3px;" 
+													<?php checked( WP2FA::get_wp2fa_setting( 'superadmins-role-add' ), 'yes' ); ?> />
+											<label for="superadmins-role-add"><?php \esc_html_e( 'Also enforce 2FA on network users with super admin privileges', 'wp-2fa' ); ?></label>
+										</p>
+									<?php } ?>
+									</fieldset>
+								<?php if ( WP_Helper::is_multisite() ) { ?>
+									<div>
+										<label for="enforce-on-multisite" style="margin:.35em 0 .5em !important; display: block;">
+											<input type="radio" name="wp_2fa_policy[enforcement-policy]" id="enforce-on-multisite" value="enforce-on-multisite"
+												<?php checked( WP2FA::get_wp2fa_setting( 'enforcement-policy' ), 'enforce-on-multisite' ); ?>
+											data-unhide-when-checked=".all-sites">
+											<span><?php \esc_html_e( 'These sub-sites', 'wp-2fa' ); ?></span>
+										</label>
+										<fieldset class="hidden all-sites">
+											<p>
+												<label for="enforced-sites"><?php \esc_html_e( 'Sites :', 'wp-2fa' ); ?></label>
+													<?php
+													$selected_sites       = array_filter( (array) WP2FA::get_wp2fa_setting( 'included_sites' ) );
+													$included_sites_items = array();
+													foreach ( WP_Helper::get_multi_sites() as $site ) {
+														// Stored loosely across versions: compare as int and as string.
+														if ( in_array( $site->blog_id, $selected_sites, true )
+															|| in_array( (string) $site->blog_id, $selected_sites, true ) ) {
+															$included_sites_items[] = array(
+																'id'   => $site->blog_id,
+																'text' => $site->blogname,
+															);
+														}
+													}
+
+													Settings_Builder::build_option(
+														array(
+															'id'          => 'enforced-sites',
+															'type'        => 'multi-select-ajax',
+															'option_name' => 'wp_2fa_policy[included_sites]',
+															'default'     => implode( ',', \wp_list_pluck( $included_sites_items, 'id' ) ),
+															'placeholder' => \esc_attr__( 'Type to search sites…', 'wp-2fa' ),
+															'items'       => $included_sites_items,
+															'data_attrs'  => array(
+																'search-type' => 'sites',
+																'min-chars'   => '2',
+															),
+														)
+													);
+													?>
+											</p>
+										</fieldset>
+									</div>
+							<?php } ?>
+									<div>
+										<label for="do-not-enforce" style="margin:.35em 0 .5em !important; display: block;">
+											<input type="radio" name="wp_2fa_policy[enforcement-policy]" id="do-not-enforce" value="do-not-enforce"
+												<?php checked( WP2FA::get_wp2fa_setting( 'enforcement-policy' ), 'do-not-enforce' ); ?>
+											>
+											<span><?php \esc_html_e( 'Do not enforce on any users', 'wp-2fa' ); ?></span>
+										</label>
+									</div>
+									<br/>
+								</fieldset>
+									<?php
+									if ( ! $setup_wizard ) {
+										?>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+										<?php
+									}
+		}
+
+		/**
+		 * Exclude users and groups
+		 *
+		 * @since 1.7.0
+		 *
+		 * @param boolean $setup_wizard - Boolean - is that first time wizard setup or settings page call.
+		 *
+		 * @return void
+		 */
+		public static function exclude_users( $setup_wizard = false ) {
+			?>
+			<h3><?php \esc_html_e( 'Do you want to exclude any users or roles from 2FA?', 'wp-2fa' ); ?></h3>
+			<p class="description">
+				<?php \esc_html_e( 'If you are enforcing 2FA on all users but for some reason you would like to exclude individual user(s) or users with a specific role, you can exclude them below', 'wp-2fa' ); ?>
+			</p>
+			<?php
+			if ( ! $setup_wizard ) {
+				?>
+			<table class="form-table js-enforcement-policy-section">
+				<tbody>
+					<tr>
+						<th><label id="exclude-users" for="excluded-users-multi-select"><?php \esc_html_e( 'Exclude the following users', 'wp-2fa' ); ?></label></th>
+						<td>
+				<?php } else { ?>
+						<label for="excluded-users-multi-select"><?php \esc_html_e( 'Exclude the following users', 'wp-2fa' ); ?>
+			<?php } ?>
+						<fieldset>
+							<div>
+								<?php
+								$excluded_users = array_values( array_filter( (array) WP2FA::get_wp2fa_setting( 'excluded_users' ) ) );
+								Settings_Builder::build_option(
+									array(
+										'id'          => 'excluded-users',
+										'type'        => 'multi-select-ajax',
+										'option_name' => 'wp_2fa_policy[excluded_users]',
+										'default'     => implode( ',', $excluded_users ),
+										'placeholder' => \esc_attr__( 'Type to search users…', 'wp-2fa' ),
+										'items'       => array_map(
+											function ( $user ) {
+												return array(
+													'id'   => $user,
+													'text' => $user,
+												);
+											},
+											$excluded_users
+										),
+										'data_attrs'  => array(
+											'search-type' => 'users',
+											'min-chars'   => '2',
+										),
+									)
+								);
+								?>
+							</div>
+							<?php
+							if ( ! $setup_wizard ) {
+								?>
+
+							</td>
+					</tr>
+					<tr>
+						<th><label for="excluded-roles-multi-select"><?php \esc_html_e( 'Exclude the following roles', 'wp-2fa' ); ?></label></th>
+						<td>
+							<p>
+							<?php } else { ?>
+							<br>
+								<label for="excluded-roles-multi-select"><?php \esc_html_e( 'Exclude the following roles', 'wp-2fa' ); ?></label>
+							<?php } ?>
+									<?php
+									$all_roles      = WP_Helper::get_roles_wp();
+									$excluded_roles = array_values( array_filter( (array) WP2FA::get_wp2fa_setting( 'excluded_roles' ) ) );
+									Settings_Builder::build_option(
+										array(
+											'id'          => 'excluded-roles',
+											'type'        => 'multi-select-ajax',
+											'option_name' => 'wp_2fa_policy[excluded_roles]',
+											'default'     => implode( ',', $excluded_roles ),
+											'placeholder' => \esc_attr__( 'Type to search roles…', 'wp-2fa' ),
+											'items'       => array_map(
+												function ( $role ) use ( $all_roles ) {
+													return array(
+														'id'   => $role,
+														'text' => isset( $all_roles[ $role ] ) ? $all_roles[ $role ] : ucfirst( $role ),
+													);
+												},
+												$excluded_roles
+											),
+											'data_attrs'  => array(
+												'search-type' => 'roles',
+												'min-chars'   => '2',
+											),
+										)
+									);
+									?>
+							<br>
+								<?php if ( WP_Helper::is_multisite() ) { ?>
+							<div style="margin-top:10px;">
+								<input type="checkbox" name="wp_2fa_policy[superadmins-role-exclude]" id="superadmins-role-exclude" value="yes"
+									<?php checked( WP2FA::get_wp2fa_setting( 'superadmins-role-exclude' ), 'yes' ); ?> />
+								<label for="superadmins-role-exclude"><?php \esc_html_e( 'Also exclude users with super admin privilege', 'wp-2fa' ); ?></label>
+							</div>
+							<?php } ?>
+						</fieldset>
+							<?php
+							if ( ! $setup_wizard ) {
+								?>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+								<?php } ?>
+			<?php
+		}
+
+		/**
+		 * Which network sites to exclude (for multisite instal)
+		 *
+		 * @since 1.7.0
+		 *
+		 * @param boolean $setup_wizard - Boolean - is that first time wizard setup or settings page call.
+		 *
+		 * @return void
+		 */
+		public static function excluded_network_sites( $setup_wizard = false ) {
+			?>
+			<h3><?php \esc_html_e( 'Do you want to exclude all the users of a site from 2FA?', 'wp-2fa' ); ?></h3>
+			<p class="description">
+				<?php \esc_html_e( 'If you are enforcing 2FA on all users but for some reason you do not want to enforce it on a specific sub site, specify the sub site name below:', 'wp-2fa' ); ?>
+			</p>
+			<?php
+			if ( ! $setup_wizard ) {
+				?>
+				<table class="form-table js-enforcement-policy-section">
+					<tbody>
+						<tr>
+							<th><label for="excluded-sites-multi-select"><?php \esc_html_e( 'Exclude the following sites', 'wp-2fa' ); ?></label></th>
+							<td>
+					<?php } ?>
+								<fieldset>
+								<?php
+								if ( $setup_wizard ) {
+									?>
+
+								<div class="option-pill">
+									<label for="excluded_sites_search"><?php \esc_html_e( 'Exclude the following sites', 'wp-2fa' ); ?>
+								<?php } ?>
+										<?php
+										$excluded_sites       = array_values( array_filter( (array) WP2FA::get_wp2fa_setting( 'excluded_sites' ) ) );
+										$excluded_sites_items = array();
+										foreach ( $excluded_sites as $site_id ) {
+											$details = \get_blog_details( $site_id );
+											if ( ! $details ) {
+												// A site deleted since it was excluded: keep the id, label it plainly.
+												continue;
+											}
+											$excluded_sites_items[] = array(
+												'id'   => $site_id,
+												'text' => $details->blogname,
+											);
+										}
+
+										Settings_Builder::build_option(
+											array(
+												'id'          => 'excluded-sites',
+												'type'        => 'multi-select-ajax',
+												'option_name' => 'wp_2fa_policy[excluded_sites]',
+												'default'     => implode( ',', \wp_list_pluck( $excluded_sites_items, 'id' ) ),
+												'placeholder' => \esc_attr__( 'Type to search sites…', 'wp-2fa' ),
+												'items'       => $excluded_sites_items,
+												'data_attrs'  => array(
+													'search-type' => 'sites',
+													'min-chars'   => '2',
+												),
+											)
+										);
+										?>
+										<?php
+										if ( $setup_wizard ) {
+											?>
+									</label>
+								</div>
+								<?php } ?>
+								</fieldset>
+									<?php
+									if ( ! $setup_wizard ) {
+										?>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+							<?php } ?>
+			<?php
+		}
+
+		/**
+		 * Set the grace period
+		 *
+		 * @since 1.7.0
+		 *
+		 * @param boolean $setup_wizard - Boolean - is that first time wizard setup or settings page call.
+		 *
+		 * @return void
+		 */
+		public static function grace_period( $setup_wizard = false ) {
+			$grace_period = (int) WP2FA::get_wp2fa_setting( 'grace-period', true );
+			/**
+			 * Via that, you can change the grace period TTL.
+			 *
+			 * @param bool - Default at this point is true - no method is selected.
+			 */
+			$testing = apply_filters( WP_2FA_PREFIX . 'allow_grace_period_in_seconds', false );
+			if ( $testing ) {
+				$grace_max = 600;
+			} else {
+				$grace_max = 90;
+			}
+			?>
+			<fieldset class="contains-hidden-inputs">
+				<label for="no-grace-period" style="margin-bottom: 10px; display: block;">
+					<input type="radio" name="wp_2fa_policy[grace-policy]" id="no-grace-period" value="no-grace-period"
+					<?php checked( WP2FA::get_wp2fa_setting( 'grace-policy' ), 'no-grace-period' ); ?>
+					>
+				<span><?php \esc_html_e( 'Require users to configure 2FA immediately', 'wp-2fa' ); ?></span>
+				</label>
+
+				<label for="use-grace-period">
+					<input type="radio" name="wp_2fa_policy[grace-policy]" id="use-grace-period" value="use-grace-period"
+					<?php checked( WP2FA::get_wp2fa_setting( 'grace-policy' ), 'use-grace-period' ); ?>
+					data-unhide-when-checked=".grace-period-inputs">
+					<span><?php \esc_html_e( 'Give users a grace period to configure 2FA', 'wp-2fa' ); ?></span>
+				</label>
+				<fieldset class="hidden grace-period-inputs">
+					<br/>
+					<input type="number" id="grace-period" name="wp_2fa_policy[grace-period]" value="<?php echo \esc_attr( $grace_period ); ?>" min="1" max="<?php echo \esc_attr( $grace_max ); ?>">
+					<label class="radio-inline">
+						<input class="js-nested" type="radio" name="wp_2fa_policy[grace-period-denominator]" value="hours"
+						<?php checked( WP2FA::get_wp2fa_setting( 'grace-period-denominator' ), 'hours' ); ?>
+						>
+						<?php \esc_html_e( 'hours', 'wp-2fa' ); ?>
+					</label>
+					<label class="radio-inline">
+						<input class="js-nested" type="radio" name="wp_2fa_policy[grace-period-denominator]" value="days"
+						<?php checked( WP2FA::get_wp2fa_setting( 'grace-period-denominator' ), 'days' ); ?>
+						>
+						<?php \esc_html_e( 'days', 'wp-2fa' ); ?>
+					</label>
+					<?php
+						/**
+						 * Fires after the grace period. Gives the ability to change the parsed code.
+						 *
+						 * @param string $content - HTML content.
+						 * @param string $role - The name of the role.
+						 * @param string $name_prefix - Name prefix for the input name, includes the role name if provided.
+						 * @param string $data_role - Data attribute - used by the JS.
+						 * @param string $role_id - The role name, used to identify the inputs.
+						 *
+						 * @since 2.0.0
+						 */
+						$after_grace_content = \apply_filters( WP_2FA_PREFIX . 'after_grace_period', '', '', 'wp_2fa_policy' );
+						echo $after_grace_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					?>
+					<?php
+					/**
+					 * Via that, you can change the grace period TTL.
+					 *
+					 * @param bool - Default at this point is true - no method is selected.
+					 */
+					$testing = \apply_filters( WP_2FA_PREFIX . 'allow_grace_period_in_seconds', false );
+					if ( $testing ) {
+						?>
+						<label class="radio-inline">
+							<input class="js-nested" type="radio" name="wp_2fa_policy[grace-period-denominator]" value="seconds"
+							<?php \checked( WP2FA::get_wp2fa_setting( 'grace-period-denominator' ), 'seconds' ); ?>
+							>
+							<?php \esc_html_e( 'Seconds', 'wp-2fa' ); ?>
+						</label>
+						<?php
+					}
+
+					if ( $setup_wizard ) {
+						$user                         = \wp_get_current_user();
+						$last_user_to_update_settings = $user->ID;
+
+						?>
+					<input type="hidden" id="wp-2fa_main_user" name="wp_2fa_policy[2fa_settings_last_updated_by]" value="<?php echo \esc_attr( $last_user_to_update_settings ); ?>">
+					<?php } else { ?>
+						<p><?php \esc_html_e( 'Note: If users do not configure it within the configured stipulated time, their account will be locked and have to be unlocked manually.', 'wp-2fa' ); ?></p>
+					<?php } ?>
+				</fieldset>
+				<br/>
+			</fieldset>
+			<?php
+		}
+	}
+}

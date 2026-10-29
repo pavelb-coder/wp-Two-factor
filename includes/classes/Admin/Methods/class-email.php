@@ -1,0 +1,681 @@
+<?php
+/**
+ * Responsible for WP2FA user's email method manipulation.
+ *
+ * @package    wp2fa
+ * @subpackage methods
+ *
+ * @copyright  2026 Melapress
+ * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ *
+ * @see       https://wordpress.org/plugins/wp-2fa/
+ *
+ * @since 2.6.0
+ */
+
+declare(strict_types=1);
+
+namespace WP2FA\Methods;
+
+use WP2FA\WP2FA;
+use WP2FA\Admin\Setup_Wizard;
+use WP2FA\Utils\Settings_Utils;
+use WP2FA\Admin\Settings_Builder;
+use WP2FA\Admin\Helpers\User_Helper;
+use WP2FA\Admin\Controllers\Settings;
+use WP2FA\Authenticator\Login;
+use WP2FA\Authenticator\Code_Guard;
+use WP2FA\Authenticator\Authentication;
+use WP2FA\Admin\Methods\Traits\Providers;
+use WP2FA\Admin\Controllers\API\API_Login;
+use WP2FA\Admin\Methods\Traits\WhiteLabel;
+use WP2FA\Methods\Wizards\Email_Wizard_Steps;
+use WP2FA\Admin\Methods\Traits\Settings_Trait;
+use WP2FA\Admin\SettingsPages\Settings_Page_White_Label;
+
+/**
+ * Class for handling email codes.
+ *
+ * @since 2.6.0
+ *
+ * @package WP2FA
+ */
+if ( ! class_exists( '\WP2FA\Methods\Email' ) ) {
+	/**
+	 * Email code class, for handling email method code generation and such.
+	 *
+	 * @since 2.6.0
+	 */
+	class Email {
+
+		use Providers;
+		use WhiteLabel;
+		use Settings_Trait;
+
+		/**
+		 * The name of the method.
+		 *
+		 * @var string
+		 *
+		 * @since 2.6.0
+		 */
+		public const METHOD_NAME = 'email';
+
+		/**
+		 * The internal name of the method.
+		 *
+		 * @var string
+		 *
+		 * @since 2.5.0
+		 */
+		public const METHOD_INTERNAL_NAME = self::METHOD_NAME;
+
+		/**
+		 * The name of the method stored in the policy
+		 *
+		 * @var string
+		 *
+		 * @since 2.6.0
+		 */
+		public const POLICY_SETTINGS_NAME = 'enable_' . self::METHOD_NAME;
+
+		/**
+		 * Is the mail enabled
+		 *
+		 * @since 2.6.0
+		 *
+		 * @var bool
+		 */
+		private static $enabled = null;
+
+		/**
+		 * Is the mail enforced
+		 *
+		 * @since 3.0.0
+		 *
+		 * @var bool
+		 */
+		private static $email_enforced = null;
+
+		/**
+		 * Inits the class and sets the filters.
+		 *
+		 * @return void
+		 *
+		 * @since 2.6.0
+		 */
+		public static function init() {
+
+			self::always_init();
+
+			\add_filter( WP_2FA_PREFIX . 'providers_translated_names', array( __CLASS__, 'provider_name_translated' ) );
+
+			\add_filter( WP_2FA_PREFIX . 'default_settings', array( __CLASS__, 'add_default_settings' ) );
+
+			\add_filter( WP_2FA_PREFIX . 'loop_settings', array( __CLASS__, 'settings_loop' ), 10, 1 );
+
+			\add_filter( WP_2FA_PREFIX . 'no_method_enabled', array( __CLASS__, 'return_default_selection' ), 10, 1 );
+
+			// add the HOTP methods to the list of available methods if enabled.
+			\add_filter(
+				WP_2FA_PREFIX . 'available_2fa_methods',
+				function ( $available_methods, $role ) {
+					if ( ! empty( Settings_Utils::get_setting_role( $role, self::POLICY_SETTINGS_NAME ) ) ) {
+						array_push( $available_methods, self::METHOD_NAME );
+					}
+
+					return $available_methods;
+				},
+				10,
+				2
+			);
+
+			// \add_action( WP_2FA_PREFIX . 'before_settings_save_roles', array( __CLASS__, 'set_email_settings_when_enforced' ) );
+
+			// \add_action( WP_2FA_PREFIX . 'before_settings_save', array( __CLASS__, 'set_email_settings_when_enforced' ) );
+
+			\add_filter( WP_2FA_PREFIX . 'white_label_default_settings', array( __CLASS__, 'add_whitelabel_settings' ) );
+
+			\add_action( WP_2FA_PREFIX . 'validate_login_api', array( __CLASS__, 'api_login_validate' ), 10, 3 );
+
+			\add_filter( WP_2FA_PREFIX . 'validate_login_form', array( __CLASS__, 'validate_login_form' ), 10, 3 );
+
+			\add_action( WP_2FA_PREFIX . 'white_label_wizard_options', array( __CLASS__, 'white_label_option_labels' ) );
+
+			Email_Wizard_Steps::init();
+
+			\add_filter( WP_2FA_PREFIX . 'providers_settings_labels', array( __CLASS__, 'provider_settings_labels' ) );
+		}
+
+		/**
+		 * Adds the OOB settings in the white label default settings array
+		 *
+		 * @param array $labels - array with white label default settings.
+		 *
+		 * @return array
+		 *
+		 * @since 3.1.1.2
+		 */
+		public static function provider_settings_labels( array $labels ): array {
+			\ob_start();
+			?>
+				<div class="form-group settings-row">
+					<?php
+					Settings_Builder::build_option(
+						array(
+							'text' => \esc_html__( 'Email option label', 'wp-2fa' ),
+							'type' => 'settings-label',
+						)
+					);
+					?>
+					<div class="settings-control ">
+						<?php
+						Settings_Builder::build_option(
+							array(
+								'id'          => 'email-option-label',
+								'type'        => 'text',
+								'placeholder' => \esc_html__( 'Provider\'s name', 'wp-2fa' ),
+								'class'       => 'form-input',
+								'option_name' => 'wp_2fa_white_label[email-option-label]',
+								'default'     => \esc_html( WP2FA::get_wp2fa_white_label_setting( 'email-option-label', true ) ),
+							)
+						);
+						?>
+					</div>
+				</div>
+				<div class="form-group settings-row">
+					<div class="settings-label-group">
+						<?php
+						Settings_Builder::build_option(
+							array(
+								'text' => \esc_html__( 'Email option hint', 'wp-2fa' ),
+								'type' => 'settings-label',
+							)
+						);
+
+						Settings_Builder::build_option(
+							array(
+								'text'  => \esc_html__( 'Add a helpful tip that users will see when configuring Email (HOTP) as their 2FA method. This text is displayed via a help icon during setup. Leave this field empty to hide the help icon.', 'wp-2fa' ),
+								'class' => 'description-settings-card',
+								'id'    => 'general-settings-tab',
+								'type'  => 'description',
+							)
+						);
+						?>
+					</div>
+					<div class="settings-control ">
+						<?php
+						Settings_Builder::build_option(
+							array(
+								'id'          => 'email-option-label-hint',
+								'type'        => 'editor',
+								'placeholder' => \esc_html__( 'Enter custom message', 'wp-2fa' ),
+								'option_name' => 'wp_2fa_white_label[email-option-label-hint]',
+								'default'     => WP2FA::get_wp2fa_white_label_setting( 'email-option-label-hint', true ),
+							)
+						);
+						?>
+					</div>
+				</div>
+				<div class="form-group settings-row">
+					<div class="settings-label-group">
+						<?php
+						Settings_Builder::build_option(
+						array(
+						'text' => \esc_html(
+						\wp_sprintf(
+						// translators: Method option label.
+						__( '%s help text', 'wp-2fa' ),
+						WP2FA::get_wp2fa_white_label_setting( 'email-option-label', true )
+						)
+						),
+						'type' => 'settings-label',
+						)
+						);
+
+						Settings_Builder::build_option(
+						array(
+						'text'  => \wp_sprintf(
+						// translators: Method option label.
+						\esc_html__( 'This message is shown to users when configuring %s.', 'wp-2fa' ),
+						WP2FA::get_wp2fa_white_label_setting( 'email-option-label', true )
+						),
+						'class' => 'description-settings-card',
+						'id'    => 'general-settings-tab',
+						'type'  => 'description',
+						)
+						);
+						?>
+					</div>
+					<div class="settings-control">
+						<?php
+						Settings_Builder::build_option(
+						array(
+						'id'          => 'method_help_hotp_intro',
+						'type'        => 'editor',
+						'placeholder' => \esc_html__( 'Enter custom message', 'wp-2fa' ),
+						'option_name' => 'wp_2fa_white_label[method_help_hotp_intro]',
+						'default'     => WP2FA::get_wp2fa_white_label_setting( 'method_help_hotp_intro', true ),
+						)
+						);
+						?>
+					</div>
+				</div>
+				<div class="form-group settings-row">
+					<div class="settings-label-group">
+						<?php
+						Settings_Builder::build_option(
+						array(
+						'text' => \esc_html__( 'Link via email help text', 'wp-2fa' ),
+						'type' => 'settings-label',
+						)
+						);
+
+						Settings_Builder::build_option(
+						array(
+						'text'  => \esc_html__( 'This message is shown to users in the final step before email verification when using the "Link via email" method. It should explain that they need to check their email and, if required, whitelist the sender address.', 'wp-2fa' ),
+						'class' => 'description-settings-card',
+						'id'    => 'method-help-hotp-help-desc',
+						'type'  => 'description',
+						)
+						);
+						?>
+					</div>
+					<div class="settings-control">
+						<?php
+						Settings_Builder::build_option(
+						array(
+						'id'          => 'method_help_hotp_help',
+						'type'        => 'editor',
+						'placeholder' => \esc_html__( 'Enter custom message', 'wp-2fa' ),
+						'option_name' => 'wp_2fa_white_label[method_help_hotp_help]',
+						'default'     => WP2FA::get_wp2fa_white_label_setting( 'method_help_hotp_help', true ),
+						)
+						);
+						?>
+					</div>
+				</div>
+				<div class="form-group settings-row">
+					<div class="settings-label-group">
+						<?php
+						Settings_Builder::build_option(
+						array(
+						'text' => \esc_html__( 'One-time code via email help text', 'wp-2fa' ),
+						'type' => 'settings-label',
+						)
+						);
+
+						Settings_Builder::build_option(
+						array(
+						'text'  => \esc_html__( 'This message is shown to users in the final step before email verification when using the "Code via email (HOTP)" method. It should explain that they need to check their email and, if required, whitelist the sender address.', 'wp-2fa' ),
+						'class' => 'description-settings-card',
+						'id'    => 'method-help-hotp-help-email-desc',
+						'type'  => 'description',
+						)
+						);
+						?>
+					</div>
+					<div class="settings-control">
+						<?php
+						Settings_Builder::build_option(
+						array(
+						'id'          => 'method_help_hotp_help_email',
+						'type'        => 'editor',
+						'placeholder' => \esc_html__( 'Enter custom message', 'wp-2fa' ),
+						'option_name' => 'wp_2fa_white_label[method_help_hotp_help_email]',
+						'default'     => WP2FA::get_wp2fa_white_label_setting( 'method_help_hotp_help_email', true ),
+						)
+						);
+						?>
+					</div>
+				</div>
+				<div class="form-group settings-row">
+					<div class="settings-label-group">
+						<?php
+						Settings_Builder::build_option(
+						array(
+						'text' => \esc_html(
+						\wp_sprintf(
+						// translators: Method option label.
+						__( '%s pre-submission text', 'wp-2fa' ),
+						WP2FA::get_wp2fa_white_label_setting( 'email-option-label', true )
+						)
+						),
+						'type' => 'settings-label',
+						)
+						);
+
+						Settings_Builder::build_option(
+						array(
+						'text'  => \esc_html(
+						\wp_sprintf(
+						// translators: Method option label.
+						\esc_html__( 'This message is shown to users prior to configuring %s method.', 'wp-2fa' ),
+						WP2FA::get_wp2fa_white_label_setting( 'email-option-label', true )
+						)
+						),
+						'class' => 'description-settings-card',
+						'id'    => 'general-settings-tab',
+						'type'  => 'description',
+						)
+						);
+						?>
+					</div>
+					<div class="settings-control">
+						<?php
+						Settings_Builder::build_option(
+						array(
+						'id'          => 'method_verification_hotp_pre',
+						'type'        => 'editor',
+						'placeholder' => \esc_html__( 'Enter custom message', 'wp-2fa' ),
+						'option_name' => 'wp_2fa_white_label[method_verification_hotp_pre]',
+						'default'     => WP2FA::get_wp2fa_white_label_setting( 'method_verification_hotp_pre', true ),
+						)
+						);
+						?>
+					</div>
+				</div>
+
+
+			<?php
+			$content = \ob_get_clean();
+
+			$labels[ self::METHOD_NAME ] = array(
+				'provider_name' => \esc_html( WP2FA::get_wp2fa_white_label_setting( 'email-option-label', true ) ),
+				'content'       => $content,
+			);
+
+			return $labels;
+		}
+
+		/**
+		 * Checks the provided user and token and validates them. Returns true if valid, false otherwise.
+		 *
+		 * @param array       $valid - The current validation value.
+		 * @param integer     $user_id - The user ID to check for.
+		 * @param string|null $token - The token to validate against user provided.
+		 *
+		 * @return array
+		 *
+		 * @since 3.0.0
+		 */
+		public static function api_login_validate( array $valid, int $user_id, ?string $token ): array {
+
+			if ( ! Settings::is_provider_enabled_for_role( User_Helper::get_user_role( $user_id ), self::METHOD_NAME ) ) {
+				return $valid;
+			}
+
+			if ( self::METHOD_NAME !== User_Helper::get_enabled_method_for_user( $user_id ) ) {
+				return $valid;
+			}
+
+			if ( ! is_array( $valid ) || ! isset( $valid['valid'] ) ) {
+				$valid['valid'] = false;
+			}
+
+			// If the login is valid, return it as it is.
+			if ( true === $valid['valid'] ) {
+				return $valid;
+			}
+
+			if ( ! isset( $token ) || empty( $token ) ) {
+				return $valid;
+			}
+
+			// Sanitize the token to ensure it is safe to use.
+			$sanitized_token = \sanitize_text_field( $token );
+
+			$is_valid = Authentication::validate_token( User_Helper::get_user( $user_id ), $sanitized_token );
+
+			if ( ! $is_valid ) {
+				$valid[ self::METHOD_NAME ]['error'] = \esc_html__( 'ERROR: Invalid verification code.', 'wp-2fa' );
+				// Only if another attempt follows: after the last one the user is sent
+				// back to log in, and that sends a code of its own.
+				$attempting = \get_userdata( $user_id );
+				if ( $attempting instanceof \WP_User && API_Login::get_login_attempts( $attempting ) + 1 < API_Login::get_allowed_login_attempts() ) {
+
+					// A rejected code is always replaced, so a guesser never gets
+					// to keep shooting at the same target.
+					if ( Code_Guard::is_rotation_enabled() ) {
+						$resent = Code_Guard::dispatch(
+							static function () use ( $user_id ) {
+								return Setup_Wizard::send_authentication_setup_email( $user_id, 'nominated_email_address' );
+							},
+							$user_id
+						);
+
+						$valid[ self::METHOD_NAME ]['error'] .= ' ' . ( Code_Guard::succeeded( $resent )
+							? \esc_html__( 'For security reasons you have been sent a new code via email. Please use this new code to log in.', 'wp-2fa' )
+							: Login::dispatch_failure_message() );
+					}
+				}
+			}
+
+			$valid['valid'] = $is_valid;
+
+			return $valid;
+		}
+
+		/**
+		 * Returns the translated name of the provider
+		 *
+		 * @return string
+		 *
+		 * @since 2.6.0
+		 */
+		public static function get_translated_name(): string {
+			return \esc_html__( 'HOTP (Email)', 'wp-2fa' );
+		}
+
+		/**
+		 * Adds the extension default settings to the main plugin settings
+		 *
+		 * @param array $default_settings - array with plugin default settings.
+		 *
+		 * @return array
+		 *
+		 * @since 2.6.0
+		 */
+		public static function add_default_settings( array $default_settings ) {
+			$default_settings[ self::POLICY_SETTINGS_NAME ] = self::POLICY_SETTINGS_NAME;
+			$default_settings['specify-email_hotp'] = false;
+
+			// $default_settings['enforce-email_hotp'] = false;
+
+			return $default_settings;
+		}
+
+		/**
+		 * Add extension settings to the loop array
+		 *
+		 * @param array $loop_settings - Currently available settings array.
+		 *
+		 * @return array
+		 *
+		 * @since 2.6.0
+		 */
+		public static function settings_loop( array $loop_settings ) {
+			array_push( $loop_settings, self::POLICY_SETTINGS_NAME );
+			array_push( $loop_settings, 'specify-email_hotp' );
+			// array_push( $loop_settings, 'enforce-email_hotp' );
+
+
+			return $loop_settings;
+		}
+
+		/**
+		 * Fills up the White Label settings array with the method defaults.
+		 *
+		 * @param array $default_settings - The array with the collected white label settings.
+		 *
+		 * @return array
+		 *
+		 * @since 3.0.0
+		 */
+		public static function add_whitelabel_settings( array $default_settings ): array {
+			$default_settings['email-option-label']           = \__( 'One-time code via email', 'wp-2fa' );
+			$default_settings['email-option-label-hint']      = '';
+			$default_settings['method_help_hotp_intro']       = '<h3>' . sprintf( /* translators: %s: the label configured for the email method. */ \__( 'Setting up HOTP (%s)', 'wp-2fa' ), '{email-option-label}' ) . '</h3><p>' . \__( 'Please select the email address where the one-time code should be sent:', 'wp-2fa' ) . '</p>';
+			$default_settings['method_help_hotp_help']        = \__( 'To complete the 2FA configuration you will be sent a one-time code over email, therefore you should have access to the mailbox of this email address. If you do not receive the email with the one-time code please check your spam folder and contact your administrator', 'wp-2fa' );
+			$default_settings['method_help_hotp_help_email']  = '<b>' . \__( 'IMPORTANT', 'wp-2fa' ) . '</b><p>' . sprintf( /* translators: %s: the address the plugin sends email from. */ \__( 'To ensure you always receive the one-time code whitelist the email address from which the codes are sent. This is %s', 'wp-2fa' ), '{from_email}' ) . '</p>';
+			$default_settings['method_verification_hotp_pre'] = '<h3>' . \__( 'Almost there…', 'wp-2fa' ) . '</h3><p>' . \__( 'Please type in the one-time code sent to your email address to finalize the setup', 'wp-2fa' ) . '</p>';
+			$default_settings['hotp_reconfigure_intro']       = '<h3>' . sprintf( /* translators: %s: the word "Configure" or "Reconfigure". */ \__( '%s one-time code over email method', 'wp-2fa' ), '{reconfigure_or_configure_capitalized}' ) . '</h3><p>' . sprintf( /* translators: %s: the word "configure" or "reconfigure". */ \__( 'Click the below button to %s the email address where the one-time code should be sent.', 'wp-2fa' ), '{reconfigure_or_configure}' ) . '</p>';
+
+			return $default_settings;
+		}
+
+		/**
+		 * Shows the Method option label and hint in the White Label settings.
+		 *
+		 * @return void
+		 *
+		 * @since 2.9.0
+		 */
+		public static function white_label_option_labels() {
+			?>
+			<strong class="description"><?php \esc_html_e( 'Email option label', 'wp-2fa' ); ?></strong>
+			<br><br>
+			<fieldset>
+				<input type="text" id="email-option-label" name="wp_2fa_white_label[email-option-label]" class="large-text" value="<?php echo \esc_attr( WP2FA::get_wp2fa_white_label_setting( 'email-option-label', true ) ); ?>">
+			</fieldset>
+			<br>
+			<strong class="description"><?php \esc_html_e( 'Email option hint', 'wp-2fa' ); ?></strong>
+			<br>
+			<fieldset>
+				<?php
+					echo Settings_Page_White_Label::create_standard_editor( 'email-option-label-hint' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				?>
+			</fieldset>
+			<br>
+			<?php
+		}
+
+		/**
+		 * Validates the Email login form submission.
+		 *
+		 * @param bool     $authenticated Whether authentication has passed.
+		 * @param \WP_User $user          The user being authenticated.
+		 * @param string   $provider      The provider name.
+		 *
+		 * @return bool
+		 *
+		 * @since 4.0.1
+		 */
+		public static function validate_login_form( $authenticated, $user, $provider ) {
+			if ( self::METHOD_NAME !== $provider ) {
+				return $authenticated;
+			}
+
+			if ( $authenticated ) {
+				return $authenticated;
+			}
+
+			// If this is an email login, or if the user failed validation previously, lets send the code to the user.
+			if ( true !== Login::pre_process_email_authentication( $user ) ) {
+				$login_nonce = Login::create_login_nonce( $user->ID );
+				if ( ! $login_nonce ) {
+					\wp_die( \esc_html__( 'Failed to create a login nonce.', 'wp-2fa' ) );
+				}
+			}
+
+			if ( true === Login::validate_email_authentication( $user ) ) {
+				return true;
+			}
+
+			$redirect_to = isset( $_REQUEST['redirect_to'] ) ? \esc_url_raw( \wp_unslash( $_REQUEST['redirect_to'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+			/*
+			 * Nothing has been answered yet.
+			 *
+			 * A request carrying no authcode field at all is the first sight of this
+			 * challenge, not a failed attempt at it. That is what a passkey hand-over
+			 * looks like — the passkey has been verified and the browser is posted
+			 * straight here to collect the second factor — and it is what any other
+			 * caller that routes a user to the challenge will look like too.
+			 *
+			 * Treating it as a failure told the user their code was invalid before
+			 * they had typed one, and announced wp_login_failed, which the security
+			 * plugins listening on that hook count against a visitor who has in fact
+			 * just authenticated successfully.
+			 *
+			 * A submitted-but-blank code is a different thing: the field is present
+			 * and empty, the user did answer, and they still get told it was wrong.
+			 * So this turns on isset(), not on emptiness.
+			 */
+			if ( ! isset( $_REQUEST['authcode'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				if ( empty( $login_nonce ) ) {
+					$login_nonce = Login::create_login_nonce( $user->ID );
+
+					if ( ! $login_nonce ) {
+						\wp_die( \esc_html__( 'Failed to create a login nonce.', 'wp-2fa' ) );
+					}
+				}
+
+				// Rendering the challenge is also what dispatches the first code.
+				Login::login_html( $user, $login_nonce['key'], $redirect_to, '', $provider );
+
+				exit;
+			}
+
+			/*
+			 * A resend with no code typed is a request for a code, not a wrong
+			 * one: no failure is announced, nothing is counted, the code the user
+			 * may still be reading is not retired.
+			 */
+			if ( isset( $_REQUEST[ Login::INPUT_NAME_RESEND_CODE ] ) && ! Login::is_answering_challenge() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$current_nonce = isset( $_REQUEST['wp-auth-nonce'] ) ? \sanitize_text_field( \wp_unslash( $_REQUEST['wp-auth-nonce'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				Login::delete_login_nonce( $user->ID, $current_nonce );
+				$login_nonce = Login::create_login_nonce( $user->ID );
+				if ( ! $login_nonce ) {
+					\wp_die( \esc_html__( 'Failed to create a login nonce.', 'wp-2fa' ) );
+				}
+				$redirect_to = isset( $_REQUEST['redirect_to'] ) ? \esc_url_raw( \wp_unslash( $_REQUEST['redirect_to'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				Login::login_html( $user, $login_nonce['key'], $redirect_to, Login::resend_notice(), $provider );
+
+				exit;
+			}
+
+			// Validation failed.
+			\do_action(
+				'wp_login_failed',
+				$user->user_login,
+				new \WP_Error(
+					'authentication_failed',
+					__( '<strong>Error</strong>: User can not be authenticated.', 'wp-2fa' )
+				)
+			);
+
+			// Only a code that was actually submitted and rejected retires the
+			// current one, so that a blank submission does not spend the code the
+			// user is still waiting to read.
+			$submitted_code = trim( (string) \wp_unslash( $_REQUEST['authcode'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+			if ( '' !== $submitted_code ) {
+				Code_Guard::rotate( $user );
+			}
+
+			$current_nonce = isset( $_REQUEST['wp-auth-nonce'] ) ? \sanitize_text_field( \wp_unslash( $_REQUEST['wp-auth-nonce'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			Login::delete_login_nonce( $user->ID, $current_nonce );
+			$login_nonce = Login::create_login_nonce( $user->ID );
+			if ( ! $login_nonce ) {
+				\wp_die( \esc_html__( 'Failed to create a login nonce.', 'wp-2fa' ) );
+			}
+
+			if ( isset( $_REQUEST['wp-2fa-email-code-resend'] ) ) { // phpcs:ignore
+				Login::login_html( $user, $login_nonce['key'], $redirect_to, Login::resend_notice(), $provider );
+			} elseif ( Authentication::check_number_of_attempts( $user ) ) {
+				$msg = \esc_html__( 'ERROR: Invalid verification code.', 'wp-2fa' );
+				if ( empty( WP2FA::get_wp2fa_general_setting( 'brute_force_disable' ) ) ) {
+					$msg .= ' ' . \esc_html__( 'For security reasons you have been sent a new code via email. Please use this new code to log in.', 'wp-2fa' );
+				}
+				Login::login_html( $user, $login_nonce['key'], $redirect_to, $msg, $provider );
+			} else {
+				Authentication::clear_login_attempts( $user );
+				Code_Guard::clear( $user );
+				\wp_safe_redirect( \wp_login_url() );
+			}
+
+			exit;
+		}
+	}
+}

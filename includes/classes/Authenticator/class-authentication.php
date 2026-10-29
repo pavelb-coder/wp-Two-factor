@@ -1,0 +1,755 @@
+<?php
+/**
+ * Responsible for WP2FA user's authentication.
+ *
+ * @package    wp2fa
+ * @subpackage authentication
+ * @copyright  2026 Melapress
+ * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link       https://wordpress.org/plugins/wp-2fa/
+ */
+
+/**
+ * Class for handling general authentication tasks.
+ *
+ * @since 0.1-dev
+ *
+ * @package WP2FA
+ */
+
+declare(strict_types=1);
+
+namespace WP2FA\Authenticator;
+
+defined( 'ABSPATH' ) || exit;
+
+use WP2FA\Authenticator\Open_SSL;
+use WP2FA\Admin\Helpers\User_Helper;
+use WP2FA\Utils\Debugging;
+use WP2FA_Vendor\BaconQrCode\Writer;
+use WP2FA\Admin\Methods\Traits\Login_Attempts;
+use WP2FA_Vendor\BaconQrCode\Renderer\ImageRenderer;
+use WP2FA_Vendor\BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use WP2FA_Vendor\BaconQrCode\Renderer\RendererStyle\RendererStyle;
+
+if ( ! class_exists( '\WP2FA\Authenticator\Authentication' ) ) {
+	/**
+	 * Authenticator class
+	 */
+	class Authentication {
+		use Login_Attempts;
+
+		const DEFAULT_KEY_BIT_SIZE        = 160;
+		const DEFAULT_CRYPTO              = 'sha1';
+		const DEFAULT_DIGIT_COUNT         = 6;
+		const DEFAULT_TIME_STEP_SEC       = 30;
+		const DEFAULT_TIME_STEP_ALLOWANCE = 2;
+
+		/**
+		 * Holds the name of the meta key for the allowed login attempts
+		 *
+		 * @var string
+		 *
+		 * @since 2.0.0
+		 */
+		private static $logging_attempts_meta_key = WP_2FA_PREFIX . 'email-login-attempts';
+
+		/**
+		 * The login attempts class
+		 *
+		 * @var \WP2FA\Admin\Controllers\Login_Attempts
+		 *
+		 * @since 2.0.0
+		 */
+		private static $login_attempts = null;
+
+		/**
+		 * String with the base32 characters
+		 *
+		 * @var string
+		 */
+		private static $base_32_chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+
+		/**
+		 * Cache of decrypted keys, keyed by ciphertext.
+		 *
+		 * @var array<string, string>
+		 */
+		private static $decrypted_key = array();
+
+		/**
+		 * Generate QR code
+		 *
+		 * @param  string $name  Username.
+		 * @param  string $key   Auth key.
+		 * @param  string $title Site title.
+		 * @return string        QR code URL.
+		 */
+		public static function get_google_qr_code( $name, $key, $title = null ) {
+			// Encode to support spaces, question marks and other characters.
+			$name = rawurlencode( $name );
+
+			self::decrypt_key_if_needed( $key );
+
+			$target_url = ( 'otpauth://totp/' . $name . '?secret=' . $key );
+			if ( isset( $title ) ) {
+				$target_url .= ( '&issuer=' . rawurlencode( $title ) );
+			}
+
+			/*
+			 * An empty string, not a fatal, when the QR image cannot be drawn.
+			 *
+			 * Drawing one needs extensions a host may not have, and this runs from
+			 * admin_enqueue_scripts via Wizard_Integration — so anything escaping here
+			 * does not merely lose the image, it takes down the whole of user-edit.php
+			 * and profile.php and leaves no way in to turn 2FA off again.
+			 *
+			 * Losing the picture costs the user very little: every caller hands the
+			 * secret to the page alongside this, so the key can still be typed into an
+			 * authenticator by hand and enrolment completes normally. The callers treat
+			 * '' as "no image available" and show the key on its own.
+			 */
+			if ( ! self::can_render_qr_code() ) {
+				Debugging::log(
+					'Skipping the TOTP QR code and offering the setup key alone: '
+					. self::describe_missing_qr_requirements()
+				);
+
+				return '';
+			}
+
+			/*
+			 * Everything the drawing needs is inside the try, the renderer included.
+			 * The back end tests for its own requirements in its constructor and throws
+			 * there, before a single line of the writing below runs — so building it
+			 * outside this block, as it used to be, left the most likely failure of the
+			 * lot as the one nothing was catching.
+			 *
+			 * Throwable, not the library's own exception type: the constructor raises a
+			 * RuntimeException, which is a sibling of the WriterException the writing
+			 * raises rather than a parent or child of it, so naming either one alone
+			 * catches only half of what this call can throw.
+			 */
+			try {
+				$renderer = new ImageRenderer(
+					new RendererStyle( 400 ),
+					new SvgImageBackEnd()
+				);
+
+				$result = ( new Writer( $renderer ) )->writeString( $target_url );
+			} catch ( \Throwable $qr_failure ) {
+				Debugging::log(
+					'Could not render the TOTP QR code, falling back to the setup key alone. Reason: '
+					. $qr_failure->getMessage()
+				);
+
+				return '';
+			}
+
+			return 'data:image/svg+xml;base64,' . base64_encode( $result );
+		}
+
+		/**
+		 * Whether this server can draw a QR code at all.
+		 *
+		 * Asked before trying, so the answer is the same everywhere and a caller that
+		 * cannot show a picture does not have to find that out by catching something.
+		 *
+		 * @return bool
+		 *
+		 * @since 4.2.0
+		 */
+		public static function can_render_qr_code(): bool {
+			return empty( self::missing_qr_requirements() );
+		}
+
+		/**
+		 * Which of the pieces needed to draw a QR code this server is without.
+		 *
+		 * Named accurately on purpose. The bundled encoder reports a missing XMLWriter as
+		 * "you need to install the libxml extension", which is not the extension at fault:
+		 * libxml, dom, SimpleXML and XMLReader are almost always present and enabled while
+		 * xmlwriter is the one left out of a build. Customers and their hosts have chased
+		 * that wording more than once and come back with libxml confirmed enabled and the
+		 * fault untouched, so nothing here repeats it.
+		 *
+		 * @return string[] Extension names, empty when the server has everything needed.
+		 *
+		 * @since 4.2.0
+		 */
+		public static function missing_qr_requirements(): array {
+			$missing = array();
+
+			// Written by the SVG back end, which throws from its constructor without it.
+			if ( ! \class_exists( '\XMLWriter' ) ) {
+				$missing[] = 'xmlwriter';
+			}
+
+			// Used while encoding the payload.
+			if ( ! \function_exists( 'ctype_digit' ) ) {
+				$missing[] = 'ctype';
+			}
+
+			/*
+			 * The encoder converts the payload with one or the other, so either will do
+			 * and only the absence of both is worth reporting.
+			 */
+			if ( ! \function_exists( 'iconv' ) && ! \function_exists( 'mb_convert_encoding' ) ) {
+				$missing[] = 'iconv';
+			}
+
+			return $missing;
+		}
+
+		/**
+		 * The missing pieces, as something that can be put in a log or shown to a person.
+		 *
+		 * @return string
+		 *
+		 * @since 4.2.0
+		 */
+		public static function describe_missing_qr_requirements(): string {
+			$missing = self::missing_qr_requirements();
+
+			if ( empty( $missing ) ) {
+				return '';
+			}
+
+			return 'the following PHP extension(s) are unavailable: ' . \implode( ', ', $missing );
+		}
+
+		/**
+		 * Generates key
+		 *
+		 * @param int $bitsize Number of bits to use for key.
+		 *
+		 * @return string $bitsize long string composed of available base32 chars.
+		 */
+		public static function generate_key( $bitsize = self::DEFAULT_KEY_BIT_SIZE ) {
+			$bytes  = ceil( $bitsize / 8 );
+			$secret = wp_generate_password( $bytes, true, true );
+
+			$secret = Open_SSL::encrypt( self::base32_encode( $secret ) );
+
+			if ( Open_SSL::is_ssl_available() ) {
+				$secret = Open_SSL::SECRET_KEY_PREFIX . $secret;
+			}
+
+			return $secret;
+		}
+
+		/**
+		 * Generates salt for the site
+		 *
+		 * @return string
+		 *
+		 * @since 2.4.0
+		 *
+		 * @throws \RuntimeException - throw exception if the generated string has unexpected characters or not a string.
+		 */
+		public static function generate_salt(): string {
+			$secret = \wp_generate_password( 64, true, true );
+
+			if ( ! is_string( $secret ) || strlen( $secret ) !== 64 ) {
+				throw new \RuntimeException( 'Could not generate secret key.' );
+			}
+
+			return base64_encode( $secret );
+		}
+
+		/**
+		 * Returns a base32 encoded string.
+		 *
+		 * @param string $string String to be encoded using base32.
+		 *
+		 * @return string base32 encoded string without padding.
+		 */
+		public static function base32_encode( $string ) {
+			if ( empty( $string ) ) {
+				return '';
+			}
+
+			$binary_string = '';
+
+			foreach ( str_split( $string ) as $character ) {
+				$binary_string .= str_pad( base_convert( (string) ord( $character ), 10, 2 ), 8, '0', STR_PAD_LEFT );
+			}
+
+			$five_bit_sections = str_split( $binary_string, 5 );
+			$base32_string     = '';
+
+			foreach ( $five_bit_sections as $five_bit_section ) {
+				$base32_string .= self::$base_32_chars[ base_convert( str_pad( $five_bit_section, 5, '0' ), 2, 10 ) ];
+			}
+
+			return $base32_string;
+		}
+
+		/**
+		 * Clears the value of the decrypted key
+		 *
+		 * @return void
+		 *
+		 * @since 2.6.0
+		 */
+		public static function clear_decrypted_key() {
+			self::$decrypted_key = array();
+		}
+
+		/**
+		 * Check if the TOTP secret key has a proper format.
+		 *
+		 * @param  string $key TOTP secret key.
+		 *
+		 * @return boolean
+		 */
+		public static function is_valid_key( $key ) {
+			self::decrypt_key_if_needed( $key );
+
+			$check = sprintf( '/^[%s]+$/', self::$base_32_chars );
+
+			if ( 1 === preg_match( $check, $key ) ) {
+				return true;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Checks if a given code is valid for a given key, allowing for a certain amount of time drift
+		 *
+		 * @param string        $key      The share secret key to use.
+		 * @param string        $authcode The code to test.
+		 * @param \WP_User|null $user     Optional. User for replay protection (persists last accepted step).
+		 *
+		 * @return bool Whether the code is valid within the time frame
+		 *
+		 * @since 3.1.0
+		 */
+		public static function is_valid_authcode( $key, $authcode, $user = null ) {
+
+			self::decrypt_key_if_needed( $key );
+
+			// No usable key - none set, or one that could not be decrypted: no code is valid.
+			if ( ! \is_string( $key ) || '' === $key ) {
+				return false;
+			}
+			/**
+			 * That allows to change the amount of thick for decrypting the key.
+			 *
+			 * @param bool - Default at this point is true - no method is selected.
+			 *
+			 * @since 2.0.0
+			 */
+			$max_ticks = apply_filters( WP_2FA_PREFIX . 'totp_time_step_allowance', self::DEFAULT_TIME_STEP_ALLOWANCE );
+
+			// Retrieve the last accepted time step for replay protection.
+			$last_used_step = 0;
+			if ( $user instanceof \WP_User && $user->ID > 0 ) {
+				$last_used_step = (int) \get_user_meta( $user->ID, WP_2FA_PREFIX . 'last_totp_step', true );
+			}
+
+			// Array of all ticks to allow, sorted using absolute value to test closest match first.
+			$ticks = range( - $max_ticks, $max_ticks );
+			usort( $ticks, array( __CLASS__, 'abssort' ) );
+
+			$time = time() / self::DEFAULT_TIME_STEP_SEC;
+			foreach ( $ticks as $offset ) {
+				$log_time    = $time + $offset;
+				$step        = (int) floor( $log_time );
+				$calculdated = (string) self::calc_totp( $key, $log_time );
+				if ( hash_equals( $calculdated, (string) $authcode ) ) {
+					// Reject replayed codes: same or earlier step already used.
+					if ( $last_used_step > 0 && $step <= $last_used_step ) {
+						return false;
+					}
+					// Persist the accepted step to prevent replay.
+					if ( $user instanceof \WP_User && $user->ID > 0 ) {
+						if ( ! self::claim_totp_step( $user->ID, $step, (int) $max_ticks ) ) {
+							return false;
+						}
+						\update_user_meta( $user->ID, WP_2FA_PREFIX . 'last_totp_step', $step );
+					}
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/**
+		 * Claim a verified TOTP step using the unique options-table key.
+		 *
+		 * Store in the main site's database even with an external object cache:
+		 * transient get/set operations alone cannot make a concurrent claim atomic.
+		 * WordPress's expired-transient cleanup removes these short-lived records.
+		 *
+		 * @param int $user_id   Account whose code was verified.
+		 * @param int $step      Verified time step.
+		 * @param int $allowance Accepted time-step tolerance.
+		 * @return bool
+		 */
+		private static function claim_totp_step( int $user_id, int $step, int $allowance ): bool {
+			$switched = \is_multisite() && \get_current_blog_id() !== (int) \get_main_site_id();
+			if ( $switched ) {
+				\switch_to_blog( \get_main_site_id() );
+			}
+			try {
+				global $wpdb;
+				// Also clean expired claims when an object cache disables core's DB cleanup.
+				$prefix = $wpdb->esc_like( '_transient_timeout_wp_2fa_totp_claim_' . $user_id . '_' ) . '%';
+				$wpdb->query( $wpdb->prepare( "DELETE claim, expiry FROM {$wpdb->options} AS expiry INNER JOIN {$wpdb->options} AS claim ON claim.option_name = REPLACE(expiry.option_name, '_transient_timeout_', '_transient_') WHERE expiry.option_name LIKE %s AND CAST(expiry.option_value AS UNSIGNED) < %d", $prefix, time() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Trusted options table; claims have unique, never-reused time-step keys.
+				$name = 'wp_2fa_totp_claim_' . $user_id . '_' . $step;
+				// Keep the claim beyond the latest instant this time step can validate.
+				$expires = max( time() + MINUTE_IN_SECONDS, ( $step + $allowance + 2 ) * self::DEFAULT_TIME_STEP_SEC );
+				\add_option( '_transient_timeout_' . $name, $expires, '', false );
+				return \add_option( '_transient_' . $name, '1', '', false );
+			} finally {
+				if ( $switched ) {
+					\restore_current_blog();
+				}
+			}
+		}
+
+		/**
+		 * Calculate a valid code given the shared secret key
+		 *
+		 * @param string $key        The shared secret key to use for calculating code.
+		 * @param mixed  $step_count The time step used to calculate the code, which is the floor of time() divided by step size.
+		 * @param int    $digits     The number of digits in the returned code.
+		 * @param string $hash       The hash used to calculate the code.
+		 * @param int    $time_step  The size of the time step.
+		 *
+		 * @return string The totp code
+		 */
+		public static function calc_totp( $key, $step_count = false, $digits = self::DEFAULT_DIGIT_COUNT, $hash = self::DEFAULT_CRYPTO, $time_step = self::DEFAULT_TIME_STEP_SEC ) {
+
+			$secret = self::base32_decode( $key );
+
+			if ( false === $step_count ) {
+				$step_count = floor( time() / $time_step );
+			}
+
+			$timestamp = self::pack64( $step_count );
+
+			$hash = hash_hmac( $hash, $timestamp, $secret, true );
+
+			$offset = ord( $hash[19] ) & 0xf;
+
+			$code = (
+				( ( ord( $hash[ $offset + 0 ] ) & 0x7f ) << 24 ) |
+				( ( ord( $hash[ $offset + 1 ] ) & 0xff ) << 16 ) |
+				( ( ord( $hash[ $offset + 2 ] ) & 0xff ) << 8 ) |
+				( ord( $hash[ $offset + 3 ] ) & 0xff )
+			) % pow( 10, $digits );
+
+			return str_pad( (string) $code, $digits, '0', STR_PAD_LEFT );
+		}
+
+		/**
+		 * Decode a base32 string and return a binary representation
+		 *
+		 * @param string $base32_string The base 32 string to decode.
+		 *
+		 * @throws \InvalidArgumentException If string contains non-base32 characters.
+		 *
+		 * @return string Binary representation of decoded string
+		 */
+		public static function base32_decode( $base32_string ) {
+
+			$base32_string = strtoupper( $base32_string );
+
+			if ( ! preg_match( '/^[' . self::$base_32_chars . ']+$/', $base32_string ) ) {
+				throw new \InvalidArgumentException( 'Invalid characters in the base32 string.' );
+			}
+
+			$l      = strlen( $base32_string );
+			$n      = 0;
+			$j      = 0;
+			$binary = '';
+
+			for ( $i = 0; $i < $l; $i++ ) {
+
+				$n  = $n << 5; // Move buffer left by 5 to make room.
+				$n  = $n + strpos( self::$base_32_chars, $base32_string[ $i ] );    // Add value into buffer.
+				$j += 5; // Keep track of number of bits in buffer.
+
+				if ( $j >= 8 ) {
+					$j      -= 8;
+					$binary .= chr( ( $n & ( 0xFF << $j ) ) >> $j );
+				}
+			}
+
+			return $binary;
+		}
+
+		/**
+		 * Used with usort to sort an array by distance from 0
+		 *
+		 * @param int $a First array element.
+		 * @param int $b Second array element.
+		 *
+		 * @return int -1, 0, or 1 as needed by usort
+		 */
+		private static function abssort( $a, $b ) {
+			$a = abs( $a );
+			$b = abs( $b );
+			if ( $a === $b ) {
+				return 0;
+			}
+			return ( $a < $b ) ? -1 : 1;
+		}
+
+		/**
+		 * Pack stuff
+		 *
+		 * @param string $value The value to be packed.
+		 *
+		 * @return string Binary packed string.
+		 */
+		public static function pack64( $value ) {
+			// 64bit mode (PHP_INT_SIZE == 8).
+			if ( PHP_INT_SIZE >= 8 ) {
+				// If we're on PHP 5.6.3+ we can use the new 64bit pack functionality.
+				if ( version_compare( PHP_VERSION, '5.6.3', '>=' ) && PHP_INT_SIZE >= 8 ) {
+					return pack( 'J', $value );
+				}
+				$highmap = 0xffffffff << 32;
+				$higher  = ( $value & $highmap ) >> 32;
+			} else {
+				/*
+				 * 32bit PHP can't shift 32 bits like that, so we have to assume 0 for the higher
+				 * and not pack anything beyond it's limits.
+				 */
+				$higher = 0;
+			}
+
+			$lowmap = 0xffffffff;
+			$lower  = $value & $lowmap;
+
+			return pack( 'NN', $higher, $lower );
+		}
+
+		/**
+		 * Generate a random eight-digit string to send out as an auth code.
+		 *
+		 * @since 0.1-dev
+		 *
+		 * @param int          $length The code length.
+		 * @param string|array $chars Valid auth code characters.
+		 * @return string
+		 */
+		public static function get_code( $length = 6, $chars = '1234567890' ) {
+			$code = '';
+			if ( is_array( $chars ) ) {
+				$chars = implode( '', $chars );
+			}
+			for ( $i = 0; $i < $length; $i++ ) {
+				$code .= substr( $chars, wp_rand( 0, strlen( $chars ) - 1 ), 1 );
+			}
+			return $code;
+		}
+
+		/**
+		 * Generate the user token.
+		 *
+		 * @since 0.1-dev
+		 *
+		 * @param int $user_id User ID.
+		 * @return string
+		 */
+		public static function generate_token( $user_id ) {
+			$token = self::get_code();
+
+			User_Helper::set_email_token_for_user( \wp_hash( $token ), $user_id );
+			return $token;
+		}
+
+		/**
+		 * Validate the user token.
+		 *
+		 * @since 0.1-dev
+		 *
+		 * @param \WP_User $user User ID.
+		 * @param string   $token User token.
+		 *
+		 * @return boolean
+		 */
+		public static function validate_token( $user, $token ) {
+			$user_id      = $user->ID;
+			$hashed_token = self::get_user_token( $user_id );
+
+			// Bail if token is empty or it doesn't match.
+			if ( empty( $hashed_token ) || ! hash_equals( wp_hash( $token ), $hashed_token ) ) {
+				self::increase_login_attempts( $user );
+				return false;
+			}
+
+
+			// Only the request that deletes this exact token may accept it.
+			if ( ! \delete_user_meta( $user_id, User_Helper::TOKEN_META_KEY, $hashed_token ) ) {
+				return false;
+			}
+			self::clear_login_attempts( $user );
+
+			\delete_transient( 'wp_2fa_code_login_' . $user_id );
+
+			return true;
+		}
+
+		/**
+		 * Delete the user token.
+		 *
+		 * @since 0.1-dev
+		 *
+		 * @param int $user_id User ID.
+		 */
+		public static function delete_token( $user_id ) {
+			User_Helper::remove_email_token_for_user( $user_id );
+		}
+
+		/**
+		 * Check if user has a valid token already.
+		 *
+		 * @param  int $user_id User ID.
+		 * @return boolean      If user has a valid email token.
+		 */
+		public static function user_has_token( $user_id ) {
+			$hashed_token = self::get_user_token( $user_id );
+			if ( ! empty( $hashed_token ) ) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		/**
+		 * Get the authentication token for the user.
+		 *
+		 * @param  int $user_id    User ID.
+		 *
+		 * @return string|boolean  User token or `false` if no token found.
+		 */
+		public static function get_user_token( $user_id ) {
+
+			/*
+			 * The code expires with this transient. It used to sit inside the
+			 * premium markers, so the free build never checked it and an emailed
+			 * code stayed valid indefinitely. Both builds set it now.
+			 */
+			$transient = \get_transient( 'wp_2fa_code_login_' . $user_id );
+			if ( false === $transient ) {
+				User_Helper::remove_email_token_for_user( $user_id );
+				return false;
+			}
+
+			$hashed_token = User_Helper::get_email_token_for_user( $user_id );
+
+			if ( ! empty( $hashed_token ) && is_string( $hashed_token ) ) {
+				return $hashed_token;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Returns list of all the auth apps and their properties
+		 *
+		 * @return array
+		 */
+		public static function get_apps(): array {
+			return array(
+				'authy'     => array(
+					'logo' => 'authy-logo.png',
+					'hash' => 'authy',
+					'name' => 'Authy',
+				),
+				'google'    => array(
+					'logo' => 'google-logo.png',
+					'hash' => 'google',
+					'name' => 'Google Authenticator',
+				),
+				'microsoft' => array(
+					'logo' => 'microsoft-logo.png',
+					'hash' => 'microsoft',
+					'name' => 'Microsoft Authenticator',
+				),
+				'duo'       => array(
+					'logo' => 'duo-logo.png',
+					'hash' => 'duo',
+					'name' => 'Duo Security',
+				),
+				'lastpass'  => array(
+					'logo' => 'lastpass-logo.png',
+					'hash' => 'lastpass',
+					'name' => 'LastPass',
+				),
+				'freeotp'   => array(
+					'logo' => 'free-otp-logo.png',
+					'hash' => 'freeotp',
+					'name' => 'FreeOTP',
+				),
+				'okta'      => array(
+					'logo' => 'okta-logo.png',
+					'hash' => 'okta',
+					'name' => 'Okta',
+				),
+			);
+		}
+
+		/**
+		 * Getter for the base32 character set
+		 *
+		 * @return string
+		 *
+		 * @since 2.0.0
+		 */
+		public static function get_base32_characters(): string {
+			return self::$base_32_chars;
+		}
+
+		/**
+		 * Validates base32 encoded string
+		 *
+		 * @param string $text = The text to be validated.
+		 *
+		 * @return boolean
+		 *
+		 * @since 2.0.0
+		 */
+		public static function validate_base32_string( string $text ): bool {
+			if ( ! preg_match( '/^[' . self::$base_32_chars . ']+$/', $text, $match ) ) {
+				return false;
+			}
+
+			return true;
+		}
+
+		/**
+		 * Checks the given key and decrypts it if necessarily
+		 *
+		 * @param string $key - The key to check.
+		 *
+		 * @return string
+		 *
+		 * @since 2.0.0
+		 *
+		 * @throws \RuntimeException - The key could not be decrypted.
+		 */
+		public static function decrypt_key_if_needed( string &$key ): string {
+			if ( ! isset( self::$decrypted_key[ $key ] ) ) {
+				if ( Open_SSL::is_ssl_available() && strpos( $key, Open_SSL::SECRET_KEY_PREFIX ) === 0 ) {
+					$decrypted = Open_SSL::decrypt( substr( $key, strlen( Open_SSL::SECRET_KEY_PREFIX ) ) );
+					if ( false !== $decrypted ) {
+						self::$decrypted_key[ $key ] = $decrypted;
+					} else {
+						throw new \RuntimeException( 'Failed to decrypt the key.' );
+					}
+				} else {
+					self::$decrypted_key[ $key ] = $key;
+				}
+			}
+
+			return ( $key = self::$decrypted_key[ $key ] ); // phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.Found
+		}
+	}
+}

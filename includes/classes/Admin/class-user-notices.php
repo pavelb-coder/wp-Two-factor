@@ -1,0 +1,387 @@
+<?php
+/**
+ * Responsible for WP2FA user's notifying.
+ *
+ * @package    wp2fa
+ * @subpackage user-utils
+ * @copyright  2026 Melapress
+ * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link       https://wordpress.org/plugins/wp-2fa/
+ */
+
+namespace WP2FA\Admin;
+
+use WP2FA\WP2FA;
+use WP2FA\Extensions_Loader;
+use WP2FA\Utils\Settings_Utils;
+use WP2FA\Admin\Helpers\WP_Helper;
+use WP2FA\Freemius\User_Licensing;
+use WP2FA\Admin\Controllers\Methods;
+use WP2FA\Admin\Helpers\User_Helper;
+use WP2FA\Authenticator\Login;
+use WP2FA\Admin\Controllers\Settings;
+use WP2FA\Admin\Views\Grace_Period_Notifications;
+use WP2FA\Admin\SettingsPages\Settings_Page_White_Label;
+
+/**
+ * User_Notices class with user notification filters
+ *
+ * @since 2.4.0
+ */
+if ( ! class_exists( '\WP2FA\Admin\User_Notices' ) ) {
+	/**
+	 * User_Notices - Class for displaying notices to our users.
+	 */
+	class User_Notices {
+
+		/**
+		 * Lets set things up
+		 */
+		public static function init() {
+			$user               = User_Helper::get_user_object();
+			$enforcement_policy = Settings_Utils::get_setting_role( User_Helper::get_user_role( $user ), 'enforcement-policy' );
+			if ( ! empty( $enforcement_policy ) ) {
+				// Check we are supposed to, before adding action to show nag.
+				if ( in_array( $enforcement_policy, array( 'all-users', 'certain-roles-only', 'certain-users-only', 'superadmins-only', 'superadmins-siteadmins-only', 'enforce-on-multisite', true ), true ) ) {
+
+					$global_methods = Methods::get_available_2fa_methods( User_Helper::get_user_role() );
+					$users_method   = User_Helper::get_enabled_method_for_user( User_Helper::get_user_object() );
+
+					if ( Grace_Period_Notifications::notify_using_dashboard( User_Helper::get_user_object() ) ) {
+						add_action( 'admin_notices', array( __CLASS__, 'user_setup_2fa_nag' ) );
+						add_action( 'network_admin_notices', array( __CLASS__, 'user_setup_2fa_nag' ) );
+					}
+
+					// If enabled method is no longer available, show nag so users reconfigures using an available remaining method.
+					if ( User_Helper::is_enforced( $user ) && ! empty( $users_method ) && empty( \array_intersect( array( $users_method ), $global_methods ) ) ) {
+					}
+				} elseif ( 'do-not-enforce' === Settings_Utils::get_setting_role( User_Helper::get_user_role( $user ), 'enforcement-policy' ) ) {
+					add_action( 'admin_notices', array( __CLASS__, 'user_reconfigure_2fa_nag' ) );
+					add_action( 'network_admin_notices', array( __CLASS__, 'user_setup_2fa_nag' ) );
+				}
+			}
+		}
+
+		/**
+		 * The nag content
+		 *
+		 * @param string $is_shortcode - Is that a call from shortcode.
+		 * @param string $configure_2fa_url - The configuration url.
+		 *
+		 * @return void
+		 */
+		public static function user_setup_2fa_nag( $is_shortcode = '', $configure_2fa_url = '' ) {
+
+			if ( isset( $_GET['user_id'] ) ) {
+				$current_profile_user_id = (int) $_GET['user_id'];
+			} elseif ( ! is_null( User_Helper::get_user_object() ) ) {
+				$current_profile_user_id = User_Helper::get_user_object()->ID;
+			} else {
+				$current_profile_user_id = false;
+			}
+
+			if ( ! $current_profile_user_id ||
+			isset( $_GET['user_id'] ) &&
+			$_GET['user_id'] !== User_Helper::get_user_object()->ID ) {
+				return;
+			}
+
+			// In admin context, enforced-instantly users get the wizard auto-opened,
+			// so we skip the nag. On FE (shortcode), we still need to show it.
+			if ( 'output_shortcode' !== $is_shortcode && User_Helper::get_user_enforced_instantly( User_Helper::get_user_object() ) ) {
+				return;
+			}
+
+			$grace_expiry = (int) User_Helper::get_user_expiry_date( User_Helper::get_user_object() );
+
+			$class = 'notice notice-info wp-2fa-nag wp-2fa-admin-notice';
+
+			if ( User_Helper::get_user_needs_to_reconfigure_2fa( User_Helper::get_user_object() ) ) {
+				$message = WP2FA::get_wp2fa_white_label_setting( 'default-2fa-resetup-required-notice', true );
+			} else {
+				$message = WP2FA::get_wp2fa_white_label_setting( 'default-2fa-required-notice', true );
+			}
+
+			$is_nag_dismissed = User_Helper::get_nag_status();
+			$is_nag_needed    = User_Helper::is_enforced( User_Helper::get_user_object()->ID );
+			$is_user_excluded = User_Helper::is_excluded( User_Helper::get_user_object()->ID );
+			$enabled_methods  = User_Helper::get_enabled_method_for_user( User_Helper::get_user_object() );
+			$new_page_id      = Settings_Utils::get_setting_role( User_Helper::get_user_role(), 'custom-user-page-id' );
+
+			if ( empty( $new_page_id ) ) {
+				$new_page_id = Settings::get_custom_settings_page_id( '', User_Helper::get_user_object() );
+			}
+
+			$new_page_permalink = get_permalink( $new_page_id );
+
+			$setup_url = Settings::get_setup_page_link( true );
+
+			// Stop the page from being a link to a page this user cant access if needed.
+			if ( WP_Helper::is_multisite() && ! is_user_member_of_blog( User_Helper::get_user_object()->ID ) ) {
+				$new_page_id = false;
+			}
+
+			// If we have a custom page generated, lets use it.
+			if ( ! empty( $new_page_id ) && $new_page_permalink ) {
+				$setup_url = $new_page_permalink;
+			}
+
+			// Allow setup URL to be customized if outputting via shortcode.
+			if ( isset( $is_shortcode ) && 'output_shortcode' === $is_shortcode && ! empty( $configure_2fa_url ) ) {
+				$setup_url = $configure_2fa_url;
+			}
+
+			// If the nag has not already been dismissed, and of course if the user is eligible, lets show them something.
+			$is_enforced_instantly = User_Helper::get_user_enforced_instantly( User_Helper::get_user_object() );
+			if ( ! $is_nag_dismissed && $is_nag_needed && empty( $enabled_methods ) && ! $is_user_excluded && ( ! empty( $grace_expiry ) || $is_enforced_instantly ) ) {
+
+				$show = true;
+
+				if ( class_exists( '\WP2FA\Freemius\User_Licensing' ) ) {
+					if ( Extensions_Loader::use_proxytron() ) {
+						$show = User_Licensing::enable_2fa_user_setting( true );
+						// When quota is exceeded or no license, fall back to free
+						// version behaviour — still show the nag.
+						if ( ! $show && User_Licensing::quota_check() ) {
+							$show = true;
+						}
+					}
+				}
+
+				if ( $show ) {
+					$is_frontend = ( isset( $is_shortcode ) && 'output_shortcode' === $is_shortcode );
+					$nag_id      = 'wp-2fa-nag-' . wp_unique_id();
+
+					echo '<div id="' . \esc_attr( $nag_id ) . '" class="' . \esc_attr( $class ) . '">';
+					echo wpautop( \wp_kses_post( WP2FA::replace_remaining_grace_period( $message, (int) $grace_expiry ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+					if ( $is_frontend ) {
+						echo ' <a href="' . \esc_url( $setup_url ) . '" class="button button-primary" data-wp2fa-nag-configure="' . \esc_attr( $nag_id ) . '">' . \esc_html__( 'Configure 2FA now', 'wp-2fa' ) . '</a>';
+					} else {
+						echo ' <a href="' . \esc_url( $setup_url ) . '" class="button button-primary">' . \esc_html__( 'Configure 2FA now', 'wp-2fa' ) . '</a>';
+					}
+
+					echo ' <a href="#" class="button button-secondary wp-2fa-dismiss-nag" data-wp-2fa-nag-dismiss="' . \esc_attr( $nag_id ) . '">' . \esc_html__( 'Remind me on next login', 'wp-2fa' ) . '</a></p>';
+					echo '</div>';
+
+					self::inline_nag_scripts( $nag_id );
+				}
+			} else {
+				self::user_reconfigure_2fa_nag( isset( $is_shortcode ) && 'output_shortcode' === $is_shortcode );
+			}
+		}
+
+		/**
+		 * The nag content
+		 *
+		 * @param bool $is_frontend - True when rendered by a shortcode. The admin
+		 *                            script that handles the dismiss button is not
+		 *                            loaded there, so the nag brings its own.
+		 *
+		 * @since 3.0.0
+		 */
+		public static function user_reconfigure_2fa_nag( $is_frontend = false ) {
+
+			// If the nag has not already been dismissed, and of course if the user is eligible, lets show them something.
+			if ( User_Helper::needs_to_reconfigure_method() ) {
+				$class       = 'notice notice-info wp-2fa-nag wp-2fa-admin-notice';
+				$is_frontend = true === $is_frontend;
+				$nag_id      = 'wp-2fa-nag-' . \wp_unique_id();
+
+				$message = \esc_html__( 'The 2FA method you were using is no longer allowed on this website. Please reconfigure 2FA using one of the supported methods.', 'wp-2fa' );
+
+				echo '<div id="' . \esc_attr( $nag_id ) . '" class="' . \esc_attr( $class ) . '"><p>' . \esc_html( $message );
+				echo ' <a href="' . \esc_url( Settings::get_setup_page_link() ) . '" class="button button-primary">' . \esc_html__( 'Configure 2FA now', 'wp-2fa' ) . '</a>';
+				if ( $is_frontend ) {
+					echo '  <a href="#" class="button button-secondary wp-2fa-button-secondary" data-wp-2fa-nag-dismiss="' . \esc_attr( $nag_id ) . '">' . \esc_html__( 'I\'ll do it later', 'wp-2fa' ) . '</a></p>';
+				} else {
+					echo '  <a href="#" class="button button-secondary wp-2fa-button-secondary dismiss-user-reconfigure-nag">' . \esc_html__( 'I\'ll do it later', 'wp-2fa' ) . '</a></p>';
+				}
+				echo '</div>';
+
+				if ( $is_frontend ) {
+					self::inline_nag_scripts( $nag_id );
+				}
+			}
+		}
+
+
+		/**
+		 * Outputs inline vanilla JS for nag dismiss and configure buttons.
+		 *
+		 * @param string $nag_id - The unique ID of the nag element.
+		 *
+		 * @return void
+		 *
+		 * @since 2.10.0
+		 */
+		private static function inline_nag_scripts( $nag_id ) {
+			$ajax_url  = \esc_url( \admin_url( 'admin-ajax.php' ) );
+			$nag_nonce = \wp_create_nonce( 'wp-2fa-dismiss-nag' );
+			?>
+			<script type="text/javascript">
+			(function() {
+				var nagEl = document.getElementById('<?php echo \esc_js( $nag_id ); ?>');
+				if (!nagEl) return;
+
+				var dismissBtn = nagEl.querySelector('[data-wp-2fa-nag-dismiss="<?php echo \esc_js( $nag_id ); ?>"]');
+				if (dismissBtn) {
+					dismissBtn.addEventListener('click', function(e) {
+						e.preventDefault();
+						var xhr = new XMLHttpRequest();
+						xhr.open('POST', '<?php echo $ajax_url; // phpcs:ignore ?>', true);
+						xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+						xhr.onreadystatechange = function() {
+							if (xhr.readyState === 4) {
+								nagEl.style.transition = 'opacity 0.3s, max-height 0.3s';
+								nagEl.style.overflow = 'hidden';
+								nagEl.style.opacity = '0';
+								nagEl.style.maxHeight = '0';
+								setTimeout(function() { nagEl.style.display = 'none'; }, 300);
+							}
+						};
+						xhr.send('action=dismiss_nag&nonce=<?php echo \esc_js( $nag_nonce ); ?>');
+					});
+				}
+
+				var configureBtn = nagEl.querySelector('[data-wp2fa-nag-configure="<?php echo \esc_js( $nag_id ); ?>"]');
+				if (configureBtn) {
+					configureBtn.addEventListener('click', function(e) {
+						e.preventDefault();
+						// New wizard system (v4+).
+						var wizardBtn = document.querySelector('[data-wp2fa-open-wizard]');
+						if (wizardBtn) {
+							wizardBtn.click();
+							return;
+						}
+						// Legacy wizard (MicroModal).
+						if (document.getElementById('configure-2fa') && typeof window.wp2fa_fireWizard === 'function') {
+							window.wp2fa_fireWizard();
+							return;
+						}
+						// Fallback: navigate to setup URL.
+						if (configureBtn.href && configureBtn.href !== '#') {
+							window.location.href = configureBtn.href;
+						}
+					});
+				}
+			})();
+			</script>
+			<?php
+		}
+
+		/**
+		 * Dismiss notice and setup a user meta value so we know its been dismissed
+		 *
+		 * @since 3.0.0
+		 */
+		public static function dismiss_nag() {
+			/*
+			 * From the grace period interstitial. That page is rendered during the
+			 * login request itself, where a WordPress nonce is minted for user 0
+			 * and no session, so check_ajax_referer() refused every dismissal.
+			 * It sends the login transaction's nonce instead: scoped to this one
+			 * action, issued to this user, and good once.
+			 */
+			if ( isset( $_POST['wp-auth-nonce'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified below.
+				$user_id = \get_current_user_id();
+				$nonce   = \sanitize_text_field( \wp_unslash( $_POST['wp-auth-nonce'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+				if ( 0 === $user_id || ! Login::consume_login_nonce( $user_id, $nonce, Login::GRACE_NAG_NONCE_ACTION ) ) {
+					\wp_send_json_error( null, 403 );
+				}
+
+				User_Helper::set_nag_status( true, $user_id );
+				\wp_send_json_success();
+			}
+
+			check_ajax_referer( 'wp-2fa-dismiss-nag', 'nonce' );
+			User_Helper::set_nag_status( true );
+		}
+
+		/**
+		 * Reset the nag when the user logs out, so they get it again next time.
+		 *
+		 * @param int $user_id - The ID of the user.
+		 *
+		 * @return void
+		 *
+		 * @since 3.0.0
+		 */
+		public static function reset_nag( $user_id ) {
+			User_Helper::remove_nag_status( $user_id );
+		}
+
+		/**
+		 * Adds setting option in the white label settings page.
+		 *
+		 * @return void
+		 *
+		 * @since 2.5.0
+		 */
+		public static function white_label_settings_text() {
+			?>
+			<tr>
+				<th><label for="email-backup-method"><?php \esc_html_e( '2FA mandatory notice', 'wp-2fa' ); ?></label></th>
+				<td>
+					<?php
+						echo Settings_Page_White_Label::create_standard_editor( 'default-2fa-required-notice' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					?>
+					<div style="margin-top: 5px;"><span><strong><i><?php \esc_html_e( 'Note:', 'wp-2fa' ); ?></i></strong> <?php \esc_html_e( 'Only plain text is allowed.', 'wp-2fa' ); ?></span></div>
+				</td>
+			</tr>
+			<tr>
+				<th><label for="email-backup-method"><?php \esc_html_e( '2FA reconfiguration mandatory notice', 'wp-2fa' ); ?></label></th>
+				<td>
+					<?php
+						echo Settings_Page_White_Label::create_standard_editor( 'default-2fa-resetup-required-notice' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					?>
+					<div style="margin-top: 5px;"><span><strong><i><?php \esc_html_e( 'Note:', 'wp-2fa' ); ?></i></strong> <?php \esc_html_e( 'Only plain text is allowed.', 'wp-2fa' ); ?></span></div>
+				</td>
+			</tr>
+			<tr>
+				<th><label><?php \esc_html_e( 'User profile 2FA configuration area title', 'wp-2fa' ); ?></label></th>
+				<td>
+					<?php
+						echo Settings_Page_White_Label::create_standard_editor( 'user-profile-form-preamble-title' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					?>
+					<div style="margin-top: 5px;"><span><strong><i><?php \esc_html_e( 'Note:', 'wp-2fa' ); ?></i></strong> <?php \esc_html_e( 'Only plain text is allowed.', 'wp-2fa' ); ?></span></div>
+				</td>
+			</tr>
+			<tr>
+			<th><label><?php \esc_html_e( 'User profile 2FA configuration area description', 'wp-2fa' ); ?></label></th>
+				<td>
+					<?php
+						echo Settings_Page_White_Label::create_standard_editor( 'user-profile-form-preamble-desc' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					?>
+					<div style="margin-top: 5px;"><span><strong><i><?php \esc_html_e( 'Note:', 'wp-2fa' ); ?></i></strong> <?php \esc_html_e( 'Only plain text is allowed.', 'wp-2fa' ); ?></span></div>
+				</td>
+			</tr>
+			<?php
+			?>
+			<?php
+		}
+
+		/**
+		 * Adds and filters extension values in the settings store array ($output).
+		 *
+		 * @param array $output - Array with the currently stored settings.
+		 * @param array $input  - Array with the input ($_POST) values.
+		 *
+		 * @return array
+		 *
+		 * @since 2.5.0
+		 */
+		public static function settings_store( array $output, array $input ) {
+			if ( isset( $input['default-2fa-required-notice'] ) ) {
+				$output['default-2fa-required-notice'] = \wp_kses_post( $input['default-2fa-required-notice'] );
+			}
+
+			if ( isset( $input['default-2fa-resetup-required-notice'] ) ) {
+				$output['default-2fa-resetup-required-notice'] = \wp_kses_post( $input['default-2fa-resetup-required-notice'] );
+			}
+
+			return $output;
+		}
+	}
+}

@@ -1,0 +1,832 @@
+<?php
+/**
+ * Setup wizard rendering class.
+ *
+ * @package    wp2fa
+ * @subpackage setup
+ * @copyright  2026 Melapress
+ * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link       https://wordpress.org/plugins/wp-2fa/
+ */
+
+namespace WP2FA\Admin;
+
+use WP2FA\Core;
+use WP2FA\WP2FA;
+use WP2FA\Methods\TOTP;
+use WP2FA\Methods\Email;
+use WP2FA\Utils\User_Utils;
+use WP2FA\Admin\Settings_Page;
+use WP2FA\Methods\Backup_Codes;
+use WP2FA\Utils\Generate_Modal;
+use WP2FA\Utils\Settings_Utils;
+use WP2FA\Admin\Helpers\WP_Helper;
+use WP2FA\Admin\Views\Re_Login_2FA;
+use WP2FA\Admin\Views\Wizard_Steps;
+use WP2FA\Admin\Helpers\Ajax_Helper;
+use WP2FA\Admin\Helpers\User_Helper;
+use WP2FA\Admin\Controllers\Settings;
+use WP2FA\Authenticator\Authentication;
+use WP2FA\Admin\Helpers\Email_Templates;
+use WP2FA\Admin\Views\First_Time_Wizard_Steps;
+use WP2FA\Admin\SettingsPages\Settings_Page_Policies;
+use WP2FA\Admin\SettingsPages\Setup_Wizard_New;
+
+/**
+ * Setup_Wizard class for the wizard steps setup
+ *
+ * @since 2.4.0
+ */
+if ( ! class_exists( '\WP2FA\Admin\Setup_Wizard' ) ) {
+	/**
+	 * Our class for creating a step by step wizard for easy configuration.
+	 */
+	class Setup_Wizard {
+
+		/**
+		 * Wizard Steps
+		 *
+		 * @var array
+		 *
+		 * @since 2.8.0
+		 */
+		private static $wizard_steps;
+
+		/**
+		 * Current Step
+		 *
+		 * @var string
+		 *
+		 * @since 2.8.0
+		 */
+		private static $current_step;
+
+		/**
+		 * Registers the setup page, without a menu entry.
+		 *
+		 * WordPress refuses admin.php?page=wp-2fa-setup unless the page is
+		 * registered, but the wizard is never reached from the menu - it is
+		 * printed and the request ends on admin_init. It used to be registered
+		 * under the Dashboard with an empty title, which left an invisible item
+		 * between Home and Updates; with no callback, that item linked to
+		 * wp-admin/wp-2fa-setup, which is a 404. A page with no parent is
+		 * registered and reachable, but listed nowhere.
+		 *
+		 * @return void
+		 *
+		 * @since 2.8.0
+		 * @since 4.3.0 - Registered without a parent, so no menu item is shown.
+		 */
+		public static function admin_menus() {
+			\add_submenu_page( '', \esc_html__( 'WP 2FA setup wizard', 'wp-2fa' ), '', 'read', 'wp-2fa-setup', '__return_null' );
+		}
+
+		/**
+		 * Registers the setup page in the network admin, without a menu entry.
+		 *
+		 * @return void
+		 *
+		 * @since 2.2.0
+		 * @since 4.3.0 - Registered without a parent, so no menu item is shown.
+		 */
+		public static function network_admin_menus() {
+			self::admin_menus();
+		}
+
+		/**
+		 * Setup Page Start.
+		 *
+		 * @since 2.8.0
+		 */
+		public static function setup_page() {
+
+			// Get page argument from $_GET array.
+			$page = ( isset( $_GET['page'] ) ) ? \sanitize_text_field( \wp_unslash( $_GET['page'] ) ) : '';
+			if ( empty( $page ) || 'wp-2fa-setup' !== $page ) {
+				return;
+			}
+
+			// When the new interface is active and this is an admin-level request
+			// (not a user_2fa_config / backup_codes_config / user_reconfigure_config),
+			// always use the new wizard or redirect to the settings page.
+			$wizard_type_check = isset( $_GET['wizard_type'] ) ? \sanitize_text_field( \wp_unslash( $_GET['wizard_type'] ) ) : 'default';
+			if ( /*Setup_Wizard_New::should_render() && */in_array( $wizard_type_check, array( 'default', '' ), true ) && \current_user_can( 'manage_options' ) ) {
+				$has_settings   = ! empty( WP2FA::get_wp2fa_setting() );
+				$wizard_pending = Settings_Utils::get_option( 'wizard_not_finished' );
+				$defaults_only  = Settings_Utils::get_option( 'default_settings_applied', false );
+
+				if ( ! $has_settings || $wizard_pending || $defaults_only ) {
+					// First-time setup: show the new wizard.
+					Setup_Wizard_New::render();
+					// render() calls exit().
+				}
+
+				// Settings already configured: redirect to the settings page
+				// instead of falling through to the old wizard.
+				\wp_safe_redirect( Settings::get_settings_page_link() );
+				exit;
+			}
+
+			\wp_safe_redirect( Settings::get_settings_page_link() );
+				exit;
+
+			// Clear out any old notices.
+			$user = \wp_get_current_user();
+
+			// First lets check if any options have been saved.
+			$settings_saved = true;
+			$settings       = WP2FA::get_wp2fa_setting();
+			if ( empty( $settings ) || ! isset( $settings ) ) {
+				$settings_saved = false;
+			}
+
+			if ( Settings_Utils::get_option( 'wizard_not_finished' ) ) {
+				$settings_saved = false;
+			}
+
+			/**
+			 * Wizard Steps.
+			 */
+			$wizard_type = isset( $_GET['wizard_type'] ) ? \sanitize_text_field( \wp_unslash( $_GET['wizard_type'] ) ) : 'default';
+
+			$is_user_forced_to_setup = User_Helper::get_user_enforced_instantly( $user );
+			if ( ! empty( $is_user_forced_to_setup ) ) {
+				\add_filter( 'wp_2fa_wizard_default_steps', array( __CLASS__, 'wp_2fa_add_intro_step' ) );
+			}
+
+			$user_type = User_Utils::determine_user_2fa_status( $user );
+
+			$wizard_steps = array(
+				'welcome'                => array(
+					'name'        => \esc_html__( 'Welcome', 'wp-2fa' ),
+					'content'     => array( __CLASS__, 'wp_2fa_step_welcome' ),
+					'wizard_type' => 'welcome_wizard',
+				),
+				'settings_configuration' => array(
+					'name'        => \esc_html__( 'Configure 2FA methods & Policies', 'wp-2fa' ),
+					'content'     => array( __CLASS__, 'wp_2fa_step_global_2fa_methods' ),
+					'save'        => array( __CLASS__, 'wp_2fa_step_global_2fa_methods_save' ),
+					'wizard_type' => 'welcome_wizard',
+				),
+				'finish'                 => array(
+					'name'        => \esc_html__( 'Setup Finish', 'wp-2fa' ),
+					'content'     => array( __CLASS__, 'wp_2fa_step_finish' ),
+					'save'        => array( __CLASS__, 'wp_2fa_step_finish_save' ),
+					'wizard_type' => 'welcome_wizard',
+				),
+			);
+
+			// Admin user setting up fresh install of 2FA plugin.
+			if ( in_array( 'can_manage_options', $user_type, true ) && ! $settings_saved ) {
+				unset( $wizard_steps['user_choose_2fa_method'] );
+				unset( $wizard_steps['reconfigure_method'] );
+			}
+
+			// We will use this setting to determine if defaults have already been saved to the DB.
+			$have_defaults_been_applied = Settings_Utils::get_option( 'default_settings_applied', false );
+			// If we have settings, but they are the defaults, then we want to consider the settings to be unsaved at this point.
+			if ( in_array( 'can_manage_options', $user_type, true ) && $settings_saved && $have_defaults_been_applied ) {
+				$settings_saved = false;
+			}
+
+			// Ensure user has minimum capabilities needed to be here.
+			if ( in_array( 'can_read', $user_type, true ) && $settings_saved ) {
+
+				switch ( $wizard_type ) {
+					case 'user_2fa_config':
+						$wizard_steps = array_intersect_key( $wizard_steps, array_flip( array( 'user_choose_2fa_method', 'setup_method', 'finish', 'backup_codes' ) ) );
+						break;
+
+					case 'backup_codes_config':
+						$wizard_steps = array_intersect_key( $wizard_steps, array_flip( array( 'backup_codes' ) ) );
+						break;
+
+					case 'user_reconfigure_config':
+						$wizard_steps = array_intersect_key( $wizard_steps, array_flip( array( 'reconfigure_method' ) ) );
+						break;
+
+					default:
+						$wizard_steps = array_intersect_key( $wizard_steps, array_flip( array( 'choose_2fa_method', 'setup_method', 'finish', 'backup_codes', 'reconfigure_method' ) ) );
+				}
+
+				// Remove 1st step if only one method is available.
+				if ( empty( WP2FA::get_wp2fa_setting( TOTP::POLICY_SETTINGS_NAME ) ) || empty( WP2FA::get_wp2fa_setting( Email::POLICY_SETTINGS_NAME ) ) ) {
+					unset( $wizard_steps['choose_2fa_method'] );
+				}
+
+				// If the user has codes setup already, no need to add the slide.
+				if ( ! in_array( 'user_needs_to_setup_backup_codes', $user_type, true ) && 'backup_codes_config' !== $wizard_type ) {
+					unset( $wizard_steps['backup_codes'] );
+				}
+			}
+
+			/**
+			 * Filter: `Wizard Default Steps`
+			 *
+			 * Filter to filter wizard steps before they are displayed.
+			 *
+			 * @param array $wizard_steps – Wizard Steps.
+			 *
+			 * @since 2.8.0
+			 */
+			self::$wizard_steps = apply_filters( WP_2FA_PREFIX . 'wizard_default_steps', $wizard_steps );
+
+			// Set current step.
+			$current_step       = ( isset( $_GET['current-step'] ) ) ? \sanitize_text_field( \wp_unslash( $_GET['current-step'] ) ) : '';
+			self::$current_step = ! empty( $current_step ) ? $current_step : current( array_keys( self::$wizard_steps ) );
+
+			if ( Backup_Codes::METHOD_NAME === self::$current_step && ! Backup_Codes::are_backup_codes_enabled_for_role( User_Helper::get_user_role( $user ) ) ) {
+
+				$redirect_to_finish = add_query_arg(
+					array(
+						'current-step' => 'finish',
+						'all-set'      => 1,
+					)
+				);
+				\wp_safe_redirect( \esc_url_raw( $redirect_to_finish ) );
+			}
+
+			/**
+			 * Enqueue Scripts.
+			 */
+			\wp_enqueue_style(
+				'wp_2fa_setup_wizard',
+				Core\style_url( 'setup-wizard', 'admin' ),
+				array(),
+				WP_2FA_VERSION
+			);
+
+			\wp_enqueue_style(
+				'wp_2fa_admin-style',
+				WP_2FA_URL . 'css/admin/wp2fa-admin-styles.css',
+				array(),
+				WP_2FA_VERSION
+			);
+
+			\wp_enqueue_script(
+				'wp_2fa_admin',
+				Core\script_url( 'admin', 'admin' ),
+				array( 'jquery-ui-widget', 'jquery-ui-core', 'jquery-ui-autocomplete' ),
+				WP_2FA_VERSION,
+				true
+			);
+
+			\wp_enqueue_script(
+				'wp_2fa_micromodal',
+				Core\script_url( 'micromodal', 'admin' ),
+				array(),
+				WP_2FA_VERSION,
+				true
+			);
+
+			// Data array.
+			$data_array = array(
+				'ajaxURL'         => \admin_url( 'admin-ajax.php' ),
+				'roles'           => WP_Helper::get_roles_wp(),
+				'nonce'           => \wp_create_nonce( 'wp-2fa-settings-nonce' ),
+				'invalidEmail'    => \esc_html__( 'Please use a valid email address', 'wp-2fa' ),
+				'backupCodesSent' => \esc_html__( 'Backup codes sent', 'wp-2fa' ),
+			);
+			\wp_localize_script( 'wp_2fa_admin', 'wp2faData', $data_array );
+
+			$re_login = Settings_Utils::get_setting_role( User_Helper::get_user_role(), Re_Login_2FA::RE_LOGIN_SETTINGS_NAME );
+
+			$role = User_Helper::get_user_role();
+
+			$redirect_page                = \sanitize_text_field( Settings_Utils::get_setting_role( $role, 'redirect-user-custom-page' ) );
+			$redirect_page_global         = \sanitize_text_field( Settings_Utils::get_setting_role( null, 'redirect-user-custom-page' ) );
+			$redirect_page_global_setting = \sanitize_text_field( Settings_Utils::get_setting_role( $role, 'redirect-user-custom-page-global' ) );
+
+			// Priority: role-specific redirect-user-custom-page > global redirect-user-custom-page > redirect-user-custom-page-global > empty.
+			if ( '' !== trim( (string) $redirect_page ) ) {
+				$redirect_to_url = \trailingslashit( \get_site_url() ) . $redirect_page;
+			} elseif ( '' !== trim( (string) $redirect_page_global ) ) {
+				$redirect_to_url = \trailingslashit( \get_site_url() ) . $redirect_page_global;
+			} elseif ( '' !== trim( (string) $redirect_page_global_setting ) ) {
+				$redirect_to_url = \trailingslashit( \get_site_url() ) . $redirect_page_global_setting;
+			} else {
+				$redirect_to_url = '';
+			}
+
+			// Data array.
+			$data_array = array(
+				'ajaxURL'        => \admin_url( 'admin-ajax.php' ),
+				'nonce'          => \wp_create_nonce( 'wp2fa-verify-wizard-page' ),
+				'codesPreamble'  => \esc_html__( 'These are the 2FA backup codes for the user', 'wp-2fa' ),
+				'readyText'      => \esc_html__( 'I\'m ready', 'wp-2fa' ),
+				'codeReSentText' => \esc_html__( 'New code sent', 'wp-2fa' ),
+				'reLogin'        => $re_login,
+				'reLoginEnabled' => Re_Login_2FA::ENABLED_SETTING_VALUE,
+				'loginUrl'       => \wp_login_url(),
+				'redirectToUrl'  => $redirect_to_url,
+			);
+
+			/**
+			 * Gives the ability to change the default JS wizard settings.
+			 *
+			 * @param int $data_array - The array with all the JS wizard settings.
+			 *
+			 * @since 2.2.0
+			 */
+			$data_array = apply_filters( WP_2FA_PREFIX . 'js_wizard_settings', $data_array );
+			\wp_localize_script( 'wp_2fa_admin', 'wp2faWizardData', $data_array );
+
+			/**
+			 * Save Wizard Settings.
+			 */
+			$save_step = ( isset( $_POST['save_step'] ) ) ? \sanitize_text_field( \wp_unslash( $_POST['save_step'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			if ( ! empty( $save_step ) && ! empty( self::$wizard_steps[ self::$current_step ]['save'] ) ) {
+				call_user_func( self::$wizard_steps[ self::$current_step ]['save'] );
+			}
+
+			// self::setup_page_header();
+			// self::setup_page_steps();
+			// self::setup_page_content();
+			// self::setup_page_footer();
+
+			exit();
+		}
+
+		/**
+		 * Setup Page Header.
+		 *
+		 * @since 2.8.0
+		 */
+		private static function setup_page_header() {
+			?>
+				<!DOCTYPE html>
+				<html <?php language_attributes(); ?>>
+				<head>
+					<meta name="viewport" content="width=device-width, initial-scale=1" />
+					<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+					<title><?php \esc_html_e( 'WP 2FA &rsaquo; Setup Wizard', 'wp-2fa' ); ?></title>
+					<?php
+						\wp_print_scripts( 'jquery' );
+						\wp_print_scripts( 'jquery-ui-core' );
+						\wp_print_scripts( 'wp_2fa_setup_wizard' );
+						\wp_print_scripts( 'wp_2fa_micromodal' );
+						\wp_print_scripts( 'wp_2fa_admin' );
+
+						\wp_enqueue_script( 'jquery' );
+						\wp_enqueue_script( 'jquery-ui-core' );
+						\wp_enqueue_script( 'wp_2fa_setup_wizard' );
+						\wp_enqueue_script( 'wp_2fa_micromodal' );
+						\wp_enqueue_script( 'wp_2fa_admin' );
+						\wp_enqueue_style( 'common' );
+						\wp_enqueue_style( 'forms' );
+						\wp_enqueue_style( 'buttons' );
+						\wp_enqueue_style( 'wp-jquery-ui-dialog' );
+						\wp_enqueue_style( 'wp_2fa_admin' );
+						\remove_action( 'admin_print_styles', 'print_emoji_styles' );
+						/**
+						 * Gives the ability for 3rd party scripts to add their own JS to the plugin setup page.
+						 *
+						 * @since 2.2.0
+						 */
+						\do_action( WP_2FA_PREFIX . 'setup_page_scripts' );
+						\do_action( 'admin_print_styles' );
+					?>
+				</head>
+				<body class="wp2fa-setup wp-core-ui">
+					<div class="setup-wizard-wrapper wp-2fa-settings-wrapper wp2fa-form-styles">
+						<h1 id="wp2fa-logo"><a href="https://melapress.com/wordpress-2fa/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=wp_2fa_logo" target="_blank" ><img style="max-width: 80px;" src="<?php echo \esc_url( WP_2FA_URL . 'dist/images/wp-2fa-color_opt.png' ); ?>" alt="WP 2FA Logo"></a></h1>
+			<?php
+		}
+
+		/**
+		 * Setup Page Footer.
+		 *
+		 * @since 2.8.0
+		 */
+		private static function setup_page_footer() {
+			$user = \wp_get_current_user();
+
+			$redirect = Settings::get_settings_page_link();
+			?>
+				<div class="wp2fa-setup-footer">
+					<?php if ( 'welcome' !== self::$current_step && 'finish' !== self::$current_step ) { // Don't show the link on the first & last step. ?>
+						<?php if ( ! User_Helper::get_user_enforced_instantly( $user ) ) { ?>
+							<a class="close-wizard-link" href="<?php echo \esc_url( $redirect ); ?>"><?php \esc_html_e( 'Close Wizard', 'wp-2fa' ); ?></a>
+							<?php
+						}
+					}
+					?>
+				</div>
+			</div>
+			</body>
+			</html>
+				<?php
+				echo Generate_Modal::generate_modal(
+					'notify-admin-settings-page',
+					'',
+					sprintf(
+						/* translators: %s: the plugin name, shown in bold. */
+						\esc_html__( 'If you cancel this wizard, the default plugin settings will be applied. You can always configure the plugin settings and two-factor authentication policies at a later stage from the %s entry in your WordPress dashboard menu.', 'wp-2fa' ),
+						'<b>' . \esc_html__( 'WP 2FA', 'wp-2fa' ) . '</b>'
+					), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					array(
+						'<a href="#" id="close-settings" class="button button-primary wp-2fa-button-primary" data-redirect-url="' . \esc_url( $redirect ) . '">' . \esc_html__( 'OK, close wizard', 'wp-2fa' ) . '</a>', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						'<a href="#" class="button button-secondary wp-2fa-button-secondary wp-2fa-button-secondary" data-close-2fa-modal>' . \esc_html__( 'Continue with wizard', 'wp-2fa' ) . '</a>', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					),
+					'',
+					'580px'
+				);
+		}
+
+		/**
+		 * Setup Page Steps.
+		 *
+		 * @since 2.8.0
+		 */
+		private static function setup_page_steps() {
+			?>
+			<ul class="steps">
+				<?php
+				foreach ( self::$wizard_steps as $key => $step ) {
+					if ( 'welcome_wizard' === $step['wizard_type'] || ( is_array( $step['wizard_type'] ) && in_array( 'welcome_wizard', $step['wizard_type'], true ) ) ) {
+						$step_name = isset( $step['name'] ) ? \esc_html( $step['name'] ) : '';
+						if ( $key === self::$current_step ) {
+							?>
+							<li class="is-active"><?php echo \esc_html( $step_name ); ?></li>
+							<?php
+						} else {
+							?>
+							<li><?php echo \esc_html( $step_name ); ?></li>
+							<?php
+						}
+					}
+				}
+				?>
+			</ul>
+			<?php
+		}
+
+		/**
+		 * Get Next Step URL.
+		 *
+		 * @return string
+		 *
+		 * @since 2.8.0
+		 */
+		private static function get_next_step() {
+			// Get current step.
+			$current_step = self::$current_step;
+
+			// Array of step keys.
+			$keys = array_keys( self::$wizard_steps );
+			if ( end( $keys ) === $current_step ) { // If last step is active then return WP Admin URL.
+				return \network_admin_url();
+			}
+
+			// Search for step index in step keys.
+			$step_index = array_search( $current_step, $keys, true );
+			if ( false === $step_index ) { // If index is not found then return empty string.
+				return '';
+			}
+
+			// Return next step.
+			return \add_query_arg( 'current-step', \sanitize_text_field( $keys[ $step_index + 1 ] ) );
+		}
+
+		/**
+		 * Setup Page Content.
+		 *
+		 * @since 2.8.0
+		 */
+		private static function setup_page_content() {
+			?>
+			<div class="wp2fa-setup-content">
+				<?php
+				if ( ! empty( self::$wizard_steps[ self::$current_step ]['content'] ) ) {
+					call_user_func( self::$wizard_steps[ self::$current_step ]['content'] );
+				}
+				?>
+			</div>
+			<?php
+		}
+
+		/**
+		 * Step View: `Welcome`
+		 *
+		 * @since 2.8.0
+		 */
+		private static function wp_2fa_step_welcome() {
+			Wizard_Steps::welcome_step( self::get_next_step() );
+		}
+
+		/**
+		 * Step View: `Finish`
+		 *
+		 * @since 2.8.0
+		 */
+		private static function wp_2fa_step_finish() {
+			User_Helper::remove_user_needs_to_reconfigure_2fa( User_Helper::get_user_object() );
+			Wizard_Steps::congratulations_step( true );
+		}
+
+		/**
+		 * Step Save: `Finish`
+		 *
+		 * @since 2.8.0
+		 */
+		private static function wp_2fa_step_finish_save() {
+			// Verify nonce.
+			\check_admin_referer( 'wp2fa-step-finish' );
+			\wp_safe_redirect( \esc_url_raw( self::get_next_step() ) );
+
+			exit();
+		}
+
+		/**
+		 * Step View: `Choose Methods`
+		 *
+		 * @since 2.8.0
+		 */
+		private static function wp_2fa_step_global_2fa_methods() {
+			?>
+				<form method="post" class="wp2fa-setup-form wp2fa-form-styles wp2fa-first-time-wizard" autocomplete="off">
+					<?php wp_nonce_field( 'wp2fa-step-choose-method' ); ?>
+					<div class="step-setting-wrapper active" data-step-title="<?php \esc_html_e( '2FA methods', 'wp-2fa' ); ?>">
+						<?php
+						First_Time_Wizard_Steps::select_method( true );
+						?>
+						<div class="wp2fa-setup-actions">
+							<button type="button" class="button button-primary" name="next_step_setting" value="<?php \esc_attr_e( 'Continue Setup', 'wp-2fa' ); ?>"><?php \esc_html_e( 'Continue Setup', 'wp-2fa' ); ?></button>
+						</div>
+					</div>
+					<div class="step-setting-wrapper" data-step-title="<?php \esc_html_e( 'Alternative methods', 'wp-2fa' ); ?>">
+						<?php First_Time_Wizard_Steps::backup_method( true ); ?>
+						<div class="wp2fa-setup-actions">
+							<button type="button" class="button button-primary" name="next_step_setting" value="<?php \esc_attr_e( 'Continue Setup', 'wp-2fa' ); ?>"><?php \esc_html_e( 'Continue Setup', 'wp-2fa' ); ?></button>
+						</div>
+					</div>
+					<div class="step-setting-wrapper" data-step-title="<?php \esc_html_e( '2FA policy', 'wp-2fa' ); ?>">
+						<?php First_Time_Wizard_Steps::enforcement_policy( true ); ?>
+						<div class="wp2fa-setup-actions">
+							<button type="button" class="button button-primary continue-wizard hidden" name="next_step_setting" value="<?php \esc_attr_e( 'Continue Setup', 'wp-2fa' ); ?>"><?php \esc_html_e( 'Continue Setup', 'wp-2fa' ); ?></button>
+							<button class="button button-primary save-wizard" type="submit" name="save_step" value="<?php \esc_attr_e( 'All done', 'wp-2fa' ); ?>"><?php \esc_html_e( 'All done', 'wp-2fa' ); ?></button>
+						</div>
+					</div>
+					<div class="step-setting-wrapper hidden" data-step-title="<?php \esc_html_e( 'Exclude users', 'wp-2fa' ); ?>">
+					<?php First_Time_Wizard_Steps::exclude_users( true ); ?>
+						<div class="wp2fa-setup-actions">
+							<button type="button" class="button button-primary" name="next_step_setting" value="<?php \esc_attr_e( 'Continue Setup', 'wp-2fa' ); ?>"><?php \esc_html_e( 'Continue Setup', 'wp-2fa' ); ?></button>
+						</div>
+					</div>
+
+					<?php if ( WP_Helper::is_multisite() ) { ?>
+						<div class="step-setting-wrapper" data-step-title="<?php \esc_html_e( 'Exclude sites', 'wp-2fa' ); ?>">
+						<?php First_Time_Wizard_Steps::excluded_network_sites( true ); ?>
+							<div class="wp2fa-setup-actions">
+								<button type="button" class="button button-primary" name="next_step_setting" value="<?php \esc_attr_e( 'Continue Setup', 'wp-2fa' ); ?>"><?php \esc_html_e( 'Continue Setup', 'wp-2fa' ); ?></button>
+							</div>
+						</div>
+					<?php } ?>
+
+					<div class="step-setting-wrapper hidden" data-step-title="<?php \esc_html_e( 'Grace period', 'wp-2fa' ); ?>">
+						<h3><?php \esc_html_e( 'How long should users have to configure 2FA?', 'wp-2fa' ); ?></h3>
+						<p class="description"><?php \esc_html_e( 'When 2FA is required, you can require users to configure it immediately or give them a grace period. During the grace period, users can continue to log in without 2FA.', 'wp-2fa' ); ?></p>
+						<?php First_Time_Wizard_Steps::grace_period( true ); ?>
+						<div class="wp2fa-setup-actions">
+							<button class="button button-primary save-wizard" type="submit" name="save_step" value="<?php \esc_attr_e( 'All done', 'wp-2fa' ); ?>"><?php \esc_html_e( 'All done', 'wp-2fa' ); ?></button>
+						</div>
+					</div>
+
+				</form>
+			<?php
+		}
+
+		/**
+		 * Step Save: `Choose Method`
+		 *
+		 * @since 2.8.0
+		 */
+		private static function wp_2fa_step_global_2fa_methods_save() {
+			// Check nonce.
+			\check_admin_referer( 'wp2fa-step-choose-method' );
+			if ( ! Settings_Page::can_manage_settings() ) {
+				\wp_die( \esc_html__( 'You do not have sufficient permissions to change these settings.', 'wp-2fa' ), '', array( 'response' => 403 ) );
+			}
+
+			$input = ( isset( $_POST[ WP_2FA_POLICY_SETTINGS_NAME ] ) && ! empty( $_POST[ WP_2FA_POLICY_SETTINGS_NAME ] ) && \is_array( $_POST[ WP_2FA_POLICY_SETTINGS_NAME ] ) ) ? \wp_unslash( $_POST[ WP_2FA_POLICY_SETTINGS_NAME ] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
+			$input = \map_deep( $input, 'sanitize_text_field' );
+
+			if ( ! WP_Helper::is_multisite() ) {
+				\unregister_setting(
+					WP_2FA_POLICY_SETTINGS_NAME,
+					WP_2FA_POLICY_SETTINGS_NAME
+				);
+			}
+
+			$sanitized_settings = Settings_Page_Policies::validate_and_sanitize( $input, 'setup_wizard' );
+			WP2FA::update_plugin_settings( $sanitized_settings );
+
+			\wp_safe_redirect( \esc_url_raw( self::get_next_step() ) );
+			exit();
+		}
+
+		/**
+		 * Send email with fresh code, or to setup email 2fa.
+		 *
+		 * @param int    $user_id - User id we want to send the message to.
+		 * @param string $nominated_email_address - The user custom address to use (name of the meta key to check for).
+		 * @param bool   $is_reset_protection - That call is for reset code.
+		 * @param string $reset_challenge_url - Unused; retained for backward compatibility.
+		 *
+		 * @return bool
+		 *
+		 * @since 2.8.0
+		 */
+		public static function send_authentication_setup_email( $user_id, $nominated_email_address = 'nominated_email_address', $is_reset_protection = false, $reset_challenge_url = '' ) {
+
+			if ( \wp_doing_ajax() ) {
+				$nonce = isset( $_POST['nonce'] ) ? \sanitize_text_field( \wp_unslash( $_POST['nonce'] ) ) : '';
+				if ( ! \wp_verify_nonce( $nonce, 'wp-2fa-send-setup-email' ) ) {
+					\wp_send_json_error( new \WP_Error( 400, \esc_html__( 'Nonce checking failed', 'wp-2fa' ) ), 400 );
+					return false;
+				}
+
+				if ( ! Ajax_Helper::check_rate_limit( 'send_authentication_setup_email' ) ) {
+					\wp_send_json_error( new \WP_Error( 429, \esc_html__( 'Rate limit exceeded. Please try again later.', 'wp-2fa' ) ), 429 );
+					return false;
+				}
+
+				unset( $user_id );
+			}
+
+			if ( empty( $user_id ) ) {
+				$user = \wp_get_current_user();
+			} else {
+				$user = \get_userdata( $user_id );
+			}
+
+			if ( ! $user ) {
+				return false;
+			}
+
+			// Grab email address if it's provided.
+			$email = \sanitize_email( $user->user_email );
+
+			if ( isset( $_POST['email_address'] ) && ! empty( trim( $_POST['email_address'] ) ) ) {
+				$email = \sanitize_email( \wp_unslash( $_POST['email_address'] ) );
+
+				if ( ! \is_email( $email ) ) {
+					if ( \wp_doing_ajax() && isset( $_POST['nonce'] ) ) {
+						\wp_send_json_error( new \WP_Error( 400, \esc_html__( 'Please use a valid email address', 'wp-2fa' ) ), 400 );
+						return false;
+					}
+
+					return false;
+				}
+
+				if ( ! Settings_Utils::get_setting_role( User_Helper::get_user_role( $user ), 'specify-email_hotp' ) ) {
+					\wp_send_json_error( new \WP_Error( 400, \esc_html__( 'The email address in the request does not match the user\'s email address. Please try again.', 'wp-2fa' ) ), 400 );
+
+					return false;
+				}
+			}
+
+			$email_address = '';
+
+			// Only this authenticated AJAX request can name an arbitrary recipient; bind
+			// the code about to be sent to that exact address so a later commit cannot
+			// nominate a different, unverified one for it.
+			$is_authenticated_setup_request = \wp_doing_ajax() && isset( $_POST['nonce'] );
+
+			if ( $is_authenticated_setup_request ) {
+				$email_address = $email;
+			} elseif ( ! empty( $nominated_email_address ) ) {
+				if ( 'nominated_email_address' === $nominated_email_address ) {
+					$email_address = User_Helper::get_nominated_email_for_user( $user );
+				} elseif ( 'backup_email_address' === $nominated_email_address ) {
+					$email_address = User_Helper::get_backup_email_for_user( $user );
+				}
+			} else {
+				$email_address = $user->user_email;
+			}
+
+			// Generate a token and setup email.
+			$token = Authentication::generate_token( $user->ID );
+
+			// @free:start
+			/*
+			 * The code's lifetime. Premium records it in the per-provider
+			 * transient below; free had nothing, so an emailed code stayed valid
+			 * until used, however old. Free sets the same transient, carrying the
+			 * issue time rather than the code itself, and get_user_token() refuses
+			 * a code once it is gone.
+			 *
+			 * This has to come before the premium block: unbuilt source runs both,
+			 * and premium's value is the one it compares codes against.
+			 */
+			$free_period = (int) Settings_Utils::get_setting_role( User_Helper::get_user_role( $user ), 'email-code-period', true ) * MINUTE_IN_SECONDS;
+			$free_period = (int) \apply_filters( WP_2FA_PREFIX . 'email_code_period', $free_period );
+			if ( $free_period <= 0 ) {
+				$free_period = 5 * MINUTE_IN_SECONDS;
+			}
+			\set_transient( 'wp_2fa_code_login_' . $user->ID, time(), $free_period );
+			if ( $is_authenticated_setup_request ) {
+				\set_transient( 'wp_2fa_pending_email_recipient_' . $user->ID, $email_address, $free_period );
+			}
+			// @free:end
+
+
+			/*
+			 * The token goes to the subject as well as the body.
+			 *
+			 * {login_code} is offered in the settings UI for every one of these
+			 * templates — the tag list comes from
+			 * Email_Templates::get_mail_template_tags() and is not filtered per
+			 * field — so an administrator can put it in a subject line and the
+			 * screen gives no hint that it will not work there. Without the token
+			 * the tag resolves to an empty string, silently, and the subject reads
+			 * "Your code is  for Example" with a hole where the code should be.
+			 *
+			 * The setup-code branch below already passed it, which is why the
+			 * feature appeared to work when tested against that email and not
+			 * against the login one.
+			 */
+			if ( $is_reset_protection ) {
+				$subject = wp_strip_all_tags( Email_Templates::replace_email_strings( Email_Templates::get_wp2fa_email_templates( 'reset_password_code_email_subject' ), $user->ID, $token ) );
+				$message = wpautop( Email_Templates::replace_email_strings( Email_Templates::get_wp2fa_email_templates( 'reset_password_code_email_body' ), $user->ID, $token ) );
+			} elseif ( wp_doing_ajax() && isset( $_POST['nonce'] ) ) {
+				$subject = wp_strip_all_tags( Email_Templates::replace_email_strings( Email_Templates::get_wp2fa_email_templates( 'login_code_setup_email_subject' ), $user->ID, $token ) );
+				$message = wpautop( Email_Templates::replace_email_strings( Email_Templates::get_wp2fa_email_templates( 'login_code_setup_email_body' ), $user->ID, $token ) );
+			} else {
+				$subject = wp_strip_all_tags( Email_Templates::replace_email_strings( Email_Templates::get_wp2fa_email_templates( 'login_code_email_subject' ), $user->ID, $token ) );
+				$message = wpautop( Email_Templates::replace_email_strings( Email_Templates::get_wp2fa_email_templates( 'login_code_email_body' ), $user->ID, $token ) );
+			}
+
+			// @free:start
+			$message .= '<p>' . \esc_html__( 'Email sent by', 'wp-2fa' );
+			$message .= ' <a href="https://melapress.com/wordpress-2fa/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=melapress_wp_2fa_plugin_link" target="_blank">' . \esc_html__( 'WP 2FA plugin.', 'wp-2fa' ) . '</a>';
+			$message .= '</p>';
+			// @free:end
+
+			// If we have a nonce posted, check it.
+			if ( \wp_doing_ajax() && isset( $_POST['nonce'] ) ) {
+				$mail_sent = Settings_Page::send_email( $email_address, $subject, $message );
+				if ( ! $mail_sent ) {
+					\wp_send_json_error( new \WP_Error( 500, \esc_html__( 'Email sending failed', 'wp-2fa' ) ), 400 );
+					return false;
+				}
+
+				\wp_send_json_success( new \WP_Error( 200, \esc_html__( 'Email sent successfully', 'wp-2fa' ) ), 200 );
+
+				return $mail_sent;
+			}
+
+			return Settings_Page::send_email( $email_address, $subject, $message );
+		}
+
+		/**
+		 * 3rd Party plugins
+		 *
+		 * @param array $wizard_steps - Array with the current wizard steps.
+		 *
+		 * @return array
+		 *
+		 * @since 2.8.0
+		 */
+		public static function wp_2fa_add_intro_step( $wizard_steps ) {
+			$new_wizard_steps = array(
+				'test' => array(
+					'name'        => __( 'Welcome to WP 2FA', 'wp-2fa' ),
+					'content'     => array( __CLASS__, 'introduction_step' ),
+					'save'        => array( __CLASS__, 'introduction_step_save' ),
+					'wizard_type' => 'welcome_wizard',
+				),
+			);
+
+			// combine the two arrays.
+			$wizard_steps = $new_wizard_steps + $wizard_steps;
+
+			return $wizard_steps;
+		}
+
+		/**
+		 * Shows introduction step of the wizard
+		 *
+		 * @return void
+		 *
+		 * @since 2.8.0
+		 */
+		private static function introduction_step() {
+			Wizard_Steps::introduction_step();
+		}
+
+		/**
+		 * Step Save: `Addons`
+		 *
+		 * @since 2.8.0
+		 */
+		private static function introduction_step_save() {
+			// Check nonce.
+			check_admin_referer( 'wp2fa-step-addon' );
+
+			wp_safe_redirect( \esc_url_raw( self::get_next_step() ) );
+			exit();
+		}
+	}
+}

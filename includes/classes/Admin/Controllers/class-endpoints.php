@@ -1,0 +1,261 @@
+<?php
+/**
+ * Responsible for the API endpoints
+ *
+ * @package    wp-2fa
+ * @since 3.0.0
+ * @copyright  2026 Melapress
+ * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link       https://wordpress.org/plugins/wp-2fa/
+ */
+
+declare(strict_types=1);
+
+namespace WP2FA\Admin\Controllers;
+
+use WP2FA\Utils\Settings_Utils;
+use WP2FA\Admin\Helpers\Classes_Helper;
+use WP2FA\Admin\Controllers\API\API_Login;
+use WP2FA\WP2FA;
+
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly.
+
+/**
+ * Endpoints registering
+ */
+if ( ! class_exists( '\WP2FA\Admin\Controllers\Endpoints' ) ) {
+
+	/**
+	 * Creates and registers all the API endpoints for the plugin
+	 *
+	 * @since 3.0.0
+	 */
+	class Endpoints {
+
+		/**
+		 * All of the endpoints supported by the plugin.
+		 *
+		 * @var array
+		 *
+		 * @since 3.0.0
+		 */
+		public static $endpoints = array(
+			self::class => array(
+				'login' => array(
+					'class'     => API_Login::class,
+					'namespace' => 'wp-2fa-methods/v1',
+
+					'endpoints' => array(
+						array(
+							'validate' => array(
+								'methods'          => array(
+									'method'   => \WP_REST_Server::CREATABLE,
+									'callback' => 'validate_provider',
+								),
+								'args'             => array(
+									'user_id'         => array(
+										'required'          => true,
+										'type'              => 'integer',
+										'description'       => 'User ID',
+										'minimum'           => 1,
+										'sanitize_callback' => 'absint',
+									),
+									'token'           => array(
+										'required'          => true,
+										'type'              => 'string',
+										'description'       => 'Provider token',
+										'sanitize_callback' => 'sanitize_text_field',
+									),
+									'provider'        => array(
+										'required'          => true,
+										'type'              => 'string',
+										'description'       => 'Provider name',
+										'sanitize_callback' => 'sanitize_text_field',
+									),
+									'login_nonce'     => array(
+										'required'          => true,
+										'type'              => 'string',
+										'description'       => 'Login nonce from user meta',
+										'sanitize_callback' => 'sanitize_text_field',
+									),
+									'remember_device' => array(
+										'required'    => false,
+										'type'        => 'boolean',
+										'description' => 'Remember device',
+									),
+									'rememberme'      => array(
+										'required'    => false,
+										'type'        => 'boolean',
+										'description' => "Core's Remember Me, carried over from the login form so the session keeps the longer lifetime the user asked for.",
+									),
+									'redirect_to'     => array(
+										'required'    => false,
+										'type'        => 'string',
+										'description' => 'Where the login form was asked to go afterwards, as the form-based challenge carries it.',
+									),
+									'interim_login'   => array(
+										'required'    => false,
+										'type'        => 'boolean',
+										'description' => 'Whether this is the session-expired login inside the editor, which closes instead of going anywhere.',
+									),
+								),
+								'checkPermissions' => '__return_true',
+								'showInIndex'      => false,
+							),
+						),
+					),
+				),
+			),
+		);
+
+		/**
+		 * Inits the class
+		 *
+		 * @return void
+		 *
+		 * @since 3.0.0
+		 */
+		public static function init() {
+
+			\add_action( 'rest_api_init', array( __CLASS__, 'init_endpoints' ) );
+			\add_filter( 'rest_authentication_errors', array( __CLASS__, 'bypass_cookie_nonce_for_login' ), 101 );
+
+			/**
+			 * Enables the API endpoints for the plugin.
+			 *
+			 * @since 2.9.1
+			 */
+			if ( Settings_Utils::string_to_bool( WP2FA::get_wp2fa_general_setting( 'enable_rest' ) ) ) {
+				\add_action( 'login_enqueue_scripts', array( __CLASS__, 'dequeue_style' ), PHP_INT_MAX );
+			}
+
+			$api_classes = Classes_Helper::get_classes_by_namespace( 'WP2FA\Admin\Controllers\API' );
+
+			if ( \is_array( $api_classes ) && ! empty( $api_classes ) ) {
+				foreach ( $api_classes as $class ) {
+					if ( \method_exists( $class, 'init' ) ) {
+						$class::init();
+					}
+				}
+			}
+		}
+
+		/**
+		 * Inits all the endpoints from given structure
+		 *
+		 * @return void
+		 *
+		 * @since 3.0.0
+		 */
+		public static function init_endpoints() {
+			self::$endpoints = \apply_filters( WP_2FA_PREFIX . 'api_endpoints', self::$endpoints );
+
+			foreach ( self::$endpoints as $endpoint_provider ) {
+				foreach ( $endpoint_provider as $root_endpoint => $settings ) {
+					$class     = $settings['class'];
+					$namespace = $settings['namespace'];
+
+					foreach ( $settings['endpoints'] as $routes ) {
+						foreach ( $routes as $route => $endpoint ) {
+							$args = array();
+							if ( isset( $endpoint['args'] ) ) {
+								$args = $endpoint['args'];
+							}
+							$check_permissions = array();
+							if ( isset( $endpoint['checkPermissions'] ) ) {
+								$check_permissions = $endpoint['checkPermissions'];
+							}
+							$show_in_index = isset( $endpoint['showInIndex'] ) ? $endpoint['showInIndex'] : false;
+							\register_rest_route(
+								$namespace,
+								'/' . $root_endpoint . '/' . $route,
+								array(
+									array(
+										'methods'       => $endpoint['methods']['method'],
+										'callback'      => array( $class, $endpoint['methods']['callback'] ),
+										'args'          => $args,
+										'permission_callback' => $check_permissions,
+										'show_in_index' => $show_in_index,
+									),
+								),
+								false
+							);
+						}
+					}
+				}
+			}
+		}
+
+		/**
+		 * Global method to check permissions for API endpoints - this one checks if the user has read capability.
+		 *
+		 * @return bool
+		 *
+		 * @since 3.0.0
+		 */
+		public static function check_permissions() {
+			return \current_user_can( 'read' );
+		}
+
+		/**
+		 * Bypasses the WordPress REST cookie nonce check for our login validation endpoint.
+		 *
+		 * The login endpoint uses its own authentication mechanism (login nonce stored in user meta)
+		 * and has permission_callback => '__return_true'. When the user session is destroyed mid-request
+		 * (e.g. passkey → 2FA flow), the browser may still send a stale auth cookie on the subsequent
+		 * REST request, triggering a nonce validation failure. This filter clears that error for our
+		 * specific endpoint only.
+		 *
+		 * @param \WP_Error|null|true $errors WP_Error if authentication error, null if not yet handled, true if authenticated.
+		 *
+		 * @return \WP_Error|null|true
+		 *
+		 * @since 4.0.0
+		 */
+		public static function bypass_cookie_nonce_for_login( $errors ) {
+			if ( \is_wp_error( $errors ) && 'rest_cookie_invalid_nonce' === $errors->get_error_code() ) {
+				// Use the authoritative dispatched REST route (rest_route query var), never the
+				// browser-visible REQUEST_URI - the latter can be spoofed via rest_route= while a
+				// different endpoint is actually dispatched (e.g. /wp/v2/users), which would let
+				// this filter clear a real nonce failure for an unrelated, sensitive request.
+				$route = isset( $GLOBALS['wp']->query_vars['rest_route'] ) ? (string) $GLOBALS['wp']->query_vars['rest_route'] : '';
+				$route = '/' . ltrim( $route, '/' );
+				$route = untrailingslashit( $route );
+				if ( '/wp-2fa-methods/v1/login/validate' === $route ) {
+					return null;
+				}
+			}
+
+			return $errors;
+		}
+
+		/**
+		 * Removes GoDaddy style which causing the form elements to be shown
+		 *
+		 * @return void
+		 *
+		 * @since 2.9.0
+		 */
+		public static function dequeue_style() {
+
+			\wp_register_script(
+				'wp_2fa_user_login_scripts',
+				WP_2FA_URL . 'includes/classes/Authenticator/assets/user-login.js',
+				array( 'wp-dom-ready', 'wp-i18n' ),
+				WP_2FA_VERSION,
+				array( 'in_footer' => true )
+			);
+
+			// Its messages are wp.i18n's, which knows only what is registered for the handle.
+			\wp_set_script_translations( 'wp_2fa_user_login_scripts', 'wp-2fa', WP_2FA_PATH . 'languages' );
+
+			\wp_localize_script(
+				'wp_2fa_user_login_scripts',
+				'wp2faLogin',
+				array(
+					'restRoot' => \esc_url_raw( \get_rest_url() ),
+				)
+			);
+		}
+	}
+}
