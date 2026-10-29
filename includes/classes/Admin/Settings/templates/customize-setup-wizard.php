@@ -35,7 +35,7 @@ use WP2FA\Admin\Settings_Builder;
 						'text'  => \wp_sprintf(
 						// translators: 1. Link to documentation, 2. Link to support.
 							\esc_html__( 'Customize the messages and styling of the 2FA setup wizard. %1$s.', 'wp-2fa' ),
-							\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=setup_wizard_settings_doc', \esc_html__( 'Learn more', 'wp-2fa' ) )
+							\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '', \esc_html__( 'Learn more', 'wp-2fa' ) )
 						),
 						'class' => 'description-settings-card',
 						'id'    => 'wp-2fa-setup-wizard-settings-tab',
@@ -96,7 +96,7 @@ use WP2FA\Admin\Settings_Builder;
 						'text'  => \wp_sprintf(
 						// translators: 1. Link to documentation, 2. Link to support.
 							\esc_html__( 'You can add an extra slide at the start of the 2FA setup wizard. It will be the first slide users see when they launch the wizard to set up 2FA for their account. %1$s', 'wp-2fa' ),
-							\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/kb/wp-2fa-customize-user-2fa-experience/?#utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_customize_2fa_user_experience', \esc_html__( 'Learn more', 'wp-2fa' ) )
+							\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_customize_2fa_user_experience', \esc_html__( 'Learn more', 'wp-2fa' ) )
 						),
 						'class' => 'description-settings-card',
 						'id'    => 'general-settings-tab',
@@ -276,7 +276,7 @@ use WP2FA\Admin\Settings_Builder;
 						'text'  => \wp_sprintf(
 							/* translators: %1$s: the link to the setup wizard guide, already wrapped in an anchor. */
 							\esc_html__( 'Customize the labels and messages shown during the 2FA setup flow. %1$s', 'wp-2fa' ),
-							\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/kb/wp-2fa-customize-user-2fa-experience/?#utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_customize_2fa_user_experience', \esc_html__( 'Learn more', 'wp-2fa' ) )
+							\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_customize_2fa_user_experience', \esc_html__( 'Learn more', 'wp-2fa' ) )
 						),
 						'class' => 'description-settings-card',
 						'id'    => 'general-settings-tab',

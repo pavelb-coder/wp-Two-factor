@@ -142,7 +142,7 @@
 		<p class="wp-2fa-plugin-update-text">
 			<?php echo \esc_html__( 'You are now running the latest version of WP 2FA. To see what\'s been included in this update, refer to the plugin\'s release notes and change log where we list all new features, updates, and bug fixes.', 'wp-2fa' ); ?>
 		</p>
-		<a href="https://melapress.com/wordpress-2fa/releases/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=update_banner" target="_blank" class="wp-2fa-cta-link"><?php echo esc_html__( 'Read the release notes', 'wp-2fa' ); ?></a>
+		<a href="#" target="_blank" class="wp-2fa-cta-link"><?php echo esc_html__( 'Read the release notes', 'wp-2fa' ); ?></a>
 	</div>
 	<button aria-label="Close button" class="wp-2fa-plugin-update-close"></button>
 </div>

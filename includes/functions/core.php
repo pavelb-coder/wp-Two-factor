@@ -538,7 +538,7 @@ function get_premium_badge_dialog_pages() {
 		),
 		'cta'           => array(
 			'text' => \esc_html__( 'View Premium Plans', 'wp-2fa' ),
-			'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium-badge-dialog' ),
+			'url'  => \esc_url_raw( '' ),
 		),
 	);
 
@@ -556,7 +556,7 @@ function get_premium_badge_dialog_pages() {
 			'bullets'       => array(),
 			'cta'           => array(
 				'text' => \esc_html__( 'upgrade now', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-custom-policies-per-role' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'policies-banner'                                  => array(
@@ -580,7 +580,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock role-based policies', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=policies-banner-badge' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'settings-banner'                                  => array(
@@ -604,7 +604,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock advanced settings', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=settings-banner-badge' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'wp-2fa-policies-methods'                          => array(
@@ -632,7 +632,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'upgrade now', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium-2fa-method' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'screen:toplevel_page_wp-2fa-policies'             => array(
@@ -647,7 +647,7 @@ function get_premium_badge_dialog_pages() {
 			'bullets'       => array(),
 			'cta'           => array(
 				'text' => \esc_html__( 'upgrade now', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-custom-policies-per-role' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'screen:toplevel_page_wp-2fa-policies-network'     => array(
@@ -662,7 +662,7 @@ function get_premium_badge_dialog_pages() {
 			'bullets'       => array(),
 			'cta'           => array(
 				'text' => \esc_html__( 'upgrade now', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-custom-policies-per-role' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'wp-2fa-passkeys'                                  => array(
@@ -694,7 +694,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Upgrade to Premium', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-passkeys' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'screen:wp-2fa_page_wp-2fa-passkeys'               => array(
@@ -726,7 +726,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Upgrade to Premium', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-passkeys' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'screen:wp-2fa_page_wp-2fa-passkeys-network'       => array(
@@ -758,7 +758,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Upgrade to Premium', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-passkeys' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'wp-2fa-policies:method-oob'                       => array(
@@ -786,7 +786,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock with Premium', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/#utm_source=plugin&utm_medium=wp2fa&utm_campaign=2fa-premium-method-oob' ),
+				'url'  => \esc_url_raw( '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=2fa-premium-method-oob' ),
 			),
 		),
 		'wp-2fa-policies:method-yubikey'                   => array(
@@ -814,7 +814,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock with Premium', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/#utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium-2fa-method-yubikey' ),
+				'url'  => \esc_url_raw( '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium-2fa-method-yubikey' ),
 			),
 		),
 		'wp-2fa-policies:method-0setup'                    => array(
@@ -842,7 +842,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock with Premium', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa#utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium-2fa-method-0setup' ),
+				'url'  => \esc_url_raw( '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium-2fa-method-0setup' ),
 			),
 		),
 		'wp-2fa-policies:method-sms'                       => array(
@@ -870,7 +870,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock with Premium', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa#utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium-2fa-method-sms' ),
+				'url'  => \esc_url_raw( '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium-2fa-method-sms' ),
 			),
 		),
 		'wp-2fa-policies:backup-email'                     => array(
@@ -898,7 +898,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock with Premium', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa#utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium-2fa-method-backup-email' ),
+				'url'  => \esc_url_raw( '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium-2fa-method-backup-email' ),
 			),
 		),
 		'wp-2fa-passkeys:bypass-2fa'                       => array(
@@ -922,7 +922,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock with Premium', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/#utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-passkeys-bypass-feature' ),
+				'url'  => \esc_url_raw( '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-passkeys-bypass-feature' ),
 			),
 		),
 		'wp-2fa-passkeys:enforce-roles'                    => array(
@@ -950,7 +950,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock with Premium', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/#utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-passkeys' ),
+				'url'  => \esc_url_raw( '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-passkeys' ),
 			),
 		),
 		'wp-2fa-settings'                                  => array(
@@ -978,7 +978,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'upgrade now', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-settings-page' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'export-import'                                    => array(
@@ -1006,7 +1006,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock Advanced Management', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-settings-page-export-import' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'provider-integrations'                            => array(
@@ -1034,7 +1034,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock More Authentication Methods', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-settings-page-provider-integrations' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'plugin-integrations'                              => array(
@@ -1062,7 +1062,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Upgrade to Premium', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-settings-page-plugin-integrations' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'wp-2fa-settings-new'                              => array(
@@ -1090,7 +1090,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'upgrade now', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-settings-page' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'screen:wp-2fa_page_wp-2fa-settings'               => array(
@@ -1118,7 +1118,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'upgrade now', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-settings-page' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'screen:wp-2fa_page_wp-2fa-settings-new'           => array(
@@ -1146,7 +1146,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'upgrade now', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-settings-page' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'wl-setup-wizard'                                  => array(
@@ -1174,7 +1174,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock White Labelling', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-white-labeling-tabs' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'wl-prompts'                                       => array(
@@ -1202,7 +1202,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock White Labelling', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-white-labeling-tabs' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'wl-profile'                                       => array(
@@ -1230,7 +1230,7 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock White Labelling', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-white-labeling-tabs' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'wp-2fa-white-labeling'                            => array(
@@ -1258,11 +1258,11 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock Full White Labelling', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-white-labeling-tabs' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 			'ctaPremium'    => array(
 				'text' => \esc_html__( 'Unlock Full White Labelling', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium-white-labeling-tabs' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'screen:wp-2fa_page_wp-2fa-white-labeling'         => array(
@@ -1290,11 +1290,11 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock Full White Labelling', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-white-labeling-tabs' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 			'ctaPremium'    => array(
 				'text' => \esc_html__( 'Unlock Full White Labelling', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium-white-labeling-tabs' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'wp-2fa-white-labeling:email-templates'            => array(
@@ -1322,11 +1322,11 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock White Labelling', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-email-sms-templates-tabs' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 			'ctaPremium'    => array(
 				'text' => \esc_html__( 'Unlock White Labelling', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium-email-sms-templates-tabs' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'wp-2fa-white-labeling:sms-templates'              => array(
@@ -1354,11 +1354,11 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock Full White Labelling', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-email-sms-templates-tabs' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 			'ctaPremium'    => array(
 				'text' => \esc_html__( 'Unlock Full White Labelling', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium-email-sms-templates-tabs' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'wp-2fa-white-labeling:customize-code-page-design' => array(
@@ -1386,11 +1386,11 @@ function get_premium_badge_dialog_pages() {
 			),
 			'cta'           => array(
 				'text' => \esc_html__( 'Unlock White Labelling', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-white-labeling-tabs' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 			'ctaPremium'    => array(
 				'text' => \esc_html__( 'Unlock White Labelling', 'wp-2fa' ),
-				'url'  => \esc_url_raw( 'https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium-white-labeling-tabs' ),
+				'url'  => \esc_url_raw( '' ),
 			),
 		),
 		'wp-2fa-reports-locked'                            => array(
@@ -1462,7 +1462,7 @@ function admin_styles() {
 /**
  * Add async/defer attributes to enqueued scripts that have the specified script_execution flag.
  *
- * @link https://core.trac.wordpress.org/ticket/12009
+ * @link 
  * @param string $tag    The script tag.
  * @param string $handle The script handle.
  * @return string

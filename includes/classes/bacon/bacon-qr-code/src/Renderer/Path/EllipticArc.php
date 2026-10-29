@@ -85,7 +85,7 @@ final class EllipticArc implements OperationInterface
      * Since not all image back ends support elliptic arcs, this method allows to convert the arc into multiple curves
      * resembling the same result.
      *
-     * @see https://mortoray.com/2017/02/16/rendering-an-svg-elliptical-arc-as-bezier-curves/
+     * @see 
      * @return array<Curve|Line>
      */
     public function toCurves(float $fromX, float $fromY) : array

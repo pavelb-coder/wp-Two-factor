@@ -10,7 +10,7 @@
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  *
- * @see       https://wordpress.org/plugins/wp-2fa/
+ * @see       
  */
 
 namespace WP2FA\Admin\Helpers;
@@ -231,7 +231,7 @@ if ( ! class_exists( '\WP2FA\Admin\Helpers\WP_Helper' ) ) {
 						?>
 					</span>
 					</h2>
-					<a href="https://melapress.com/black-friday-cyber-monday/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=BFCM2025" target="_blank" class="bf-cta-link"><?php \esc_html_e( 'Get Offer Now', 'wp-2fa' ); ?></a>
+					<a href="#" target="_blank" class="bf-cta-link"><?php \esc_html_e( 'Get Offer Now', 'wp-2fa' ); ?></a>
 					</div>
 					
 					<!-- Close Button -->
@@ -260,7 +260,7 @@ if ( ! class_exists( '\WP2FA\Admin\Helpers\WP_Helper' ) ) {
 				});
 				</script>
 				<style>
-					@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Quicksand:wght@600;700&display=swap');
+					
 
 					:root {
 					--color-coral: #FF8977;
@@ -488,7 +488,7 @@ if ( ! class_exists( '\WP2FA\Admin\Helpers\WP_Helper' ) ) {
 					<!-- Text Content -->
 					<div class="survey-banner-content">
 						<div class="survey-banner-title"><?php \esc_html_e( 'Got 2 minutes? Help us shape the future of WP 2FA', 'wp-2fa' ); ?></div>
-						<a href="https://getformly.app/ThUFdP" target="_blank" class="survey-cta-link wp-2fa-survey-cta-link" data-take-nonce="<?php echo \esc_attr( \wp_create_nonce( 'wp_2fa_take_survey_nonce' ) ); ?>"><?php \esc_html_e( 'Take the survey', 'wp-2fa' ); ?></a>
+						<a href="#" target="_blank" class="survey-cta-link wp-2fa-survey-cta-link" data-take-nonce="<?php echo \esc_attr( \wp_create_nonce( 'wp_2fa_take_survey_nonce' ) ); ?>"><?php \esc_html_e( 'Take the survey', 'wp-2fa' ); ?></a>
 					</div>
 					
 					<!-- Close Button -->
@@ -535,7 +535,7 @@ if ( ! class_exists( '\WP2FA\Admin\Helpers\WP_Helper' ) ) {
 				});
 				</script>
 				<style>
-					@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Quicksand:wght@600;700&display=swap');
+					
 
 					:root {
 					--color-coral: #FF8977;

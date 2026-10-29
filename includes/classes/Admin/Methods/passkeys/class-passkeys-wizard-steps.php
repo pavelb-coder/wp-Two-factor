@@ -8,7 +8,7 @@
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  *
- * @see       https://wordpress.org/plugins/wp-2fa/
+ * @see       
  */
 
 declare(strict_types=1);
@@ -199,7 +199,7 @@ if ( ! class_exists( '\WP2FA\Methods\Wizards\PassKeys_Wizard_Steps' ) ) {
 						printf(
 							/* translators: %s: link to the list of supported 2FA apps, already wrapped in an anchor. */
 							\esc_html__( 'Passkeys - %s', 'wp-2fa' ),
-							'<a href="https://melapress.com/support/kb/wp-2fa-configuring-2fa-apps/?&utm_source=plugin&utm_medium=link&utm_campaign=wp2fa" target="_blank" rel="noopener">'
+							'<a href="#" target="_blank" rel="noopener">'
 								. \esc_html__( 'complete list of supported 2FA apps.', 'wp-2fa' )
 								. '</a>'
 						);
@@ -211,7 +211,7 @@ if ( ! class_exists( '\WP2FA\Methods\Wizards\PassKeys_Wizard_Steps' ) ) {
 					printf(
 						/* translators: link to the knowledge base website */
 						\esc_html__( 'When using this method, users will need to configure a 2FA app to get the one-time login code. The plugin supports all standard 2FA apps. Refer to the %s for more information. Allowing users to configure a secondary 2FA method is highly recommended. You can configure this in the next step of the wizard. This allows users to log in using an alternative method if they lose access to their primary 2FA device, such as their phone.', 'wp-2fa' ),
-						'<a href="https://melapress.com/support/kb/wp-2fa-configuring-2fa-apps/?&utm_source=plugin&utm_medium=link&utm_campaign=wp2fa" target="_blank">' . \esc_html__( 'guide on how to set up 2FA apps', 'wp-2fa' ) . '</a>'
+						'<a href="#" target="_blank">' . \esc_html__( 'guide on how to set up 2FA apps', 'wp-2fa' ) . '</a>'
 					);
 					echo '</p>';
 				}
@@ -220,7 +220,7 @@ if ( ! class_exists( '\WP2FA\Methods\Wizards\PassKeys_Wizard_Steps' ) ) {
 					printf(
 						/* translators: link to the knowledge base website */
 						\esc_html__( 'Refer to the %s for more information on how to setup these apps and which apps are supported.', 'wp-2fa' ),
-						'<a href="https://melapress.com/support/kb/wp-2fa-configuring-2fa-apps/?&utm_source=plugin&utm_medium=link&utm_campaign=wp2fa" target="_blank">' . \esc_html__( 'guide on how to set up 2FA apps', 'wp-2fa' ) . '</a>'
+						'<a href="#" target="_blank">' . \esc_html__( 'guide on how to set up 2FA apps', 'wp-2fa' ) . '</a>'
 					);
 					echo '</p>';
 				}

@@ -7,7 +7,7 @@
  * @since 3.0.0
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
- * @link       https://wordpress.org/plugins/wp-2fa/
+ * @link       
  */
 
 declare(strict_types=1);
@@ -85,7 +85,7 @@ if ( ! class_exists( '\WP2FA\Passkeys\Passkeys_User_Profile' ) ) {
 					__( 'Passkeys make login easier and safer by replacing passwords with your fingerprint, face, or device PIN, reducing password risks and speeding up authentication. %s', 'wp-2fa' ),
 					array( 'a' => array( 'href' => array(), 'target' => array(), 'rel' => array() ) )
 				),
-				'<a href="' . \esc_url( 'https://melapress.com/support/kb/wp-2fa-activate-use-passkeys/?#utm_source=plugin&utm_medium=wp2fa&utm_campaign=passkeys_user' ) . '" target="_blank" rel="noopener noreferrer">' . \esc_html__( 'Learn more about Passkeys.', 'wp-2fa' ) . '</a>'
+				'<a href="' . \esc_url( '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=passkeys_user' ) . '" target="_blank" rel="noopener noreferrer">' . \esc_html__( 'Learn more about Passkeys.', 'wp-2fa' ) . '</a>'
 			);
 
 			$date_format = \get_option( 'date_format' ) ?: 'F j, Y';

@@ -8,7 +8,7 @@
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  *
- * @see       https://wordpress.org/plugins/wp-2fa/
+ * @see       
  *
  * @since 2.6.0
  */
@@ -290,7 +290,7 @@ if ( ! class_exists( '\WP2FA\Methods\TOTP' ) ) {
 						// array(
 						// 'text'  => \wp_sprintf(
 						// \esc_html__( 'Step-by-step guidance for the authenticator-app (TOTP) method, e.g. Step 1: open your authenticator app and tap +. Step 2: scan the QR code. Step 3: enter the 6-digit code shown. %1$s', 'wp-2fa' ),
-						// \wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/kb/wp-2fa-customize-user-2fa-experience/?#utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_customize_2fa_user_experience', \esc_html__( 'Learn more', 'wp-2fa' ) )
+						// \wp_sprintf( '<a href="%s" target="_blank">%s</a>', '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_customize_2fa_user_experience', \esc_html__( 'Learn more', 'wp-2fa' ) )
 						// ),
 						// 'class' => 'description-settings-card',
 						// 'id'    => 'totp-step-1-desc',
@@ -1164,7 +1164,7 @@ if ( ! class_exists( '\WP2FA\Methods\TOTP' ) ) {
 				<tr>
 				<?php foreach ( Authentication::get_apps() as $app ) { ?>
 					<td>
-					<a href="https://melapress.com/support/kb/wp-2fa-configuring-2fa-apps/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=authentication_help#<?php echo $app['hash']; ?>" target="_blank" class="app-logo"><img src="<?php echo \esc_url( WP_2FA_URL . 'dist/images/' . $app['logo'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>"></a>
+					<a href="#<?php echo $app['hash']; ?>" target="_blank" class="app-logo"><img src="<?php echo \esc_url( WP_2FA_URL . 'dist/images/' . $app['logo'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>"></a>
 					</td>
 				<?php } ?>
 				</tr>
@@ -1183,7 +1183,7 @@ if ( ! class_exists( '\WP2FA\Methods\TOTP' ) ) {
 			$default_settings['totp-option-label-hint']       = sprintf(
 			/* translators: link to the knowledge base website */
 				\esc_html__( 'Refer to the %s for step-by-step instructions on how to set up this method.', 'wp-2fa' ),
-				'<a href="https://melapress.com/support/kb/wp-2fa-configuring-2fa-wordpress-user/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_how_to_setup_totp_app_hint" target="_blank">' . \esc_html__( 'setup guide', 'wp-2fa' ) . '</a>'
+				'<a href="#" target="_blank">' . \esc_html__( 'setup guide', 'wp-2fa' ) . '</a>'
 			);
 
 			return $default_settings;

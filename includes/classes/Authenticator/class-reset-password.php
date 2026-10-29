@@ -8,7 +8,7 @@
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  *
- * @see       https://wordpress.org/plugins/wp-2fa/
+ * @see       
  *
  * @since     2.5.0
  */
@@ -120,7 +120,7 @@ if ( ! class_exists( '\WP2FA\Authenticator\Reset_Password' ) ) {
 							\wp_sprintf(
 							// translators: anchor link, contact us text, closing anchor.
 								__( 'This process cannot be completed because one or more parameters are missing from the request. This could be caused by outdated plugins. Ensure all the plugins are up to date. If the problem persists %1$1s%2$2s%3$3s - WP 2FA.', 'wp-2fa' ),
-								'<a href="mailto:support@melapress.com">',
+								'<a href="mailto:support@">',
 								__( 'contact us', 'wp-2fa' ),
 								'</a>'
 							)

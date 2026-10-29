@@ -6,7 +6,7 @@
  * @subpackage admin
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
- * @link       https://wordpress.org/plugins/wp-2fa/
+ * @link       
  */
 
 namespace WP2FA\Admin;
@@ -73,9 +73,9 @@ if ( ! class_exists( '\WP2FA\Admin\Top_Bar_Banner' ) ) {
 			$has_update    = ! empty( $update_info );
 			$update_url    = $has_update ? self::get_update_url() : '';
 			$new_version   = $has_update ? $update_info['new_version'] : '';
-			$release_url   = 'https://melapress.com/wordpress-2fa/releases/?#utm_source=plugin&utm_medium=wp2fa&utm_campaign=topbar_releasenotes';
-			$changelog_url = 'https://melapress.com/support/kb/wp-2fa-plugin-changelog/?#utm_source=plugin&utm_medium=wp2fa&utm_campaign=topbar_changelog';
-			$upgrade_url   = 'https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=upgrade_to_premium_top_banner';
+			$release_url   = '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=topbar_releasenotes';
+			$changelog_url = '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=topbar_changelog';
+			$upgrade_url   = '';
 			?>
 			<div id="wp2fa-top-bar-banner">
 				<div class="wp2fa-top-bar-inner">

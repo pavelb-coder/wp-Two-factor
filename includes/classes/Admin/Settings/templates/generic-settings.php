@@ -38,8 +38,8 @@ use WP2FA\Admin\Helpers\ManageWP_Guard;
 				'text'  => \wp_sprintf(
 				// translators: 1. Link to documentation, 2. Link to support.
 					\esc_html__( 'Use the settings below to configure several 2FA settings on your website. If you have any questions, %1$s or %2$s.', 'wp-2fa' ),
-					\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=settings_page_doc', \esc_html__( 'visit documentation', 'wp-2fa' ) ),
-					\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=settings_page_support', \esc_html__( 'contact support', 'wp-2fa' ) )
+					\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '', \esc_html__( 'visit documentation', 'wp-2fa' ) ),
+					\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '', \esc_html__( 'contact support', 'wp-2fa' ) )
 				),
 				'class' => 'description-settings-card',
 				'id'    => 'general-settings-tab',
@@ -114,7 +114,7 @@ use WP2FA\Admin\Helpers\ManageWP_Guard;
 				'text'  => \wp_sprintf(
 				// translators: 1. Link to documentation, 2. Link to support.
 					\esc_html__( 'When using email or SMS 2FA, the plugin sends users a new one-time code each time they enter a wrong code at login. This acts as a form of brute-force protection. You can disable it using the setting below, although doing so is not recommended. %1$s', 'wp-2fa' ),
-					\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/kb/wp-2fa-plugin-getting-started/?#utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_getting_started_wp2fa', \esc_html__( 'Learn more', 'wp-2fa' ) )
+					\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_getting_started_wp2fa', \esc_html__( 'Learn more', 'wp-2fa' ) )
 				),
 				'class' => 'description-settings-card',
 				'id'    => 'general-settings-tab',

@@ -37,7 +37,7 @@ use WP2FA\Admin\Settings_Builder;
 						'text'  => \wp_sprintf(
 							/* translators: %1$s: the link to the user prompts guide, already wrapped in an anchor. */
 							\esc_html__( 'Customize the prompts and notifications users see when 2FA is required or must be reconfigured. %1$s.', 'wp-2fa' ),
-							\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/kb/wp-2fa-customize-user-2fa-experience/?#utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_customize_2fa_user_experience', \esc_html__( 'Learn more', 'wp-2fa' ) )
+							\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_customize_2fa_user_experience', \esc_html__( 'Learn more', 'wp-2fa' ) )
 						),
 						'class' => 'description-settings-card',
 						'id'    => 'wp-2fa-user-prompts-settings-tab',

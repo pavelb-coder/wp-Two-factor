@@ -6,7 +6,7 @@
  * @subpackage setup
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
- * @link       https://wordpress.org/plugins/wp-2fa/
+ * @link       
  */
 
 namespace WP2FA\Admin;
@@ -389,7 +389,7 @@ if ( ! class_exists( '\WP2FA\Admin\Setup_Wizard' ) ) {
 				</head>
 				<body class="wp2fa-setup wp-core-ui">
 					<div class="setup-wizard-wrapper wp-2fa-settings-wrapper wp2fa-form-styles">
-						<h1 id="wp2fa-logo"><a href="https://melapress.com/wordpress-2fa/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=wp_2fa_logo" target="_blank" ><img style="max-width: 80px;" src="<?php echo \esc_url( WP_2FA_URL . 'dist/images/wp-2fa-color_opt.png' ); ?>" alt="WP 2FA Logo"></a></h1>
+						<h1 id="wp2fa-logo"><a href="#" target="_blank" ><img style="max-width: 80px;" src="<?php echo \esc_url( WP_2FA_URL . 'dist/images/wp-2fa-color_opt.png' ); ?>" alt="WP 2FA Logo"></a></h1>
 			<?php
 		}
 
@@ -760,7 +760,7 @@ if ( ! class_exists( '\WP2FA\Admin\Setup_Wizard' ) ) {
 
 			// @free:start
 			$message .= '<p>' . \esc_html__( 'Email sent by', 'wp-2fa' );
-			$message .= ' <a href="https://melapress.com/wordpress-2fa/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=melapress_wp_2fa_plugin_link" target="_blank">' . \esc_html__( 'WP 2FA plugin.', 'wp-2fa' ) . '</a>';
+			$message .= ' <a href="#" target="_blank">' . \esc_html__( 'WP 2FA plugin.', 'wp-2fa' ) . '</a>';
 			$message .= '</p>';
 			// @free:end
 

@@ -6,7 +6,7 @@
  * @subpackage settings-pages
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
- * @link       https://wordpress.org/plugins/wp-2fa/
+ * @link       
  */
 
 namespace WP2FA\Admin\SettingsPages;
@@ -218,7 +218,7 @@ if ( ! class_exists( '\WP2FA\Admin\SettingsPages\Settings_Page_White_Label' ) ) 
 
 			}
 
-			// Remove duplicates from settings errors. We do this as this sanitization callback is actually fired twice, so we end up with duplicates when saving the settings for the FIRST TIME only. The issue is not present once the settings are in the DB as the sanitization wont fire again. For details on this core issue - https://core.trac.wordpress.org/ticket/21989.
+			// Remove duplicates from settings errors. We do this as this sanitization callback is actually fired twice, so we end up with duplicates when saving the settings for the FIRST TIME only. The issue is not present once the settings are in the DB as the sanitization wont fire again. For details on this core issue - 
 			global $wp_settings_errors;
 			if ( isset( $wp_settings_errors ) ) {
 				$errors             = array_map( 'unserialize', array_unique( array_map( 'serialize', $wp_settings_errors ) ) );
@@ -444,7 +444,7 @@ if ( ! class_exists( '\WP2FA\Admin\SettingsPages\Settings_Page_White_Label' ) ) 
 				}
 			}
 
-			// Remove duplicates from settings errors. We do this as this sanitization callback is actually fired twice, so we end up with duplicates when saving the settings for the FIRST TIME only. The issue is not present once the settings are in the DB as the sanitization wont fire again. For details on this core issue - https://core.trac.wordpress.org/ticket/21989.
+			// Remove duplicates from settings errors. We do this as this sanitization callback is actually fired twice, so we end up with duplicates when saving the settings for the FIRST TIME only. The issue is not present once the settings are in the DB as the sanitization wont fire again. For details on this core issue - 
 			global $wp_settings_errors;
 			if ( isset( $wp_settings_errors ) ) {
 				$errors             = array_map( 'unserialize', array_unique( array_map( 'serialize', $wp_settings_errors ) ) );

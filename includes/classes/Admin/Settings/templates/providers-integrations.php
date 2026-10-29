@@ -34,7 +34,7 @@ use WP2FA\Admin\Settings_Builder;
 				'text'  => \wp_sprintf(
 				// translators: 1. Link to documentation, 2. Link to support.
 					\esc_html__( 'Manage the integrations for the available 2FA providers. %1$s.', 'wp-2fa' ),
-					\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/kb/wp-2fa-add-authentication-methods/?#utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_add_supplementary_2fa_methods', \esc_html__( 'Learn more', 'wp-2fa' ) )
+					\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_add_supplementary_2fa_methods', \esc_html__( 'Learn more', 'wp-2fa' ) )
 				),
 				'class' => 'description-settings-card',
 				'id'    => 'providers-integrations-tab',

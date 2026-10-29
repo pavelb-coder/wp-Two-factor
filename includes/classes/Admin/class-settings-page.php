@@ -6,7 +6,7 @@
  * @subpackage settings
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
- * @link       https://wordpress.org/plugins/wp-2fa/
+ * @link       
  */
 
 namespace WP2FA\Admin;
@@ -462,7 +462,7 @@ if ( ! class_exists( '\WP2FA\Admin\Settings_Page' ) ) {
 
 			// @free:start
 			$message .= '<p>' . \esc_html__( 'Email sent by', 'wp-2fa' );
-			$message .= ' <a href="https://melapress.com/wordpress-2fa/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=melapress_wp_2fa_plugin_link" target="_blank">' . \esc_html__( 'WP 2FA plugin.', 'wp-2fa' ) . '</a>';
+			$message .= ' <a href="#" target="_blank">' . \esc_html__( 'WP 2FA plugin.', 'wp-2fa' ) . '</a>';
 			$message .= '</p>';
 			// @free:end
 
@@ -545,7 +545,7 @@ if ( ! class_exists( '\WP2FA\Admin\Settings_Page' ) ) {
 		public static function add_plugin_action_links( $links ) {
 			// add link to the external free trial page in free version and also in premium version if license is not active.
 			if ( ! Licensing_Factory::has_active_valid_license() ) {
-				$trial_link = 'https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=upgrade_to_premium_menu';
+				$trial_link = '';
 				$links      = array_merge(
 					array(
 						'<a style="font-weight:bold" href="' . $trial_link . '" target="_blank">' . __( 'Upgrade to Premium', 'wp-2fa' ) . '</a>',
@@ -1182,7 +1182,7 @@ if ( ! class_exists( '\WP2FA\Admin\Settings_Page' ) ) {
 							</li>
 						</ul>
 
-						<a class="wp2fa-reports-teaser-cta" href="<?php echo \esc_url( 'https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-reports-page' ); ?>" target="_blank" rel="noopener noreferrer"><?php echo \esc_html__( 'Unlock 2FA Reports & Statistics', 'wp-2fa' ); ?></a>
+						<a class="wp2fa-reports-teaser-cta" href="<?php echo \esc_url( '#' ); ?>" target="_blank" rel="noopener noreferrer"><?php echo \esc_html__( 'Unlock 2FA Reports & Statistics', 'wp-2fa' ); ?></a>
 					</div>
 
 					<div class="wp2fa-reports-teaser-preview" aria-hidden="true">

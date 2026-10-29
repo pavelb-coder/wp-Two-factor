@@ -9,7 +9,7 @@
  * @since      2.0.0
  * @package    wp2fa
  * @subpackage Licensing
- * @link       https://easydigitaldownloads.com/docs/software-licensing-updater-implementation-for-wordpress-plugins/
+ * @link       
  */
 
 declare(strict_types=1);

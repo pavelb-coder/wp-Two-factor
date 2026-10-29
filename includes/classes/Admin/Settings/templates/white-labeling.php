@@ -35,8 +35,8 @@ use WP2FA\Licensing\Licensing_Factory;
 			'text' => \wp_sprintf(
 				// translators: 1. Link to documentation, 2. Link to support.
 				\esc_html__( 'Use the settings below to configure several 2FA settings on your website. If you have any questions, %1$s or %2$s.', 'wp-2fa' ),
-				\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=white_labeling_doc', \esc_html__( 'visit documentation', 'wp-2fa' ) ),
-				\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=white_labeling_support', \esc_html__( 'contact support', 'wp-2fa' ) )
+				\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '', \esc_html__( 'visit documentation', 'wp-2fa' ) ),
+				\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '', \esc_html__( 'contact support', 'wp-2fa' ) )
 			),
 			'id'   => 'white-labeling-tab',
 			'type' => 'description',

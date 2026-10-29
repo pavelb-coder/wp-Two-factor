@@ -11,7 +11,7 @@
  * @subpackage Licensing
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
- * @link       https://wordpress.org/plugins/wp-2fa/
+ * @link       
  */
 
 declare(strict_types=1);
@@ -82,7 +82,7 @@ if ( ! class_exists( '\WP2FA\Licensing\Licensing_Factory' ) ) {
 		 *
 		 * @var string
 		 */
-		public const PRICING_URL = 'https://melapress.com/wordpress-2fa/pricing/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=edd_pricing';
+		public const PRICING_URL = '';
 
 		/**
 		 * Admin menu icon render callback class (fully qualified).
@@ -164,21 +164,21 @@ if ( ! class_exists( '\WP2FA\Licensing\Licensing_Factory' ) ) {
 		 *
 		 * @var string
 		 */
-		public const FREEMIUS_PRICING_URL = 'https://melapress.com/wordpress-2fa/pricing/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=priciing_url';
+		public const FREEMIUS_PRICING_URL = '';
 
 		/**
 		 * External pricing page redirect URL (used in Freemius redirect handler).
 		 *
 		 * @var string
 		 */
-		public const FREEMIUS_PRICING_REDIRECT_URL = 'https://melapress.com/wordpress-2fa/pricing/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=redirect_to_external_price_page';
+		public const FREEMIUS_PRICING_REDIRECT_URL = '';
 
 		/**
 		 * Freemius connect message URL for the opt-in message.
 		 *
 		 * @var string
 		 */
-		public const FREEMIUS_OPTIN_URL = 'https://melapress.com/wordpress-2fa/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=optin_message';
+		public const FREEMIUS_OPTIN_URL = '';
 
 		/*
 		|----------------------------------------------------------------------
@@ -312,14 +312,14 @@ if ( ! class_exists( '\WP2FA\Licensing\Licensing_Factory' ) ) {
 		 *
 		 * @var string
 		 */
-		public const FALLBACK_PRICING_URL = 'https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=upgrade_pricing_fallback';
+		public const FALLBACK_PRICING_URL = '';
 
 		/**
 		 * Fallback account URL (used when no provider is available).
 		 *
 		 * @var string
 		 */
-		public const FALLBACK_ACCOUNT_URL = 'https://melapress.com/account/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=account_fallback';
+		public const FALLBACK_ACCOUNT_URL = '';
 
 		/*
 		|----------------------------------------------------------------------
@@ -1243,7 +1243,7 @@ if ( ! class_exists( '\WP2FA\Licensing\Licensing_Factory' ) ) {
 							printf(
 								/* translators: %s: contact link */
 								\esc_html__( "Can't find your license key? %s so we can assist you.", 'wp-2fa' ),
-								'<a href="mailto:support@melapress.com">' . \esc_html__( 'Contact us', 'wp-2fa' ) . '</a>'
+								'<a href="mailto:support@">' . \esc_html__( 'Contact us', 'wp-2fa' ) . '</a>'
 							);
 							?>
 						</p>

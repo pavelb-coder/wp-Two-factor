@@ -6,7 +6,7 @@
  * @subpackage admin
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
- * @link       https://wordpress.org/plugins/wp-2fa/
+ * @link       
  */
 
 declare(strict_types=1);
@@ -112,7 +112,7 @@ if ( ! class_exists( '\WP2FA\Admin\Free_Support_Notice' ) ) {
 							printf(
 								/* translators: %s: email link */
 								\esc_html__( 'WP 2FA 4.0 now has a completely redesigned interface. To help with the transition, we\'re temporarily offering free one-to-one email support to all users, including the free edition users. Contact us on %s if you need any assistance.', 'wp-2fa' ),
-								'<a href="mailto:support@melapress.com">support@melapress.com</a>'
+								'<a href="mailto:support@">support@</a>'
 							);
 							?>
 						</span>

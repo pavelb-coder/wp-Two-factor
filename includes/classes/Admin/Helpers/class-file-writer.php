@@ -7,7 +7,7 @@
  * @since      2.4.0
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
- * @link       https://wordpress.org/plugins/wp-2fa/
+ * @link       
  */
 
 namespace WP2FA\Admin\Helpers;
@@ -103,7 +103,7 @@ if ( ! class_exists( '\WP2FA\Admin\Helpers\File_Writer' ) ) {
 				 * one was generated on the next request, every TOTP seed decrypted
 				 * to garbage, and every TOTP user was silently re-seeded.
 				 */
-				if ( true !== self::write_wp_config( '/** WP 2FA plugin data encryption key. For more information please visit melapress.com */' . "\n" . $definition, $contents ) ) {
+				if ( true !== self::write_wp_config( '/** WP 2FA plugin data encryption key. For more information please visit  */' . "\n" . $definition, $contents ) ) {
 					return false;
 				}
 

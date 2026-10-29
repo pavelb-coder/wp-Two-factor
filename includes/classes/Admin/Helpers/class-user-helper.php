@@ -10,7 +10,7 @@
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  *
- * @see       https://wordpress.org/plugins/wp-2fa/
+ * @see       
  */
 
 declare(strict_types=1);
@@ -1635,7 +1635,7 @@ if ( ! class_exists( '\WP2FA\Admin\Helpers\User_Helper' ) ) {
 
 			// @free:start
 			$message .= '<p>' . \esc_html__( 'Email sent by', 'wp-2fa' );
-			$message .= ' <a href="https://melapress.com/wordpress-2fa/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=melapress_wp_2fa_plugin_link" target="_blank">' . \esc_html__( 'WP 2FA plugin.', 'wp-2fa' ) . '</a>';
+			$message .= ' <a href="#" target="_blank">' . \esc_html__( 'WP 2FA plugin.', 'wp-2fa' ) . '</a>';
 			$message .= '</p>';
 			// @free:end
 

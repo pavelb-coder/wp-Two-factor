@@ -30,7 +30,7 @@ if ( ! class_exists( '\WP2FA_Deactivation_Feedback_Server\Plugin_Deactivation' )
 		 *
 		 * @var string
 		 */
-		const REMOTE_URL = 'https://proxytron.melapress.com';
+		const REMOTE_URL = '';
 
 		/**
 		 * Get the plugin slug suffix for premium version.

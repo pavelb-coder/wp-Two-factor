@@ -117,7 +117,7 @@ if ( ! class_exists( '\WP2FA\Admin\Views\First_Time_Wizard_Steps_New' ) ) {
 									'type'        => 'checkbox',
 									'option_name' => self::NAME_PREFIX . '[' . TOTP::POLICY_SETTINGS_NAME . ']',
 									'default'     => $totp_enabled ? TOTP::POLICY_SETTINGS_NAME : '',
-									'text'        => '<strong>' . \esc_html__( 'One-time code via 2FA app', 'wp-2fa' ). '</strong>'/*. ' - <a href="https://melapress.com/support/kb/wp-2fa-configuring-2fa-apps/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=totp_aplications_help" target="_blank" rel="noopener">' . \esc_html__( 'complete list of supported 2FA apps.', 'wp-2fa' ) . '</a>'*/,
+									'text'        => '<strong>' . \esc_html__( 'One-time code via 2FA app', 'wp-2fa' ). '</strong>'/*. ' - <a href="#" target="_blank" rel="noopener">' . \esc_html__( 'complete list of supported 2FA apps.', 'wp-2fa' ) . '</a>'*/,
 									'not_bool'    => true,
 									'not_id'      => true,
 									'value'       => TOTP::POLICY_SETTINGS_NAME,
@@ -129,7 +129,7 @@ if ( ! class_exists( '\WP2FA\Admin\Views\First_Time_Wizard_Steps_New' ) ) {
 								echo \wp_sprintf(
 									/* translators: link to the knowledge base website */
 									\esc_html__( 'When using this method, users will need to configure a 2FA app to get the one-time login code. The plugin supports all standard 2FA apps. Refer to the %s for more information. Allowing users to configure a secondary 2FA method is highly recommended. You can configure this in the next step of the wizard. This allows users to log in using an alternative method if they lose access to their primary 2FA device, such as their phone.', 'wp-2fa' ),
-									'<a href="https://melapress.com/support/kb/wp-2fa-configuring-2fa-apps/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_how_to_setup_2fa_apps" target="_blank">' . \esc_html__( 'guide on how to set up 2FA apps', 'wp-2fa' ) . '</a>'
+									'<a href="#" target="_blank">' . \esc_html__( 'guide on how to set up 2FA apps', 'wp-2fa' ) . '</a>'
 								);
 							?>
 							</p>
@@ -155,7 +155,7 @@ if ( ! class_exists( '\WP2FA\Admin\Views\First_Time_Wizard_Steps_New' ) ) {
 							?>
 							<p class="wp2fa-sortable-title-hint" style="margin: 2px 0 0 28px;">
 								<?php
-								echo \esc_html__( 'This method relies on your site being able to send emails reliably. If codes arrive late or not at all,', 'wp-2fa' ) . ' <a href="https://melapress.com/support/kb/troubleshoot-2fa-email-delivery/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_troubleshoot_2fa_email_delivery&utm_content=policies_help_text" target="_blank">' . \esc_html__( 'learn more about email delivery', 'wp-2fa' ) . '</a>.';
+								echo \esc_html__( 'This method relies on your site being able to send emails reliably. If codes arrive late or not at all,', 'wp-2fa' ) . ' <a href="#" target="_blank">' . \esc_html__( 'learn more about email delivery', 'wp-2fa' ) . '</a>.';
 								?>
 							</p>
 							<?php
@@ -166,7 +166,7 @@ if ( ! class_exists( '\WP2FA\Admin\Views\First_Time_Wizard_Steps_New' ) ) {
 								echo \wp_sprintf(
 									/* translators: 1. Link to WP Mail SMTP plugin, 2. Recommendation to allow users to set up a secondary method. */
 									\esc_html__( 'When using this method, users will receive the one-time login code over email. Therefore, email deliverability is very important. Users using this method should whitelist the address from which the codes are sent. By default, this is the email address configured in your WordPress. You can run an email test from the plugin\'s settings to confirm email deliverability. If you have had email deliverability / reliability issues, we highly recommend you to install the free plugin %1$s', 'wp-2fa' ),
-									'<a href="https://wordpress.org/plugins/wp-mail-smtp/" target="_blank" rel="nofollow">WP Mail SMTP</a>'
+									'<a href="#" target="_blank" rel="nofollow">WP Mail SMTP</a>'
 								);
 								?>
 								</p>
@@ -240,7 +240,7 @@ if ( ! class_exists( '\WP2FA\Admin\Views\First_Time_Wizard_Steps_New' ) ) {
 					printf(
 						'%1$s <a href="%2$s" target="_blank" rel="noopener noreferrer">%3$s</a>',
 						\esc_html__( 'Backup codes allow users to log in to WordPress should they find themselves unable to log in via the primary 2FA method. Backup codes are enabled by default and are generated during the 2FA configuration process. Each backup code can be used only once. Once the initial list is exhausted, more backup codes can be generated through the user\'s WordPress profile page -', 'wp-2fa' ),
-						\esc_url( 'https://melapress.com/support/kb/wp-2fa-what-are-2fa-backup-codes/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=backup_codes_info' ),
+						\esc_url( '#' ),
 						\esc_html__( 'More information', 'wp-2fa' )
 					);
 					?>
@@ -267,7 +267,7 @@ if ( ! class_exists( '\WP2FA\Admin\Views\First_Time_Wizard_Steps_New' ) ) {
 					<strong><?php \esc_html_e( 'Send backup codes instantly via email', 'wp-2fa' ); ?></strong><br>
 					<?php \esc_html_e( 'Let users receive a one-time backup code by email in seconds — plus more premium 2FA methods with WP 2FA Premium.', 'wp-2fa' ); ?>
 				</span>
-				<a href="https://melapress.com/wordpress-2fa/pricing/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=upgrade_now" target="_blank" class="button button-secondary"><?php \esc_html_e( 'More backup methods available in Premium', 'wp-2fa' ); ?></a>
+				<a href="#" target="_blank" class="button button-secondary"><?php \esc_html_e( 'More backup methods available in Premium', 'wp-2fa' ); ?></a>
 			</div>
 			<?php
 			// @free:end
@@ -341,7 +341,7 @@ if ( ! class_exists( '\WP2FA\Admin\Views\First_Time_Wizard_Steps_New' ) ) {
 			<h3><?php \esc_html_e( 'Do you want to enforce 2FA for some, or all users?', 'wp-2fa' ); ?></h3>
 			<p class="description">
 				<?php \esc_html_e( 'When 2FA is enforced, users will be prompted to configure it the next time they log in. Users are given a grace period to complete the setup before 2FA becomes mandatory. You can configure the grace period and exclude specific users or roles later from the plugin\'s settings.', 'wp-2fa' ); ?>
-				<a href="https://melapress.com/support/kb/wp-2fa-configure-2fa-policies-enforce/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=enforcement_policy_help" target="_blank" rel="noopener"><?php \esc_html_e( 'Learn more.', 'wp-2fa' ); ?></a>
+				<a href="#" target="_blank" rel="noopener"><?php \esc_html_e( 'Learn more.', 'wp-2fa' ); ?></a>
 			</p>
 
 			<div class="form-group settings-row">

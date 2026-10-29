@@ -8,7 +8,7 @@
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  *
- * @see       https://wordpress.org/plugins/wp-2fa/
+ * @see       
  *
  * @since 2.6.0
  */
@@ -824,10 +824,10 @@ if ( ! class_exists( '\WP2FA\Methods\Backup_Codes' ) ) {
 			$default_settings['backup_codes-select-method']      = sprintf(
 				/* translators: URL with more information about the backup codes */
 				esc_html__( 'Login with a backup code: you will get 10 backup codes and you can use one of them when you need to login and you cannot generate a code from the app. %s', 'wp-2fa' ),
-				'<a href="https://melapress.com/2fa-backup-codes/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=backup_codes_select_method_info" target="_blank">' . esc_html__( 'More information.', 'wp-2fa' ) . '</a>'
+				'<a href="#" target="_blank">' . esc_html__( 'More information.', 'wp-2fa' ) . '</a>'
 			);
 			$default_settings['backup-codes-login-text'] = \esc_html__( 'Or, use a backup code.', 'wp-2fa' );
-			$default_settings['backup_codes_learn_more'] = '<a href="https://melapress.com/2fa-backup-codes/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=backup_codes_user_profile_help" target="_blank">' . \esc_html__( 'Learn more about backup codes', 'wp-2fa' ) . '</a>';
+			$default_settings['backup_codes_learn_more'] = '<a href="#" target="_blank">' . \esc_html__( 'Learn more about backup codes', 'wp-2fa' ) . '</a>';
 
 			return $default_settings;
 		}

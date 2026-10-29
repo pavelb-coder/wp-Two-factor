@@ -6,7 +6,7 @@
  * @subpackage admin
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
- * @link       https://wordpress.org/plugins/wp-2fa/
+ * @link       
  * @since      2.0.0
  */
 
@@ -106,13 +106,13 @@ if ( ! class_exists( '\WP2FA\Admin\Help_Contact_Us' ) ) {
 				</div>
 				<p><?php \esc_html_e( 'Getting started with WP 2FA and making 2FA compulsory is as easy as 1 2 3 with WP 2FA. This can be easily done through the install wizard or the plugin settings. If you are stuck, no problem! Below are a few links of guides to help you get started:', 'wp-2fa' ); ?></p>
 				<ul>
-					<li><?php echo wp_sprintf( '<a href="%1$s" target="_blank">%2$s</a>', \esc_url( 'https://melapress.com/support/kb/wp-2fa-plugin-getting-started/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=getting_started_help' ), \esc_html__( 'Getting started with WP 2FA', 'wp-2fa' ) ); ?></li>
-					<li><?php echo wp_sprintf( '<a href="%1$s" target="_blank">%2$s</a>', \esc_url( 'https://melapress.com/support/kb/wp-2fa-configure-2fa-policies-enforce/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=configure_policies_help' ), \esc_html__( 'Configuring 2FA policies & making 2FA mandatory', 'wp-2fa' ) ); ?></li>
-					<li><?php echo wp_sprintf( '<a href="%1$s" target="_blank">%2$s</a>', \esc_url( 'https://melapress.com/support/kb/wp-2fa-configure-2fa-front-end-page-wordpress/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=no_dashboard_page_help' ), \esc_html__( 'Allowing users to configure 2FA from a website page (no dashboard access)', 'wp-2fa' ) ); ?></li>
+					<li><?php echo wp_sprintf( '<a href="%1$s" target="_blank">%2$s</a>', \esc_url( '#' ), \esc_html__( 'Getting started with WP 2FA', 'wp-2fa' ) ); ?></li>
+					<li><?php echo wp_sprintf( '<a href="%1$s" target="_blank">%2$s</a>', \esc_url( '#' ), \esc_html__( 'Configuring 2FA policies & making 2FA mandatory', 'wp-2fa' ) ); ?></li>
+					<li><?php echo wp_sprintf( '<a href="%1$s" target="_blank">%2$s</a>', \esc_url( '#' ), \esc_html__( 'Allowing users to configure 2FA from a website page (no dashboard access)', 'wp-2fa' ) ); ?></li>
 				</ul>
 				<!-- End -->
 				<br>
-				<p><iframe title="<?php \esc_html_e( 'Getting started', 'wp-2fa' ); ?>" class="wsal-youtube-embed" width="100%" height="315" src="https://www.youtube.com/embed/vRlX_NNGeFo" frameborder="0" allowfullscreen></iframe></p>
+				<p><iframe title="<?php \esc_html_e( 'Getting started', 'wp-2fa' ); ?>" class="wsal-youtube-embed" width="100%" height="315" src="" frameborder="0" allowfullscreen></iframe></p>
 
 				<!-- Plugin documentation -->
 				<div class="title">
@@ -120,7 +120,7 @@ if ( ! class_exists( '\WP2FA\Admin\Help_Contact_Us' ) ) {
 				</div>
 				<p><?php \esc_html_e( 'For more technical information about the WP 2FA plugin please visit the plugin\'s knowledge base.', 'wp-2fa' ); ?></p>
 				<div class="btn">
-					<a href="<?php echo \esc_url( 'https://melapress.com/support/kb/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=technical_help' ); ?>" class="button" target="_blank"><?php \esc_html_e( 'Knowledge base', 'wp-2fa' ); ?></a>
+					<a href="<?php echo \esc_url( '#' ); ?>" class="button" target="_blank"><?php \esc_html_e( 'Knowledge base', 'wp-2fa' ); ?></a>
 				</div>
 				<!-- End -->
 
@@ -130,8 +130,8 @@ if ( ! class_exists( '\WP2FA\Admin\Help_Contact_Us' ) ) {
 				</div>
 				<p><?php \esc_html_e( 'Do you need assistance with the plugin? Have you noticed or encountered an issue while using WP 2FA, or do you just want to report something to us?', 'wp-2fa' ); ?></p>
 				<div class="btn">
-					<a href="<?php echo \esc_url( 'https://melapress.com/support/submit-ticket/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=suppor_ticket' ); ?>" class="button" target="_blank"><?php \esc_html_e( 'Open support ticket', 'wp-2fa' ); ?></a>
-					<a href="<?php echo \esc_url( 'https://melapress.com/contact/?utm_source=plugin&utm_medium=link&utm_campaign=contact_us' ); ?>" class="button" target="_blank"><?php \esc_html_e( 'Contact us', 'wp-2fa' ); ?></a>
+					<a href="<?php echo \esc_url( '#' ); ?>" class="button" target="_blank"><?php \esc_html_e( 'Open support ticket', 'wp-2fa' ); ?></a>
+					<a href="<?php echo \esc_url( '#' ); ?>" class="button" target="_blank"><?php \esc_html_e( 'Contact us', 'wp-2fa' ); ?></a>
 				</div>
 				<!-- End -->
 			</div>
@@ -219,7 +219,7 @@ if ( ! class_exists( '\WP2FA\Admin\Help_Contact_Us' ) ) {
 												'utm_campaign' => 'wp2fa',
 												'utm_content'  => 'role-editor-plugin-banner',
 											),
-											'https://melapress.com/wordpress-user-roles-editor/'
+											''
 										)
 									);
 									?>
@@ -246,7 +246,7 @@ if ( ! class_exists( '\WP2FA\Admin\Help_Contact_Us' ) ) {
 												'utm_campaign' => 'wp2fa',
 												'utm_content'  => 'wsal-plugin-banner',
 											),
-											'https://melapress.com/wordpress-activity-log/'
+											''
 										)
 									);
 									?>
@@ -273,7 +273,7 @@ if ( ! class_exists( '\WP2FA\Admin\Help_Contact_Us' ) ) {
 												'utm_campaign' => 'wp2fa',
 												'utm_content'  => 'login-security-plugin-banner',
 											),
-											'https://melapress.com/wordpress-login-security/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=wsal_link'
+											''
 										)
 									);
 									?>
@@ -301,7 +301,7 @@ if ( ! class_exists( '\WP2FA\Admin\Help_Contact_Us' ) ) {
 												'utm_campaign' => 'wp2fa',
 												'utm_content'  => 'file-changes-monitor-plugin-banner',
 											),
-											'https://melapress.com/wordpress-plugins/website-file-changes-monitor/'
+											''
 										)
 									);
 									?>

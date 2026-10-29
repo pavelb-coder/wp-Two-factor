@@ -2,16 +2,16 @@
 /**
  * WP 2FA - Two-factor authentication for WordPress .
  *
- * @copyright Copyright (C) 2013-2026, Melapress - support@melapress.com
+ * @copyright Copyright (C) 2013-2026, Melapress - support@
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, version 3 or higher
  *
  * @wordpress-plugin
  * Plugin Name: WP 2FA - Two-factor authentication for WordPress 
  * Version:     4.2.1
- * Plugin URI:  https://melapress.com/
+ * Plugin URI:  
  * Description: Easily add an additional layer of security to your WordPress login pages. Enable Two-Factor Authentication for you and all your website users with this easy to use plugin.
  * Author:      Melapress
- * Author URI:  https://melapress.com/
+ * Author URI:  
  * Text Domain: wp-2fa
  * Domain Path: /languages/
  * License:     GPL v3

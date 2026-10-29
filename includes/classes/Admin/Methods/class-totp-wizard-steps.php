@@ -8,7 +8,7 @@
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  *
- * @see       https://wordpress.org/plugins/wp-2fa/
+ * @see       
  */
 
 declare(strict_types=1);
@@ -384,7 +384,7 @@ if ( ! class_exists( '\WP2FA\Methods\Wizards\TOTP_Wizard_Steps' ) ) {
 						<?php \checked( TOTP::POLICY_SETTINGS_NAME, Settings_Utils::get_setting_role( $role, TOTP::POLICY_SETTINGS_NAME ), true ); ?>
 						
 					>
-			<?php echo \esc_html( WP2FA::get_wp2fa_white_label_setting( 'totp-option-label', true ) ) . ' - '; ?><a href="https://melapress.com/support/kb/wp-2fa-configuring-2fa-apps/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=totp_aplications_help" target="_blank" rel=noopener><?php \esc_html_e( 'complete list of supported 2FA apps.', 'wp-2fa' ); ?></a>
+			<?php echo \esc_html( WP2FA::get_wp2fa_white_label_setting( 'totp-option-label', true ) ) . ' - '; ?><a href="#" target="_blank" rel=noopener><?php \esc_html_e( 'complete list of supported 2FA apps.', 'wp-2fa' ); ?></a>
 				</label>
 				<?php
 				if ( $setup_wizard ) {
@@ -392,7 +392,7 @@ if ( ! class_exists( '\WP2FA\Methods\Wizards\TOTP_Wizard_Steps' ) ) {
 					printf(
 						/* translators: link to the knowledge base website */
 						\esc_html__( 'When using this method, users will need to configure a 2FA app to get the one-time login code. The plugin supports all standard 2FA apps. Refer to the %s for more information. Allowing users to configure a secondary 2FA method is highly recommended. You can configure this in the next step of the wizard. This allows users to log in using an alternative method if they lose access to their primary 2FA device, such as their phone.', 'wp-2fa' ),
-						'<a href="https://melapress.com/support/kb/wp-2fa-configuring-2fa-apps/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_how_to_setup_2fa_apps" target="_blank">' . \esc_html__( 'guide on how to set up 2FA apps', 'wp-2fa' ) . '</a>'
+						'<a href="#" target="_blank">' . \esc_html__( 'guide on how to set up 2FA apps', 'wp-2fa' ) . '</a>'
 					);
 					echo '</p>';
 				}
@@ -401,7 +401,7 @@ if ( ! class_exists( '\WP2FA\Methods\Wizards\TOTP_Wizard_Steps' ) ) {
 					printf(
 						/* translators: link to the knowledge base website */
 						\esc_html__( 'Refer to the %s for step-by-step instructions on how to set up this method.', 'wp-2fa' ),
-				'<a href="https://melapress.com/support/kb/wp-2fa-configuring-2fa-wordpress-user/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_how_to_setup_totp_user_settings" target="_blank">' . \esc_html__( 'setup guide', 'wp-2fa' ) . '</a>'
+				'<a href="#" target="_blank">' . \esc_html__( 'setup guide', 'wp-2fa' ) . '</a>'
 					);
 					echo '</p>';
 				}
@@ -455,7 +455,7 @@ if ( ! class_exists( '\WP2FA\Methods\Wizards\TOTP_Wizard_Steps' ) ) {
 		 * @since 4.0.0
 		 */
 		public static function get_method_title_hint(): string {
-			return ''; //' - <a href="https://melapress.com/support/kb/wp-2fa-configuring-2fa-apps/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=totp_aplications_help" target="_blank" rel="noopener">' . \esc_html__( 'complete list of supported 2FA apps.', 'wp-2fa' ) . '</a>';
+			return ''; //' - <a href="#" target="_blank" rel="noopener">' . \esc_html__( 'complete list of supported 2FA apps.', 'wp-2fa' ) . '</a>';
 		}
 
 		/**
@@ -469,7 +469,7 @@ if ( ! class_exists( '\WP2FA\Methods\Wizards\TOTP_Wizard_Steps' ) ) {
 			return \wp_sprintf(
 				/* translators: link to the knowledge base website */
 				\esc_html__( 'Refer to the %s for step-by-step instructions on how to set up this method.', 'wp-2fa' ),
-				'<a href="https://melapress.com/support/kb/wp-2fa-configuring-2fa-wordpress-user/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_how_to_setup_totp_user_settings" target="_blank">' . \esc_html__( 'setup guide', 'wp-2fa' ) . '</a>'
+				'<a href="#" target="_blank">' . \esc_html__( 'setup guide', 'wp-2fa' ) . '</a>'
 			);
 		}
 	}

@@ -538,7 +538,7 @@ if ( ! class_exists( '\WP2FA\Admin\SettingsPages\Setup_Wizard_New' ) ) {
 						<span class="wp2fa-wizard-crosssell-badge"><?php \esc_html_e( 'Recommended', 'wp-2fa' ); ?></span>
 						<h3><?php \esc_html_e( 'Melapress Login Security (free)', 'wp-2fa' ); ?></h3>
 						<p><?php \esc_html_e( 'Add strong password policies, limit login attempts and restrict access by IP address.', 'wp-2fa' ); ?></p>
-						<a href="https://melapress.com/wordpress-login-security/?utm_source=plugin&amp;utm_medium=wp2fa&amp;utm_campaign=wizard_cross_sell" target="_blank" rel="noopener noreferrer">
+						<a href=";utm_medium=wp2fa&amp;utm_campaign=wizard_cross_sell" target="_blank" rel="noopener noreferrer">
 							<?php \esc_html_e( 'Learn more', 'wp-2fa' ); ?>
 						</a>
 					</div>

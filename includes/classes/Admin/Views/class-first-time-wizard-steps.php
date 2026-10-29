@@ -7,7 +7,7 @@
  * @since      1.7.0
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
- * @link       https://wordpress.org/plugins/wp-2fa/
+ * @link       
  */
 
 namespace WP2FA\Admin\Views;
@@ -177,7 +177,7 @@ if ( ! class_exists( '\WP2FA\Admin\Views\First_Time_Wizard_Steps' ) ) {
 					printf( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						'%1$s <a href="%2$s" target="_blank" rel="noopener noreferrer">%3$s</a> <br><br>',
 						\esc_html__( 'Backup codes allow users to log in to WordPress should they find themselves unable to log in via the primary 2FA method. Backup codes are enabled by default and are generated during the 2FA configuration process. Each backup code can be used only once. Once the initial list is exhausted, more backup codes can be generated through the user’s WordPress profile page -', 'wp-2fa' ),
-						esc_url( 'https://melapress.com/support/kb/wp-2fa-what-are-2fa-backup-codes/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=backup_codes_info' ),
+						esc_url( '#' ),
 						\esc_html__( 'More information', 'wp-2fa' )
 					);
 					echo '</p>';
@@ -189,7 +189,7 @@ if ( ! class_exists( '\WP2FA\Admin\Views\First_Time_Wizard_Steps' ) ) {
 					printf( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						'%1$s <a href="%2$s" target="_blank" rel="noopener noreferrer">%3$s</a> %4$s',
 						\esc_html__( 'Upgrade to WP 2FA Premium for', 'wp-2fa' ),
-						esc_url( 'https://melapress.com/wordpress-2fa/features/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=upgrade_to_premium' ),
+						esc_url( '#' ),
 						\esc_html__( 'more alternative 2FA methods', 'wp-2fa' ),
 						\esc_html__( 'to give your users more options.', 'wp-2fa' )
 					);
@@ -219,7 +219,7 @@ if ( ! class_exists( '\WP2FA\Admin\Views\First_Time_Wizard_Steps' ) ) {
 			?>
 			<h3 id="enforcement_settings"><?php \esc_html_e( 'Do you want to enforce 2FA for some, or all users?', 'wp-2fa' ); ?></h3>
 			<p class="description">
-				<?php \esc_html_e( 'When 2FA is enforced, users will be prompted to configure it the next time they log in. Users are given a grace period to complete the setup before 2FA becomes mandatory. You can configure the grace period and exclude specific users or roles later from the plugin\'s settings.', 'wp-2fa' ); ?> <a href="https://melapress.com/support/kb/wp-2fa-configure-2fa-policies-enforce/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=enforcement_policy_help" target="_blank" rel=noopener><?php \esc_html_e( 'Learn more.', 'wp-2fa' ); ?></a>
+				<?php \esc_html_e( 'When 2FA is enforced, users will be prompted to configure it the next time they log in. Users are given a grace period to complete the setup before 2FA becomes mandatory. You can configure the grace period and exclude specific users or roles later from the plugin\'s settings.', 'wp-2fa' ); ?> <a href="#" target="_blank" rel=noopener><?php \esc_html_e( 'Learn more.', 'wp-2fa' ); ?></a>
 			</p>
 			<?php
 			if ( ! $setup_wizard ) {

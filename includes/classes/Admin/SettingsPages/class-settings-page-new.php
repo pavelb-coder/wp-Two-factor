@@ -393,7 +393,7 @@ if ( ! class_exists( '\WP2FA\Admin\SettingsPages\Settings_Page_New' ) ) {
 
 			\wp_send_json_error(
 				/* translators: %s: the link to the email deliverability guide, already wrapped in an anchor. */
-				array( 'message' => \wp_sprintf( \esc_html__( 'Failed to send the test email. This is usually caused by an SMTP issue, a restricted "from" address, or your host blocking outgoing mail. Check your email settings or contact your hosting provider. %s.', 'wp-2fa' ), \wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/kb/troubleshoot-2fa-email-delivery/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_troubleshoot_2fa_email_delivery&utm_content=test_email_error', \esc_html__( 'Read more about email deliverability', 'wp-2fa' ) ) ) )
+				array( 'message' => \wp_sprintf( \esc_html__( 'Failed to send the test email. This is usually caused by an SMTP issue, a restricted "from" address, or your host blocking outgoing mail. Check your email settings or contact your hosting provider. %s.', 'wp-2fa' ), \wp_sprintf( '<a href="%s" target="_blank">%s</a>', '', \esc_html__( 'Read more about email deliverability', 'wp-2fa' ) ) ) )
 			);
 		}
 

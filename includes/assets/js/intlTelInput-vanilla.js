@@ -574,7 +574,7 @@
 	};
 
 	/* ------------------------------------------------------------------ */
-	/* Geo-IP helper using ipinfo.io (vanilla fetch, no jQuery needed)      */
+	/* Geo-IP helper using  (vanilla fetch, no jQuery needed)      */
 	/* ------------------------------------------------------------------ */
 	IntlTelInputVanilla.geoIpLookup = function (callback) {
 		var done = false;
@@ -586,7 +586,7 @@
 
 		/* Use fetch with a timeout fallback. */
 		if (typeof fetch === 'function') {
-			fetch('https://ipinfo.io/json?token=', { mode: 'cors' })
+			fetch('', { mode: 'cors' })
 				.then(function (r) { return r.json(); })
 				.then(function (data) { finish(data && data.country ? data.country : ''); })
 				.catch(function () { finish(''); });
@@ -598,7 +598,7 @@
 				delete window[cbName];
 			};
 			var s = document.createElement('script');
-			s.src = 'https://ipinfo.io/?callback=' + cbName;
+			s.src = '' + cbName;
 			s.onerror = function () { finish(''); };
 			document.body.appendChild(s);
 			/* Safety timeout */

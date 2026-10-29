@@ -29,8 +29,8 @@ use WP2FA\Licensing\Licensing_Factory;
 			'text' => \wp_sprintf(
 				// translators: 1. Link to documentation, 2. Link to support.
 				\esc_html__( 'Use the settings below to configure several 2FA settings on your website. If you have any questions, %1$s or %2$s.', 'wp-2fa' ),
-				\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/kb/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=settings_page_doc', \esc_html__( 'visit documentation', 'wp-2fa' ) ),
-				\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=general_settings_support', \esc_html__( 'contact support', 'wp-2fa' ) )
+				\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '', \esc_html__( 'visit documentation', 'wp-2fa' ) ),
+				\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '', \esc_html__( 'contact support', 'wp-2fa' ) )
 			),
 			'id'   => 'general-settings-tab',
 			'type' => 'description',
@@ -113,7 +113,7 @@ use WP2FA\Licensing\Licensing_Factory;
 		$panel_banner_title  = \esc_html__( 'Unlock all settings in Premium', 'wp-2fa' );
 		$panel_banner_desc   = \esc_html__( 'Enjoy unlimited flexibility and control with advanced settings', 'wp-2fa' );
 		$panel_banner_cta    = \esc_html__( 'Upgrade to Premium', 'wp-2fa' );
-		$panel_banner_url    = 'https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-settings-page';
+		$panel_banner_url    = '';
 		$panel_visible_count = 3;
 		$panel_id            = 'wp2fa-locked-panel-settings-new';
 		$panel_banner_badge_context = 'settings-banner';

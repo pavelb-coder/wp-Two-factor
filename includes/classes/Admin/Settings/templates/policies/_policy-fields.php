@@ -233,7 +233,7 @@ $managed_checkbox_keys = \apply_filters( WP_2FA_PREFIX . 'managed_checkbox_keys'
 			printf(
 				/* translators: %s: link to documentation */
 				\esc_html__( 'When you enforce 2FA the users will be prompted to configure 2FA the next time they login. Users have a grace period for configuring 2FA. You can configure the grace period and also exclude user(s) or role(s) in this settings page. %s', 'wp-2fa' ),
-				'<a href="' . \esc_url( 'https://melapress.com/support/kb/wp-2fa-configure-2fa-policies-enforce/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=enforcement_policy_help' ) . '" target="_blank">' . \esc_html__( 'Learn more.', 'wp-2fa' ) . '</a>'
+				'<a href="' . \esc_url( '#' ) . '" target="_blank">' . \esc_html__( 'Learn more.', 'wp-2fa' ) . '</a>'
 			);
 			?>
 		</p>
@@ -664,7 +664,7 @@ $managed_checkbox_keys = \apply_filters( WP_2FA_PREFIX . 'managed_checkbox_keys'
 
 			Settings_Builder::build_option(
 				array(
-					'text'  => \esc_html__( 'Enable this option if your users do not have full access to the WordPress dashboard, or other user roles that access your site primarily through the frontend. WP 2FA will create a dedicated frontend page where authenticated users can configure and manage their own 2FA settings.', 'wp-2fa' ) . ' <a href="https://melapress.com/support/kb/wp-2fa-configure-2fa-front-end-page-wordpress/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_frontend_2fa_page" target="_blank">' . \esc_html__( 'Learn more.', 'wp-2fa' ) . '</a>',
+					'text'  => \esc_html__( 'Enable this option if your users do not have full access to the WordPress dashboard, or other user roles that access your site primarily through the frontend. WP 2FA will create a dedicated frontend page where authenticated users can configure and manage their own 2FA settings.', 'wp-2fa' ) . ' <a href="#" target="_blank">' . \esc_html__( 'Learn more.', 'wp-2fa' ) . '</a>',
 					'class' => 'description-settings-card',
 					'id'    => 'custom-user-page-desc' . $id_suffix,
 					'type'  => 'description',

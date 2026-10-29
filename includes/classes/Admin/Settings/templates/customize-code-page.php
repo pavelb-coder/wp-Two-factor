@@ -37,7 +37,7 @@ use WP2FA\Admin\Helpers\MLS_Cross_Sell;
 						'text'  => \wp_sprintf(
 						// translators: 1. Link to documentation, 2. Link to support.
 							\esc_html__( 'Customize the messages and styling of the 2FA code page. %1$s.', 'wp-2fa' ),
-							\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=code_page_settings_doc', \esc_html__( 'Learn more', 'wp-2fa' ) )
+							\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '', \esc_html__( 'Learn more', 'wp-2fa' ) )
 						),
 						'class' => 'description-settings-card',
 						'id'    => 'wp-2fa-code-page-settings-tab',
@@ -81,7 +81,7 @@ use WP2FA\Admin\Helpers\MLS_Cross_Sell;
 		<div class="tab-panel tab-panel-content">
 			<?php
 			$is_enterprise = \WP2FA\Utils\White_Label::code_page_customization_allowed();
-			$enterprise_plan_url = 'https://melapress.com/wordpress-2fa/pricing/#utm_source=plugin&utm_medium=wp2fa&utm_campaign=white-labeling-page';
+			$enterprise_plan_url = '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=white-labeling-page';
 			if ( ! $is_enterprise ) :
 			?>
 			<div class="wp2fa-enterprise-upsell-banner" role="region" aria-label="<?php echo \esc_attr__( 'Enterprise upgrade banner', 'wp-2fa' ); ?>">

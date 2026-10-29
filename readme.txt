@@ -1,6 +1,6 @@
 === WP 2FA - Two-factor authentication for WordPress ===
 Contributors: Melapress, robert681
-Plugin URI: https://melapress.com/wordpress-2fa/
+Plugin URI: 
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl.html
 Tags: 2FA, two-factor authentication, 2-factor authentication, WordPress authentication, Google Authenticator
@@ -33,9 +33,9 @@ Use the WP 2FA plugin to enable two-factor authentication for your WordPress adm
 - **Editable email templates** for full customization  
 - **Much more!**
 
-[youtube https://www.youtube.com/watch?v=EbqiphCcwWs]
+[youtube ]
 
-[Features](https://melapress.com/wordpress-2fa/features/?utm_source=wp+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa) | [Getting Started](https://melapress.com/support/kb/wp-2fa-plugin-getting-started/?utm_source=wp+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa) | [Get the Premium!](https://melapress.com/wordpress-2fa/pricing/?utm_source=wp+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa)
+[Features](+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa) | [Getting Started](+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa) | [Get the Premium!](+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa)
  
 ### 💎 Upgrade to WP 2FA Premium and get even more benefits
 
@@ -43,7 +43,7 @@ The premium version of WP 2FA comes bundled with even more features to take your
 
 With the premium edition of WP 2FA, you get more 2FA methods, 1-click integration with WooCommerce, trusted devices feature, extensive white labeling capabilities, and much more!
 
-[Check out WP 2FA Premium!](https://melapress.com/wordpress-2fa/pricing/?utm_source=wp+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa)
+[Check out WP 2FA Premium!](+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa)
 
 ### Premium features list
 
@@ -59,19 +59,19 @@ With the premium edition of WP 2FA, you get more 2FA methods, 1-click integratio
 - **One-click WooCommerce integration** to enable 2FA for customers and store admins
 - **And much more!**
 
-Refer to the [WP 2FA plugin features and benefits page](https://melapress.com/wordpress-2fa/features/?utm_source=wp+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa) to learn more about the benefits of upgrading to WP 2FA Premium.
+Refer to the [WP 2FA plugin features and benefits page](+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa) to learn more about the benefits of upgrading to WP 2FA Premium.
 
 ## 🛠️ Free and premium support
 
-Support for the free edition of WP 2FA is free on the [WordPress support forums](https://wordpress.org/support/plugin/wp-2fa/). Premium world-class support via one-to-one email is available to the Premium users - [upgrade to premium](https://melapress.com/wordpress-2fa/pricing/?utm_source=wp+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa) to benefit from email support.
+Support for the free edition of WP 2FA is free on the WordPress support forums. Premium world-class support via one-to-one email is available to the Premium users - upgrade to premium to benefit from email support.
 
-For any other queries, feedback, or if you simply want to get in touch with us, please use our [contact form](https://melapress.com/contact/?utm_source=wp+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa).
+For any other queries, feedback, or if you simply want to get in touch with us, please use our [contact form](+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa).
 
 #### MAINTAINED & SUPPORTED BY MELAPRESS
 
 Melapress develops high-quality WordPress management and security plugins, such as Melapress Login Security, Melapress Role Editor, and WP Activity Log; the #1 user-rated activity log plugin for WordPress.
 
-Browse our list of [WordPress security and administration plugins](https://melapress.com/?utm_source=wp+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa) to see how our plugins can help you better manage and improve the security and administration of your WordPress websites and users.
+Browse our list of [WordPress security and administration plugins](+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa) to see how our plugins can help you better manage and improve the security and administration of your WordPress websites and users.
     
 == Installing WP 2FA ==
 
@@ -89,13 +89,12 @@ Browse our list of [WordPress security and administration plugins](https://melap
 
 ## As featured on:
 
-- [WP Beginner](https://www.wpbeginner.com/plugins/how-to-add-two-factor-authentication-for-wordpress/)
-- [IsitWP](https://www.isitwp.com/best-wordpress-security-authentication-plugins/)
-- [WP Astra](https://wpastra.com/two-factor-authentication-wordpress/)
-- [MainWP](https://mainwp.com/how-to-use-the-wp-2fa-plugin-on-your-child-sites/)
-- [FixRunner](https://www.fixrunner.com/wordpress-two-factor-authentication/)
-- [Inmotion Hosting](https://www.inmotionhosting.com/support/edu/wordpress/plugins/wp-2fa/)
-- [WP Marmite](https://wpmarmite.com/en/wordpress-two-factor-authentication/)
+- [WP Beginner]()
+- [IsitWP]()
+- [WP Astra]()
+- [MainWP]()
+- [FixRunner]()
+- [Inmotion Hosting]()
 
 == Frequently Asked Questions ==
 
@@ -106,7 +105,7 @@ No, the plugin does not send any data to us whatsoever. The only data we receive
 The free edition of WP 2FA includes the following 2FA methods: Authenticator app 2FA and code over email. This allows you to use Google Authenticator OTP The premium edition adds YubiKey, one-click email link, SMS 2FA, and Authy push notifications. 
 
 = How can I integrate two-factor authentication (2FA) into my custom login process or AJAX-based form? =
-WP 2FA includes a REST API that allows developers to enable and verify 2FA during custom authentication flows, such as AJAX-based login forms, mobile apps, or headless WordPress websites. Refer to the [REST API in WP 2FA documentation](https://melapress.com/support/kb/wp-2fa-rest-api/?utm_source=wp+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa) for more information.
+WP 2FA includes a REST API that allows developers to enable and verify 2FA during custom authentication flows, such as AJAX-based login forms, mobile apps, or headless WordPress websites. Refer to the [REST API in WP 2FA documentation](+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa) for more information.
 
 = How can I ensure I do not get locked out? =
 WP 2FA includes backup authentication methods so that if the primary authentication method fails, you and your users can still log in. The free version of the plugin includes backup codes, which can be configured during 2FA configuration or at any point after that from the profile page. The premium edition adds 2FA backup codes over email.
@@ -121,15 +120,15 @@ Yes, WP 2FA is multisite compatible. The plugin can be activated at the network 
 We update the plugin fairly regularly to ensure the plugin continues to run in tip-top shape while adding new features from time to time.
 
 = Does the plugin support Google Authenticator? =
-Yes, WP 2FA fully supports Google Authenticator on WordPress. [WP 2FA also supports many other 2FA authenticator apps](https://melapress.com/support/kb/wp-2fa-configuring-2fa-apps/?utm_source=wp+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa).
+Yes, WP 2FA fully supports Google Authenticator on WordPress. [WP 2FA also supports many other 2FA authenticator apps](+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa).
 
 = Can I get support if I get stuck? =
-Support for the free edition of the plugin is provided only via the WordPress.org support forums. You can also refer to our [support pages](https://melapress.com/support/?utm_source=wp+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa) for all the technical and product documentation.
+Support for the free edition of the plugin is provided only via the WordPress.org support forums. You can also refer to our [support pages](+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=wp2fa) for all the technical and product documentation.
 
-If you are using the Premium edition, you get direct access to our support team via one-to-one [email support](https://melapress.com/support/submit-ticket/?utm_source=wp+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=mls).
+If you are using the Premium edition, you get direct access to our support team via one-to-one [email support](+repo&utm_medium=repo+link&utm_campaign=wordpress_org&utm_content=mls).
 
 = How can I report security bugs? =
-You can report security bugs through the Patchstack Vulnerability Disclosure Program. Please use this [form](https://patchstack.com/database/vdp/wp-2fa). For more details, please refer to our [Melapress plugins security program](https://melapress.com/plugins-security-program/).
+You can report security bugs through the Patchstack Vulnerability Disclosure Program. Please use this [form](). For more details, please refer to our [Melapress plugins security program]().
 
 == Screenshots ==
 

@@ -37,7 +37,7 @@ use WP2FA\Admin\Settings_Builder;
 						'text'  => \wp_sprintf(
 							/* translators: %1$s: the link to the user profile guide, already wrapped in an anchor. */
 							\esc_html__( 'Customize the title and description shown in the 2FA section of each user\'s WordPress profile page. %1$s.', 'wp-2fa' ),
-							\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/kb/wp-2fa-customize-user-2fa-experience/?#utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_customize_2fa_user_experience', \esc_html__( 'Learn more', 'wp-2fa' ) )
+							\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_customize_2fa_user_experience', \esc_html__( 'Learn more', 'wp-2fa' ) )
 						),
 						'class' => 'description-settings-card',
 						'id'    => 'wp-2fa-user-profile-settings-tab',

@@ -8,7 +8,7 @@
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  *
- * @see       https://wordpress.org/plugins/wp-2fa/
+ * @see       
  */
 
 namespace WP2FA\Admin\SettingsPages;
@@ -163,7 +163,7 @@ if ( ! class_exists( '\WP2FA\Admin\SettingsPages\Settings_Page_General' ) ) {
 				\add_filter( 'sanitize_option_' . WP_2FA_POLICY_SETTINGS_NAME, array( Settings_Page_Policies::class, 'validate_and_sanitize' ) );
 			}
 
-			// Remove duplicates from settings errors. We do this as this sanitization callback is actually fired twice, so we end up with duplicates when saving the settings for the FIRST TIME only. The issue is not present once the settings are in the DB as the sanitization wont fire again. For details on this core issue - https://core.trac.wordpress.org/ticket/21989.
+			// Remove duplicates from settings errors. We do this as this sanitization callback is actually fired twice, so we end up with duplicates when saving the settings for the FIRST TIME only. The issue is not present once the settings are in the DB as the sanitization wont fire again. For details on this core issue - 
 			global $wp_settings_errors;
 			if ( isset( $wp_settings_errors ) ) {
 				$errors             = array_map( 'unserialize', array_unique( array_map( 'serialize', $wp_settings_errors ) ) );
@@ -502,7 +502,7 @@ if ( ! class_exists( '\WP2FA\Admin\SettingsPages\Settings_Page_General' ) ) {
 					printf(
 						// translators: support email.
 						\esc_html__( 'Use this setting below to configure the properties of the two-factor authentication on your website and how users use it. If you have any questions send us an email at %1$s.', 'wp-2fa' ),
-						'<a href="mailto:support@melapress.com">support@melapress.com</a>'
+						'<a href="mailto:support@">support@</a>'
 					);
 				?>
 			</p>

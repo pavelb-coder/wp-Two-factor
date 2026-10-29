@@ -5,7 +5,7 @@
  * @package    wp2fa
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
- * @link       https://wordpress.org/plugins/wp-2fa/
+ * @link       
  */
 
 namespace WP2FA;
@@ -1375,7 +1375,7 @@ if ( ! class_exists( '\WP2FA\WP2FA' ) ) {
 										'To address this, please enable and configure the Front-end 2FA Page:%1$s',
 										'wp-2fa'
 									),
-									'<br><a href="https://melapress.com/support/kb/wp-2fa-configure-2fa-front-end-page-wordpress/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=frontend_2fa_page_notice">' . \esc_html__( 'Configure Front-end 2FA Page', 'wp-2fa' ) . '</a>'
+									'<br><a href="#">' . \esc_html__( 'Configure Front-end 2FA Page', 'wp-2fa' ) . '</a>'
 								) . '</p>';
 
 								$text .= sprintf(
@@ -1401,7 +1401,7 @@ if ( ! class_exists( '\WP2FA\WP2FA' ) ) {
 										'If you need assistance with any of the setup, feel free to reach out to us at %1$s.',
 										'wp-2fa'
 									),
-									'<a href="mailto:support@melapress.com">support@melapress.com</a>'
+									'<a href="mailto:support@">support@</a>'
 								) . '</p>';
 
 								$text .= '<p>' . \esc_html__( 'Best Regards,', 'wp-2fa' ) . '<br>' . \esc_html__( 'The Melapress Team', 'wp-2fa' ) . '</p>';
@@ -1722,7 +1722,7 @@ if ( ! class_exists( '\WP2FA\WP2FA' ) ) {
 					<div class="notice notice-warning wp-2fa-admin-notice" id="config-update-notice">
 						<?php
 						$message = sprintf(
-							'<p>%1$s <a href="https://melapress.com/support/kb/wp-2fa-add-2fa-plugin-encryption-key-wp-config/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=encryption_key_in_wp_config" noopener target="_blank">%2$s</a><br>%3$s</p>',
+							'<p>%1$s <a href="#" noopener target="_blank">%2$s</a><br>%3$s</p>',
 							\esc_html__( 'For security reasons WP 2FA needs to store the private key in the wp-config.php file. However, it is unable to. This can happen because of restrictive permissions, or the file is not in the default location. To fix this you can:', 'wp-2fa' ) . '<br><br>' .
 							\esc_html__( 'Option A) allow the plugin to write to the wp-config.php file temporarily by changing the wp-config.php permissions to 755. Once ready, click the button to proceed.', 'wp-2fa' ) . '<br>' .
 							\esc_html__( 'Option B) Add the encryption key to the wp-config.php file yourself by', 'wp-2fa' ),

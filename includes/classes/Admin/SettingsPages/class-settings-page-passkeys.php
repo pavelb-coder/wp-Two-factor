@@ -8,7 +8,7 @@
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  *
- * @see       https://wordpress.org/plugins/wp-2fa/
+ * @see       
  */
 
 namespace WP2FA\Admin\SettingsPages;
@@ -178,7 +178,7 @@ if ( ! class_exists( '\WP2FA\Admin\SettingsPages\Settings_Page_Passkeys' ) ) {
 									sprintf(
 										/* translators: 1: opening link tag, 2: closing link tag */
 										__( 'For more information about Passkeys and how to configure these settings refer to the guide %1$sHow to set up Passkeys in WP 2FA%2$s.', 'wp-2fa' ),
-										'<a href="' . \esc_url( 'https://melapress.com/support/kb/wp-2fa-set-up-passkeys/?#utm_source=plugin&utm_medium=wp2fa&utm_campaign=passkeys_admin' ) . '" target="_blank" rel="noopener noreferrer">',
+										'<a href="' . \esc_url( '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=passkeys_admin' ) . '" target="_blank" rel="noopener noreferrer">',
 										'</a>'
 									),
 									array(
@@ -282,7 +282,7 @@ if ( ! class_exists( '\WP2FA\Admin\SettingsPages\Settings_Page_Passkeys' ) ) {
 											__( '%1$sNote:%2$s In the Free edition of WP 2FA, each user can register only one Passkey, and Passkey logins bypass 2FA. The %3$sPremium edition%4$s enables users to register multiple Passkeys and gives you the option to enforce 2FA even when users sign in with a Passkey.', 'wp-2fa' ),
 											'<b>',
 											'</b>',
-											'<a href="https://melapress.com/wordpress-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=passkeys+settings+page" target="_blank" rel="noopener noreferrer">',
+											'<a href="+settings+page" target="_blank" rel="noopener noreferrer">',
 											'</a>'
 										);
 										?>
@@ -455,7 +455,7 @@ if ( ! class_exists( '\WP2FA\Admin\SettingsPages\Settings_Page_Passkeys' ) ) {
 				}
 			}
 
-			// Remove duplicates from settings errors. We do this as this sanitization callback is actually fired twice, so we end up with duplicates when saving the settings for the FIRST TIME only. The issue is not present once the settings are in the DB as the sanitization wont fire again. For details on this core issue - https://core.trac.wordpress.org/ticket/21989.
+			// Remove duplicates from settings errors. We do this as this sanitization callback is actually fired twice, so we end up with duplicates when saving the settings for the FIRST TIME only. The issue is not present once the settings are in the DB as the sanitization wont fire again. For details on this core issue - 
 			global $wp_settings_errors;
 			if ( isset( $wp_settings_errors ) ) {
 				$errors             = array_map( 'unserialize', array_unique( array_map( 'serialize', $wp_settings_errors ) ) );

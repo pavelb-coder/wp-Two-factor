@@ -32,8 +32,8 @@ use WP2FA\Admin\SettingsPages\Settings_Page_Policies_New;
 			'text' => \wp_sprintf(
 				// translators: 1. Link to documentation, 2. Link to support.
 				\esc_html__( 'Use the settings below to configure the properties of the two-factor authentication on your website and how users use it. If you have any questions, %1$s or %2$s.', 'wp-2fa' ),
-				\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/kb/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=general_settings_doc', \esc_html__( 'visit documentation', 'wp-2fa' ) ),
-				\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=policies_settings_support', \esc_html__( 'contact support', 'wp-2fa' ) )
+				\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '', \esc_html__( 'visit documentation', 'wp-2fa' ) ),
+				\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '', \esc_html__( 'contact support', 'wp-2fa' ) )
 			),
 			'id'   => 'policies-settings-tab',
 			'type' => 'description',
@@ -85,7 +85,7 @@ use WP2FA\Admin\SettingsPages\Settings_Page_Policies_New;
 			$panel_banner_title  = \esc_html__( 'Set custom policies for each role in Premium', 'wp-2fa' );
 			$panel_banner_desc   = \esc_html__( 'Different teams, different rules. Set per-role 2FA requirements', 'wp-2fa' );
 			$panel_banner_cta    = \esc_html__( 'Upgrade to Premium', 'wp-2fa' );
-			$panel_banner_url    = 'https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=per-role-policies';
+			$panel_banner_url    = '';
 			$panel_visible_count = 3;
 			$panel_lock_icons_disabled    = true;
 			$panel_banner_badge_context   = 'policies-banner';

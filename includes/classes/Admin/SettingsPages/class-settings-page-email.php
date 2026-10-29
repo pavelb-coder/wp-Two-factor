@@ -6,7 +6,7 @@
  * @subpackage settings-pages
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
- * @link       https://wordpress.org/plugins/wp-2fa/
+ * @link       
  */
 
 namespace WP2FA\Admin\SettingsPages;
@@ -146,7 +146,7 @@ if ( ! class_exists( '\WP2FA\Admin\SettingsPages\Settings_Page_Email' ) ) {
 				printf(
 					/* translators: %s: link to the contact page, already wrapped in an anchor. */
 					\esc_html__( 'Tip: The \'From email\' address should match your website domain. If the "from address" does not match your website domain, the emails may be blocked or marked as spam. If you are not sure about this please consult with your website administrator / developer or %s for more information.', 'wp-2fa' ),
-					'<a href="' . \esc_url( 'https://melapress.com/contact/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=from_email_address' ) . '" target="_blank">'
+					'<a href="' . \esc_url( '#' ) . '" target="_blank">'
 						. \esc_html__( 'contact us', 'wp-2fa' )
 						. '</a>'
 				);
@@ -160,7 +160,7 @@ if ( ! class_exists( '\WP2FA\Admin\SettingsPages\Settings_Page_Email' ) ) {
 				echo \wp_sprintf(
 					/* translators: %1$s: the link to the email delivery guide, already wrapped in an anchor. */
 					\esc_html__( 'Send a test email to confirm your site can deliver 2FA codes by email. Delivery issues are usually caused by SMTP or hosting configuration. %1$s.', 'wp-2fa' ),
-					\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/kb/troubleshoot-2fa-email-delivery/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_troubleshoot_2fa_email_delivery&utm_content=test_email_help_text', \esc_html__( 'Learn more about email deliverability', 'wp-2fa' ) )
+					\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '', \esc_html__( 'Learn more about email deliverability', 'wp-2fa' ) )
 				);
 				?>
 			</p>
@@ -337,7 +337,7 @@ if ( ! class_exists( '\WP2FA\Admin\SettingsPages\Settings_Page_Email' ) ) {
 
 			Debugging::log( 'The following settings are being saved (E-mail): ' . "\n" . \wp_json_encode( $output ) );
 
-			// Remove duplicates from settings errors. We do this as this sanitization callback is actually fired twice, so we end up with duplicates when saving the settings for the FIRST TIME only. The issue is not present once the settings are in the DB as the sanitization wont fire again. For details on this core issue - https://core.trac.wordpress.org/ticket/21989.
+			// Remove duplicates from settings errors. We do this as this sanitization callback is actually fired twice, so we end up with duplicates when saving the settings for the FIRST TIME only. The issue is not present once the settings are in the DB as the sanitization wont fire again. For details on this core issue - 
 			global $wp_settings_errors;
 			if ( isset( $wp_settings_errors ) ) {
 				$errors             = array_map( 'unserialize', array_unique( array_map( 'serialize', $wp_settings_errors ) ) );
@@ -506,7 +506,7 @@ if ( ! class_exists( '\WP2FA\Admin\SettingsPages\Settings_Page_Email' ) ) {
 			 */
 			$output = \apply_filters( WP_2FA_PREFIX . 'filter_output_email_template_content', $output );
 
-			// Remove duplicates from settings errors. We do this as this sanitization callback is actually fired twice, so we end up with duplicates when saving the settings for the FIRST TIME only. The issue is not present once the settings are in the DB as the sanitization wont fire again. For details on this core issue - https://core.trac.wordpress.org/ticket/21989.
+			// Remove duplicates from settings errors. We do this as this sanitization callback is actually fired twice, so we end up with duplicates when saving the settings for the FIRST TIME only. The issue is not present once the settings are in the DB as the sanitization wont fire again. For details on this core issue - 
 			global $wp_settings_errors;
 			if ( isset( $wp_settings_errors ) ) {
 				$errors             = array_map( 'unserialize', array_unique( array_map( 'serialize', $wp_settings_errors ) ) );

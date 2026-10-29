@@ -10,7 +10,7 @@
  * @subpackage admin
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
- * @link       https://wordpress.org/plugins/wp-2fa/
+ * @link       
  * @since      2.10.0
  */
 
@@ -34,11 +34,11 @@ if ( class_exists( '\WP2FA\Licensing\Licensing_Factory' ) ) {
 	<div class="mp-sidebar-card">
 		<h3 class="mp-sidebar-card-title"><?php \esc_html_e( 'SETUP & GUIDES', 'wp-2fa' ); ?></h3>
 		<ul class="mp-sidebar-links">
-			<li><a href="https://melapress.com/support/kb/wp-2fa-plugin-getting-started/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium_sidebar_1" target="_blank" rel="noopener noreferrer"><?php \esc_html_e( 'Getting started', 'wp-2fa' ); ?></a></li>
-			<li><a href="https://melapress.com/support/kb/wp-2fa-set-up-passkeys/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium_sidebar_2" target="_blank" rel="noopener noreferrer"><?php \esc_html_e( 'Using Passkeys', 'wp-2fa' ); ?></a></li>
-			<li><a href="https://melapress.com/support/kb/wp-2fa-configure-2fa-policies-enforce/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium_sidebar_3" target="_blank" rel="noopener noreferrer"><?php \esc_html_e( 'Configuring 2FA policies', 'wp-2fa' ); ?></a></li>
-			<li><a href="https://melapress.com/support/kb/wp-2fa-how-to-enable-2fa-backup-methods/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium_sidebar_4" target="_blank" rel="noopener noreferrer"><?php \esc_html_e( 'Using backup methods', 'wp-2fa' ); ?></a></li>
-			<li><a href="https://melapress.com/support/kb/wp-2fa-configure-2fa-front-end-page-wordpress/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium_sidebar_5" target="_blank" rel="noopener noreferrer"><?php \esc_html_e( '2FA without dashboard access', 'wp-2fa' ); ?></a></li>
+			<li><a href="#" target="_blank" rel="noopener noreferrer"><?php \esc_html_e( 'Getting started', 'wp-2fa' ); ?></a></li>
+			<li><a href="#" target="_blank" rel="noopener noreferrer"><?php \esc_html_e( 'Using Passkeys', 'wp-2fa' ); ?></a></li>
+			<li><a href="#" target="_blank" rel="noopener noreferrer"><?php \esc_html_e( 'Configuring 2FA policies', 'wp-2fa' ); ?></a></li>
+			<li><a href="#" target="_blank" rel="noopener noreferrer"><?php \esc_html_e( 'Using backup methods', 'wp-2fa' ); ?></a></li>
+			<li><a href="#" target="_blank" rel="noopener noreferrer"><?php \esc_html_e( '2FA without dashboard access', 'wp-2fa' ); ?></a></li>
 		</ul>
 	</div>
 
@@ -46,9 +46,9 @@ if ( class_exists( '\WP2FA\Licensing\Licensing_Factory' ) ) {
 	<div class="mp-sidebar-card">
 		<h3 class="mp-sidebar-card-title"><?php \esc_html_e( 'SUPPORT & TROUBLESHOOTING', 'wp-2fa' ); ?></h3>
 		<ul class="mp-sidebar-links">
-			<li><a href="https://melapress.com/support/kb/troubleshoot-2fa-email-delivery/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium_sidebar_6" target="_blank" rel="noopener noreferrer"><?php \esc_html_e( 'Troubleshoot 2FA email delivery', 'wp-2fa' ); ?></a></li>
-			<li><a href="https://melapress.com/support/kb/category/wp-2fa-plugin/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium_sidebar_7" target="_blank" rel="noopener noreferrer"><?php \esc_html_e( 'WP 2FA Knowledge base', 'wp-2fa' ); ?></a></li>
-			<li><a href="https://melapress.com/support/submit-ticket/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium_sidebar_8" target="_blank" rel="noopener noreferrer"><?php \esc_html_e( 'Open support ticket (included in your license)', 'wp-2fa' ); ?></a></li>
+			<li><a href="#" target="_blank" rel="noopener noreferrer"><?php \esc_html_e( 'Troubleshoot 2FA email delivery', 'wp-2fa' ); ?></a></li>
+			<li><a href="#" target="_blank" rel="noopener noreferrer"><?php \esc_html_e( 'WP 2FA Knowledge base', 'wp-2fa' ); ?></a></li>
+			<li><a href="#" target="_blank" rel="noopener noreferrer"><?php \esc_html_e( 'Open support ticket (included in your license)', 'wp-2fa' ); ?></a></li>
 		</ul>
 	</div>
 
@@ -57,12 +57,12 @@ if ( class_exists( '\WP2FA\Licensing\Licensing_Factory' ) ) {
 		<h3 class="mp-sidebar-card-title"><?php \esc_html_e( 'OUR OTHER PLUGINS', 'wp-2fa' ); ?></h3>
 
 		<p class="mp-sidebar-promo-text"><?php \esc_html_e( 'Get full visibility into everything happening on your WordPress website with real-time activity logs.', 'wp-2fa' ); ?></p>
-		<a href="https://melapress.com/wordpress-activity-log/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium_sidebar_wsal_promo" target="_blank" rel="noopener noreferrer" class="mp-sidebar-promo-link"><?php \esc_html_e( 'Explore WP Activity Log', 'wp-2fa' ); ?> &rarr;</a>
+		<a href="#" target="_blank" rel="noopener noreferrer" class="mp-sidebar-promo-link"><?php \esc_html_e( 'Explore WP Activity Log', 'wp-2fa' ); ?> &rarr;</a>
 
 		<hr class="mp-sidebar-divider">
 
 		<p class="mp-sidebar-promo-text"><?php \esc_html_e( 'Give users and administrators better control over login security, access behavior, and account protection.', 'wp-2fa' ); ?></p>
-		<a href="https://melapress.com/wordpress-login-security/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=premium_sidebar_mls_promo" target="_blank" rel="noopener noreferrer" class="mp-sidebar-promo-link"><?php \esc_html_e( 'Explore Melapress Login Security', 'wp-2fa' ); ?> &rarr;</a>
+		<a href="#" target="_blank" rel="noopener noreferrer" class="mp-sidebar-promo-link"><?php \esc_html_e( 'Explore Melapress Login Security', 'wp-2fa' ); ?> &rarr;</a>
 	</div>
 
 	<!-- Footer -->
@@ -93,7 +93,7 @@ if ( class_exists( '\WP2FA\Licensing\Licensing_Factory' ) ) {
 			<li><?php \esc_html_e( 'Backup methods to prevent lockouts', 'wp-2fa' ); ?></li>
 		</ul>
 
-		<a href="https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=sidebar_buy_now" target="_blank" rel="noopener noreferrer" class="mp-sidebar-upgrade-btn"><?php \esc_html_e( 'Buy now', 'wp-2fa' ); ?></a>
+		<a href="#" target="_blank" rel="noopener noreferrer" class="mp-sidebar-upgrade-btn"><?php \esc_html_e( 'Buy now', 'wp-2fa' ); ?></a>
 
 		<p class="mp-sidebar-upgrade-guarantee-title"><strong><?php \esc_html_e( "Stronger security that your users won't push back on", 'wp-2fa' ); ?></strong></p>
 		<p class="mp-sidebar-upgrade-guarantee"><?php \esc_html_e( '30-day money back guarantee', 'wp-2fa' ); ?></p>

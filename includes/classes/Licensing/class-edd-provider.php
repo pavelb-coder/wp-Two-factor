@@ -14,7 +14,7 @@
  * @subpackage Licensing
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
- * @link       https://wordpress.org/plugins/wp-2fa/
+ * @link       
  */
 
 declare(strict_types=1);
@@ -49,7 +49,7 @@ if ( ! class_exists( '\WP2FA\Licensing\EDD_Provider' ) ) {
 		 *
 		 * @var string
 		 */
-		public const STORE_URL = 'https://store.melapress.com/';
+		public const STORE_URL = '';
 
 		/**
 		 * EDD product ID for the Premium tier.
@@ -1506,7 +1506,7 @@ if ( ! class_exists( '\WP2FA\Licensing\EDD_Provider' ) ) {
 					/* translators: 1: pricing page link, 2: support page link */
 					\esc_html__( 'A new subsite could not be activated because your license has no remaining activations. Please %1$s, free a slot by deactivating another site, or %2$s.', 'wp-2fa' ),
 					'<a href="' . \esc_url( self::get_pricing_url() ) . '" target="_blank" rel="noopener noreferrer">' . \esc_html__( 'upgrade your license', 'wp-2fa' ) . '</a>',
-					'<a href="' . \esc_url( 'https://melapress.com/contact/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=multisite_no_remaining_actiations' ) . '" target="_blank" rel="noopener noreferrer">' . \esc_html__( 'contact our support team', 'wp-2fa' ) . '</a>'
+					'<a href="' . \esc_url( '#' ) . '" target="_blank" rel="noopener noreferrer">' . \esc_html__( 'contact our support team', 'wp-2fa' ) . '</a>'
 				);
 				echo '</p></div>';
 			}

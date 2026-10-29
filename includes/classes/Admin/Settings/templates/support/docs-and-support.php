@@ -6,7 +6,7 @@
  * @subpackage admin
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
- * @link       https://wordpress.org/plugins/wp-2fa/
+ * @link       
  * @since      4.1.0
  */
 
@@ -265,25 +265,23 @@ use WP2FA\Admin\Helpers\WP_Helper;
 					<h3><?php \esc_html_e( 'Getting started', 'wp-2fa' ); ?></h3>
 					<ul>
 						<li>
-							<a href="<?php echo \esc_url( 'https://melapress.com/support/kb/wp-2fa-plugin-getting-started/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=getting_started_help' ); ?>" target="_blank">
+							<a href="<?php echo \esc_url( '#' ); ?>" target="_blank">
 								<?php \esc_html_e( 'Getting started with WP 2FA', 'wp-2fa' ); ?>
 							</a>
 						</li>
 						<li>
-							<a href="<?php echo \esc_url( 'https://melapress.com/support/kb/wp-2fa-configure-2fa-policies-enforce/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=configure_policies_help' ); ?>" target="_blank">
+							<a href="<?php echo \esc_url( '#' ); ?>" target="_blank">
 								<?php \esc_html_e( 'Configuring 2FA policies & making 2FA mandatory', 'wp-2fa' ); ?>
 							</a>
 						</li>
 						<li>
-							<a href="<?php echo \esc_url( 'https://melapress.com/support/kb/wp-2fa-configure-2fa-front-end-page-wordpress/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=no_dashboard_page_help' ); ?>" target="_blank">
+							<a href="<?php echo \esc_url( '#' ); ?>" target="_blank">
 								<?php \esc_html_e( 'Allowing users to configure 2FA from a website page (no dashboard access)', 'wp-2fa' ); ?>
 							</a>
 						</li>
 					</ul>
 				</div>
-			<div class="mp-about-hero-video">
-				<iframe src="https://www.youtube.com/embed/vRlX_NNGeFo" title="<?php \esc_attr_e( 'Getting started with WP 2FA', 'wp-2fa' ); ?>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-			</div>
+			
 		</div>
 
 		<!-- Two-column cards: Plugin documentation + Plugin Support -->
@@ -296,7 +294,7 @@ use WP2FA\Admin\Helpers\WP_Helper;
 					<p><?php \esc_html_e( 'For more technical information about the WP 2FA plugin please visit the plugin\'s knowledge base.', 'wp-2fa' ); ?></p>
 				</div>
 				<div class="mp-support-card-buttons">
-					<a href="<?php echo \esc_url( 'https://melapress.com/support/kb/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=technical_help' ); ?>" class="mp-about-btn-filled" target="_blank">
+					<a href="<?php echo \esc_url( '#' ); ?>" class="mp-about-btn-filled" target="_blank">
 						<?php \esc_html_e( 'Go to knowledge base', 'wp-2fa' ); ?>
 					</a>
 				</div>
@@ -309,10 +307,10 @@ use WP2FA\Admin\Helpers\WP_Helper;
 					<p><?php \esc_html_e( 'Do you need assistance with the plugin? Have you noticed or encountered an issue while using WP 2FA, or do you just want to report something to us?', 'wp-2fa' ); ?></p>
 				</div>
 				<div class="mp-support-card-buttons">
-					<a href="<?php echo \esc_url( 'https://melapress.com/support/submit-ticket/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=suppor_ticket' ); ?>" class="mp-about-btn-filled" target="_blank">
+					<a href="<?php echo \esc_url( '#' ); ?>" class="mp-about-btn-filled" target="_blank">
 						<?php \esc_html_e( 'Open Support ticket', 'wp-2fa' ); ?>
 					</a>
-					<a href="<?php echo \esc_url( 'https://melapress.com/contact/?utm_source=plugin&utm_medium=link&utm_campaign=contact_us' ); ?>" class="mp-about-btn-outline" target="_blank">
+					<a href="<?php echo \esc_url( '#' ); ?>" class="mp-about-btn-outline" target="_blank">
 						<?php \esc_html_e( 'Contact us', 'wp-2fa' ); ?>
 					</a>
 				</div>

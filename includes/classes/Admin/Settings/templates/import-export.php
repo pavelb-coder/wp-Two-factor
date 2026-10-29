@@ -43,7 +43,7 @@ $ie_show_custom_email  = ( 'use-custom-email' === Email_Templates::get_wp2fa_ema
 				'text'  => \wp_sprintf(
 				// translators: 1. Link to documentation.
 					\esc_html__( 'Export the plugin\'s settings to a file, or import settings from a previously exported file. Use this to back up your configuration or copy the same settings to another website. %1$s.', 'wp-2fa' ),
-					\wp_sprintf( '<a href="%s" target="_blank">%s</a>', 'https://melapress.com/support/kb/wp-2fa-plugin-getting-started/?#utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_getting_started_wp2fa', \esc_html__( 'Learn more', 'wp-2fa' ) )
+					\wp_sprintf( '<a href="%s" target="_blank">%s</a>', '#utm_source=plugin&utm_medium=wp2fa&utm_campaign=guide_getting_started_wp2fa', \esc_html__( 'Learn more', 'wp-2fa' ) )
 				),
 				'class' => 'description-settings-card',
 				'id'    => 'import-export-tab',
@@ -146,7 +146,7 @@ $ie_show_custom_email  = ( 'use-custom-email' === Email_Templates::get_wp2fa_ema
 			ok:             <?php echo \wp_json_encode( \esc_html__( 'OK', 'wp-2fa' ) ); ?>,
 			oldVersionTitle: <?php echo \wp_json_encode( \esc_html__( 'Incompatible import file detected', 'wp-2fa' ) ); ?>,
 			oldVersion:     <?php echo \wp_json_encode( \wp_kses(
-				__( 'We detected that this file was exported from WP 2FA version 3.x. This format is no longer supported in version 4.0 and above and cannot be imported directly.<br><br>To resolve this, generate a fresh export from a site already running WP 2FA 4.0 or later and use that file here.<br><br><a href="https://melapress.com/support/submit-ticket/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=settings-exportimport-submit-ticket" target="_blank">Contact support</a> if you have any questions.', 'wp-2fa' ),
+				__( 'We detected that this file was exported from WP 2FA version 3.x. This format is no longer supported in version 4.0 and above and cannot be imported directly.<br><br>To resolve this, generate a fresh export from a site already running WP 2FA 4.0 or later and use that file here.<br><br><a href="#" target="_blank">Contact support</a> if you have any questions.', 'wp-2fa' ),
 				array( 'br' => array(), 'a' => array( 'href' => array(), 'target' => array() ) )
 			) ); ?>
 		};

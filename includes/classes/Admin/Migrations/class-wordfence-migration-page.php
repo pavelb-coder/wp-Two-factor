@@ -6,7 +6,7 @@
  * @subpackage admin
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
- * @link       https://wordpress.org/plugins/wp-2fa/
+ * @link       
  */
 
 declare(strict_types=1);
@@ -230,7 +230,7 @@ if ( ! class_exists( '\WP2FA\Admin\Migrations\Wordfence_Migration_Page' ) ) {
 			return \sprintf(
 				/* translators: 1: opening link tag, 2: closing link tag. */
 				\esc_html__( 'Want to learn more? Read our guide on %1$smigrating from Wordfence Login Security to WP 2FA%2$s.', 'wp-2fa' ),
-				'<a href="' . \esc_url( 'https://melapress.com/support/kb/migrate-2fa-from-wordfence-login-security-to-wp-2fa/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=wordfence_migrator' ) . '" target="_blank" rel="noopener noreferrer">',
+				'<a href="' . \esc_url( '#' ) . '" target="_blank" rel="noopener noreferrer">',
 				'</a>'
 			);
 		}

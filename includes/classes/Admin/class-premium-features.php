@@ -8,7 +8,7 @@
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  *
- * @see       https://wordpress.org/plugins/wp-2fa/
+ * @see       
  * @since      2.0.0
  */
 
@@ -168,7 +168,7 @@ if ( ! class_exists( '\WP2FA\Admin\Premium_Features' ) ) {
 					<li><?php \esc_html_e( 'Backup methods to prevent lockouts', 'wp-2fa' ); ?></li>
 				</ul>
 
-				<a href="https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=upgrade_to_premium_banner" target="_blank" rel="noopener noreferrer" class="mp-sidebar-upgrade-btn"><?php \esc_html_e( 'Buy now', 'wp-2fa' ); ?></a>
+				<a href="#" target="_blank" rel="noopener noreferrer" class="mp-sidebar-upgrade-btn"><?php \esc_html_e( 'Buy now', 'wp-2fa' ); ?></a>
 
 				<p class="mp-sidebar-upgrade-guarantee-title"><strong><?php \esc_html_e( "Stronger security that your users won't push back on", 'wp-2fa' ); ?></strong></p>
 				<p class="mp-sidebar-upgrade-guarantee"><?php \esc_html_e( '30-day money back guarantee', 'wp-2fa' ); ?></p>
@@ -375,7 +375,7 @@ if ( ! class_exists( '\WP2FA\Admin\Premium_Features' ) ) {
 								</li>
 							</ul>
 
-							<a class="wp2fa-reports-teaser-cta" href="<?php echo \esc_url( 'https://melapress.com/wordpress-2fa/features/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=free-premium-features-page' ); ?>" target="_blank" rel="noopener noreferrer"><?php echo \esc_html__( 'View all features', 'wp-2fa' ); ?></a>
+							<a class="wp2fa-reports-teaser-cta" href="<?php echo \esc_url( '#' ); ?>" target="_blank" rel="noopener noreferrer"><?php echo \esc_html__( 'View all features', 'wp-2fa' ); ?></a>
 						</div>
 
 						<div class="wp2fa-reports-teaser-preview" aria-hidden="true">
@@ -519,7 +519,7 @@ if ( ! class_exists( '\WP2FA\Admin\Premium_Features' ) ) {
 						<li><span class="dashicons dashicons-saved"></span> <?php \esc_html_e( 'Refer to the features matrix below for a detailed list of all the premium features', 'wp-2fa' ); ?></li>
 					</ul>
 					<div class="premium-cta">
-						<a href="<?php echo \esc_url( 'https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=upgrade_to_premium_banner_2' ); ?>" target="_blank" rel="noopener"><?php \esc_html_e( 'Upgrade to Premium', 'wp-2fa' ); ?></a>
+						<a href="<?php echo \esc_url( '#' ); ?>" target="_blank" rel="noopener"><?php \esc_html_e( 'Upgrade to Premium', 'wp-2fa' ); ?></a>
 					</div>		
 				</div>
 				<div class="content-block">
@@ -751,7 +751,7 @@ if ( ! class_exists( '\WP2FA\Admin\Premium_Features' ) ) {
 					</table>
 
 					<div class="premium-cta">
-						<a href="<?php echo \esc_url( 'https://melapress.com/wordpress-2fa/pricing/?utm_source=plugin&utm_medium=wp2fa&utm_campaign=upgrade_to_premium_banner_3' ); ?>" target="_blank" rel="noopener"><?php \esc_html_e( 'Upgrade to Premium', 'wp-2fa' ); ?></a>
+						<a href="<?php echo \esc_url( '#' ); ?>" target="_blank" rel="noopener"><?php \esc_html_e( 'Upgrade to Premium', 'wp-2fa' ); ?></a>
 					</div>		
 				</div>
 
@@ -761,8 +761,8 @@ if ( ! class_exists( '\WP2FA\Admin\Premium_Features' ) ) {
 					$text = sprintf(
 						/* translators: 1: Link to our site 2: Link to our contact page */
 						\esc_html__( 'Visit the WP 2FA %1$s for more information or %2$s  with any questions you might have. We look forward to hearing from you.', 'wp-2fa' ),
-						'<a target="_blank" href="' . \esc_url( 'https://melapress.com/wordpress-2fa/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=melapress_plugin_website' ) . '">' . \esc_html__( 'plugin website', 'wp-2fa' ) . '</a>',
-						'<a target="_blank" href="' . \esc_url( 'https://melapress.com/contact/?&utm_source=plugin&utm_medium=wp2fa&utm_campaign=melapress_contact_us' ) . '">' . \esc_html__( 'contact us', 'wp-2fa' ) . '</a>'
+						'<a target="_blank" href="' . \esc_url( '#' ) . '">' . \esc_html__( 'plugin website', 'wp-2fa' ) . '</a>',
+						'<a target="_blank" href="' . \esc_url( '#' ) . '">' . \esc_html__( 'contact us', 'wp-2fa' ) . '</a>'
 					);
 
 				echo $text; // phpcs:ignore -- Visit the WP 2FA plugin website for more information or contact us with any questions you might have. We look forward to hearing from you.

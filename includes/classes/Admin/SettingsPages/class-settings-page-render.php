@@ -6,7 +6,7 @@
  * @subpackage views
  * @copyright  2026 Melapress
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
- * @link       https://wordpress.org/plugins/wp-2fa/
+ * @link       
  */
 
 namespace WP2FA\Admin\SettingsPages;
@@ -124,9 +124,9 @@ if ( ! class_exists( '\WP2FA\Admin\SettingsPages\Settings_Page_Render' ) ) {
 					'name'           => \esc_html__( 'General', 'wp-2fa' ),
 					'default'        => true,
 					'description'    => sprintf(
-						'<p class="description">%1$s <a href="mailto:support@melapress.com">%2$s</a></p>',
+						'<p class="description">%1$s <a href="mailto:support@">%2$s</a></p>',
 						\esc_html__( 'Use the settings below to configure the properties of the two-factor authentication on your website and how users use it. If you have any questions send us an email at', 'wp-2fa' ),
-						\esc_html__( 'support@melapress.com', 'wp-2fa' )
+						\esc_html__( 'support@', 'wp-2fa' )
 					),
 					'class'          => 'WP2FA\Admin\SettingsPages\Settings_Page_General',
 					'method'         => 'render',
@@ -145,9 +145,9 @@ if ( ! class_exists( '\WP2FA\Admin\SettingsPages\Settings_Page_Render' ) ) {
 					'name'           => $email_settings_name,
 					'default'        => false,
 					'description'    => sprintf(
-						'<p class="description">%1$s <a href="mailto:support@melapress.com">%2$s</a></p>',
+						'<p class="description">%1$s <a href="mailto:support@">%2$s</a></p>',
 						\esc_html__( 'Use the settings below to configure the properties of the two-factor authentication on your website and how users use it. If you have any questions send us an email at', 'wp-2fa' ),
-						\esc_html__( 'support@melapress.com', 'wp-2fa' )
+						\esc_html__( 'support@', 'wp-2fa' )
 					),
 					'class'          => 'WP2FA\Admin\SettingsPages\Settings_Page_Email',
 					'method'         => 'render',
@@ -166,9 +166,9 @@ if ( ! class_exists( '\WP2FA\Admin\SettingsPages\Settings_Page_Render' ) ) {
 					'name'           => \esc_html__( 'White labeling', 'wp-2fa' ),
 					'default'        => false,
 					'description'    => sprintf(
-						'<p class="description">%1$s <a href="mailto:support@melapress.com">%2$s</a></p>',
+						'<p class="description">%1$s <a href="mailto:support@">%2$s</a></p>',
 						\esc_html__( 'Use the settings below to configure the emails which are sent to users as part of the 2FA plugin. If you have any questions send us an email at', 'wp-2fa' ),
-						\esc_html__( 'support@melapress.com', 'wp-2fa' )
+						\esc_html__( 'support@', 'wp-2fa' )
 					),
 					'class'          => 'WP2FA\Admin\SettingsPages\Settings_Page_White_Label',
 					'method'         => 'render',
