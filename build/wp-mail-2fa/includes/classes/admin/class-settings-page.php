@@ -208,25 +208,6 @@ class WP_Mail_2FA_Admin_Settings_Page {
 					</tr>
 				</table>
 
-				<h2 class="title"><?php esc_html_e( 'White Labeling', 'wp-mail-2fa' ); ?></h2>
-				<table class="form-table">
-					<tr>
-						<th scope="row"><?php esc_html_e( 'White label', 'wp-mail-2fa' ); ?></th>
-						<td>
-							<label>
-								<input type="checkbox" name="wpm2fa_settings[white_label]" value="1" <?php checked( $all['white_label'], 'yes' ); ?> />
-								<?php esc_html_e( 'Включить white labeling', 'wp-mail-2fa' ); ?>
-							</label>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row"><label for="wl_plugin_name"><?php esc_html_e( 'Название плагина', 'wp-mail-2fa' ); ?></label></th>
-						<td>
-							<input type="text" id="wl_plugin_name" name="wpm2fa_settings[wl_plugin_name]" value="<?php echo esc_attr( $all['wl_plugin_name'] ); ?>" class="regular-text" />
-						</td>
-					</tr>
-				</table>
-
 				<p class="submit">
 					<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Сохранить настройки', 'wp-mail-2fa' ); ?>" />
 				</p>

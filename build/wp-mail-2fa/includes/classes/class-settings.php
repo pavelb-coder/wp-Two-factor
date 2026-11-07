@@ -64,13 +64,9 @@ class WP_Mail_2FA_Settings {
 			'grace_period_enabled'   => 'yes',
 			'grace_period_days'      => 7,
 
-			// Login page.
-			'show_setup_link'        => 'yes',
-
-			// White labeling.
-			'white_label'            => 'no',
-			'wl_plugin_name'         => 'WP Mail 2FA',
-		);
+		// Login page.
+		'show_setup_link'        => 'yes',
+	);
 	}
 
 	/**
@@ -136,7 +132,6 @@ class WP_Mail_2FA_Settings {
 		$bool_fields = array(
 			'enforce_2fa',
 			'grace_period_enabled',
-			'white_label',
 			'show_setup_link',
 		);
 
@@ -169,7 +164,6 @@ class WP_Mail_2FA_Settings {
 		$str_fields = array(
 			'email_from_name',
 			'email_subject_prefix',
-			'wl_plugin_name',
 		);
 
 		foreach ( $str_fields as $field ) {
