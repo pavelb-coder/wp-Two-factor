@@ -20,6 +20,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Force Russian locale — must run before WordPress determines locale.
+add_filter( 'locale', function() { return 'ru_RU'; } );
+
 /**
  * Core plugin constants.
  */
@@ -94,13 +97,12 @@ final class WP_Mail_2FA {
 	}
 
 	/**
-	 * Load text domain and force Russian locale.
+	 * Load text domain on plugins_loaded (locale is already forced above).
 	 */
 	private function load_textdomain() {
-		// Force Russian locale.
-		add_filter( 'locale', function() { return 'ru_RU'; } );
-
-		load_plugin_textdomain( 'wp-mail-2fa', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+		add_action( 'plugins_loaded', function() {
+			load_plugin_textdomain( 'wp-mail-2fa', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+		} );
 	}
 
 	/**
@@ -213,8 +215,8 @@ final class WP_Mail_2FA {
 			'wp_mail_2fa_admin',
 			array(
 				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
-				'send_test_email' => __( 'Send Test Email', 'wp-mail-2fa' ),
-				'ajax_error'     => __( 'An error occurred. Please try again.', 'wp-mail-2fa' ),
+				'send_test_email' => __( 'Отправить тестовое email', 'wp-mail-2fa' ),
+				'ajax_error'     => __( 'Произошла ошибка. Попробуйте снова.', 'wp-mail-2fa' ),
 			)
 		);
 	}

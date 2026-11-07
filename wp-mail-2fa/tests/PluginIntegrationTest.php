@@ -232,7 +232,7 @@ class PluginIntegrationTest extends WP_UnitTestCase {
 		$page->render_page();
 		$output = ob_get_clean();
 
-		$this->assertStringContainsString( 'WP Mail 2FA Settings', $output );
+		$this->assertStringContainsString( 'Настройки WP Mail 2FA', $output );
 		$this->assertStringContainsString( 'code_length', $output );
 		$this->assertStringContainsString( 'enforce_2fa', $output );
 	}
@@ -248,7 +248,7 @@ class PluginIntegrationTest extends WP_UnitTestCase {
 		$profile->render_section( $user );
 		$output = ob_get_clean();
 
-		$this->assertStringContainsString( 'Email Two-Factor Authentication', $output );
+		$this->assertStringContainsString( 'Двухфакторная аутентификация по email', $output );
 	}
 
 	/**
@@ -278,7 +278,7 @@ class PluginIntegrationTest extends WP_UnitTestCase {
 		wpm2fa_render_login_2fa_form( $this->user_id );
 		$output = ob_get_clean();
 
-		$this->assertStringContainsString( 'Email Verification', $output );
+		$this->assertStringContainsString( 'Подтверждение по email', $output );
 		$this->assertStringContainsString( 'wpm2fa-code', $output );
 		$this->assertStringContainsString( 'wpm2fa_action', $output );
 	}

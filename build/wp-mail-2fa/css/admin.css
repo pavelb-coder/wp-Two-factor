@@ -1,0 +1,37 @@
+/*
+ * WP Mail 2FA — Admin styles.
+ */
+
+#wpm2fa-profile-message {
+	margin-top: 15px;
+	padding: 10px 15px;
+	border-radius: 4px;
+}
+
+#wpm2fa-profile-message.success {
+	background: #edfaef;
+	border-left: 4px solid #00a32a;
+	color: #007017;
+}
+
+#wpm2fa-profile-message.error {
+	background: #fbeaea;
+	border-left: 4px solid #d63638;
+	color: #d63638;
+}
+
+.wpm2fa-loading {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	border: 2px solid #ccc;
+	border-top: 2px solid #007017;
+	border-radius: 50%;
+	animation: wpm2fa-spin 0.8s linear infinite;
+}
+
+@keyframes wpm2fa-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}

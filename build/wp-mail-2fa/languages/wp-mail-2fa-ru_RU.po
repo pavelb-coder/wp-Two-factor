@@ -1,0 +1,231 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Mail 2FA 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru_RU\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "WP Mail 2FA Settings"
+msgstr "Настройки WP Mail 2FA"
+
+msgid "WP Mail 2FA"
+msgstr "WP Mail 2FA"
+
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "Settings saved successfully."
+msgstr "Настройки успешно сохранены."
+
+msgid "Email Settings"
+msgstr "Настройки электронной почты"
+
+msgid "From name"
+msgstr "Имя отправителя"
+
+msgid "Name displayed as sender of 2FA emails."
+msgstr "Имя, которое отображается как отправитель 2FA писем."
+
+msgid "Subject prefix"
+msgstr "Префикс темы"
+
+msgid "Code length"
+msgstr "Длина кода"
+
+msgid "Number of digits in verification code."
+msgstr "Количество цифр в коде подтверждения."
+
+msgid "Code expiry (minutes)"
+msgstr "Срок действия кода (минуты)"
+
+msgid "Resend delay (seconds)"
+msgstr "Задержка переотправки (секунды)"
+
+msgid "Minimum delay between code resends."
+msgstr "Минимальная задержка между переотправками кода."
+
+msgid "Enforcement"
+msgstr "Применение"
+
+msgid "Require 2FA"
+msgstr "Требовать 2FA"
+
+msgid "Require email 2FA for all users"
+msgstr "Требовать email 2FA для всех пользователей"
+
+msgid "Grace period"
+msgstr "Срок отсрочки"
+
+msgid "Enable grace period"
+msgstr "Включить срок отсрочки"
+
+msgid "Days:"
+msgstr "Дни:"
+
+msgid "Exempt roles"
+msgstr "Исключенные роли"
+
+msgid "Roles that are exempt from 2FA enforcement."
+msgstr "Роли, которые исключены из требования 2FA."
+
+msgid "Login & Display"
+msgstr "Вход и отображение"
+
+msgid "Show setup link"
+msgstr "Показать ссылку на настройку"
+
+msgid "Show setup link on login page"
+msgstr "Показать ссылку на настройку на странице входа"
+
+msgid "White Labeling"
+msgstr "White Labeling"
+
+msgid "White label"
+msgstr "White label"
+
+msgid "Enable white labeling"
+msgstr "Включить white labeling"
+
+msgid "Plugin name"
+msgstr "Название плагина"
+
+msgid "Save Settings"
+msgstr "Сохранить настройки"
+
+msgid "Email Two-Factor Authentication"
+msgstr "Двухфакторная аутентификация по email"
+
+msgid "Email 2FA is enabled."
+msgstr "Email 2FA включён."
+
+msgid "Verification codes are sent to: %s"
+msgstr "Коды подтверждения отправляются на: %s"
+
+msgid "Disable 2FA"
+msgstr "Отключить 2FA"
+
+msgid "Email 2FA is not enabled for this user."
+msgstr "Email 2FA не включён для этого пользователя."
+
+msgid "Enable Email 2FA"
+msgstr "Включить Email 2FA"
+
+msgid "When enabled, a verification code will be sent to your email on each login."
+msgstr "При включении код подтверждения будет отправляться на ваш email при каждом входе."
+
+msgid "Enable 2FA"
+msgstr "Включить 2FA"
+
+msgid "Send Test Email"
+msgstr "Отправить тестовое email"
+
+msgid "Send test code"
+msgstr "Отправить тестовый код"
+
+msgid "Test email sent."
+msgstr "Тестовое email отправлено."
+
+msgid "Failed to send test email."
+msgstr "Не удалось отправить тестовое email."
+
+msgid "Two-factor authentication is now required on this site. Please contact an administrator if you need help setting it up."
+msgstr "Двухфакторная аутентификация теперь обязательна на этом сайте. Пожалуйста, свяжитесь с администратором, если вам нужна помощь с настройкой."
+
+msgid "Email 2FA will be required in %d days. Please set it up now to avoid disruption."
+msgstr "Email 2FA будет обязателен через %d дней. Пожалуйста, настройте это сейчас, чтобы избежать сбоев."
+
+msgid "Email 2FA is required on this site. Please set it up now."
+msgstr "Email 2FA обязателен на этом сайте. Пожалуйста, настройте это сейчас."
+
+msgid "Set up 2FA"
+msgstr "Настроить 2FA"
+
+msgid "Invalid user."
+msgstr "Неверный пользователь."
+
+msgid "Please wait before requesting another code."
+msgstr "Подождите, прежде чем запрашивать другой код."
+
+msgid "Failed to send email. Please check your email settings."
+msgstr "Не удалось отправить email. Проверьте настройки email."
+
+msgid "Failed to send email."
+msgstr "Не удалось отправить email."
+
+msgid "Verification code sent."
+msgstr "Код подтверждения отправлен."
+
+msgid "Not authorized."
+msgstr "Не авторизован."
+
+msgid "2FA disabled."
+msgstr "2FA отключён."
+
+msgid "Settings saved."
+msgstr "Настройки сохранены."
+
+msgid "Failed to save settings."
+msgstr "Не удалось сохранить настройки."
+
+msgid "Security check failed."
+msgstr "Проверка безопасности не пройдена."
+
+msgid "Invalid verification code. Please try again."
+msgstr "Неверный код подтверждения. Попробуйте снова."
+
+msgid "Two-factor authentication is required to log in."
+msgstr "Для входа требуется двухфакторная аутентификация."
+
+msgid "Email Verification"
+msgstr "Подтверждение по email"
+
+msgid "Email verification"
+msgstr "Подтверждение по email"
+
+msgid "A verification code has been sent to %s"
+msgstr "Код подтверждения отправлен на %s"
+
+msgid "An error occurred. Please try again."
+msgstr "Произошла ошибка. Попробуйте снова."
+
+msgid "Verification code"
+msgstr "Код подтверждения"
+
+msgid "Verify"
+msgstr "Подтвердить"
+
+msgid "Resend code"
+msgstr "Переотправить код"
+
+msgid "Didn't receive the code? Send again"
+msgstr "Не получили код? Отправить снова"
+
+msgid "Back to login"
+msgstr "Вернуться к входу"
+
+msgid "Your 2FA verification code"
+msgstr "Ваш код подтверждения 2FA"
+
+msgid "Your verification code is: %s
+
+This code expires in %d minutes.
+
+If you did not request this, please contact your site administrator."
+msgstr "Ваш код подтверждения: %s
+
+Этот код действителен в течение %d минут.
+
+Если вы не запрашивали это, пожалуйста, свяжитесь с администратором сайта."
+
+msgid "Not authenticated."
+msgstr "Не авторизован."
+
+msgid "Invalid request."
+msgstr "Неверный запрос."
+
+msgid "Invalid code."
+msgstr "Неверный код."
+

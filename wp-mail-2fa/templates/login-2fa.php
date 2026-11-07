@@ -23,18 +23,18 @@ $email_instance = WP_Mail_2FA_Email::get_instance();
 $has_code = $email_instance->has_valid_code( $user_id );
 
 echo '<div class="wpm2fa-login-form">';
-echo '<h2>' . esc_html__( 'Email Verification', 'wp-mail-2fa' ) . '</h2>';
+echo '<h2>' . esc_html__( 'Подтверждение по email', 'wp-mail-2fa' ) . '</h2>';
 
 // Show info message.
 echo '<div class="wpm2fa-login-info">';
-echo esc_html( sprintf( __( 'A verification code has been sent to %s', 'wp-mail-2fa' ), $email ) );
+echo esc_html( sprintf( __( 'Код подтверждения отправлен на %s', 'wp-mail-2fa' ), $email ) );
 echo '</div>';
 
 // Show error if any.
 if ( isset( $_GET['error'] ) ) {
 	$error_msg = 'invalid_code' === $_GET['error']
-		? __( 'Invalid verification code. Please try again.', 'wp-mail-2fa' )
-		: __( 'An error occurred. Please try again.', 'wp-mail-2fa' );
+		? __( 'Неверный код подтверждения. Попробуйте снова.', 'wp-mail-2fa' )
+		: __( 'Произошла ошибка. Попробуйте снова.', 'wp-mail-2fa' );
 	echo '<div class="wpm2fa-login-error">' . esc_html( $error_msg ) . '</div>';
 }
 
@@ -48,12 +48,12 @@ if ( isset( $_GET['redirect_to'] ) ) {
 }
 
 echo '<div class="field">';
-echo '<label for="wpm2fa-code">' . esc_html__( 'Verification code', 'wp-mail-2fa' ) . '</label>';
+echo '<label for="wpm2fa-code">' . esc_html__( 'Код подтверждения', 'wp-mail-2fa' ) . '</label>';
 echo '<input type="text" id="wpm2fa-code" name="wpm2fa_code" placeholder="' . esc_attr( str_repeat( '0', $code_length ) ) . '" maxlength="' . esc_attr( $code_length ) . '" autofocus required />';
 echo '</div>';
 
 echo '<div class="field">';
-echo '<input type="submit" class="button button-primary" value="' . esc_attr__( 'Verify', 'wp-mail-2fa' ) . '" />';
+echo '<input type="submit" class="button button-primary" value="' . esc_attr__( 'Подтвердить', 'wp-mail-2fa' ) . '" />';
 echo '</div>';
 
 echo '</form>';
@@ -61,17 +61,17 @@ echo '</form>';
 // Resend email option.
 if ( $has_code ) {
 	echo '<div class="wpm2fa-login-resend">';
-	echo '<a href="' . esc_url( add_query_arg( 'wpm2fa_resend_email', $user_id ) ) . '">' . esc_html__( 'Resend code', 'wp-mail-2fa' ) . '</a>';
+	echo '<a href="' . esc_url( add_query_arg( 'wpm2fa_resend_email', $user_id ) ) . '">' . esc_html__( 'Переотправить код', 'wp-mail-2fa' ) . '</a>';
 	echo '</div>';
 } else {
 	echo '<div class="wpm2fa-login-resend">';
-	echo '<a href="' . esc_url( add_query_arg( 'wpm2fa_send_email', $user_id ) ) . '">' . esc_html__( "Didn't receive the code? Send again", 'wp-mail-2fa' ) . '</a>';
+	echo '<a href="' . esc_url( add_query_arg( 'wpm2fa_send_email', $user_id ) ) . '">' . esc_html__( "Не получили код? Отправить снова", 'wp-mail-2fa' ) . '</a>';
 	echo '</div>';
 }
 
 // Back to login.
 echo '<div class="wpm2fa-login-back">';
-echo '<a href="' . esc_url( wp_login_url() ) . '">' . esc_html__( 'Back to login', 'wp-mail-2fa' ) . '</a>';
+echo '<a href="' . esc_url( wp_login_url() ) . '">' . esc_html__( 'Вернуться к входу', 'wp-mail-2fa' ) . '</a>';
 echo '</div>';
 
 echo '</div>';

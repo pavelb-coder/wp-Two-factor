@@ -79,7 +79,7 @@ class WP_Mail_2FA_Email {
 			update_user_meta( $user_id, 'wpm2fa_email_code', $code );
 		}
 
-		$subject = $subject_prefix . __( 'Your 2FA verification code', 'wp-mail-2fa' );
+		$subject = $subject_prefix . __( 'Ваш код подтверждения 2FA', 'wp-mail-2fa' );
 		$message = sprintf(
 			__( "Your verification code is: %s\n\nThis code expires in %d minutes.\n\nIf you did not request this, please contact your site administrator.", 'wp-mail-2fa' ),
 			$code,
