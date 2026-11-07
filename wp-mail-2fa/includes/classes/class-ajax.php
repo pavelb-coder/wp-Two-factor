@@ -43,6 +43,7 @@ class WP_Mail_2FA_Ajax {
 		add_action( 'wp_ajax_wpm2fa_send_email_code', array( $this, 'ajax_send_email_code' ) );
 		add_action( 'wp_ajax_wpm2fa_resend_code', array( $this, 'ajax_resend_code' ) );
 		add_action( 'wp_ajax_wpm2fa_disable_2fa', array( $this, 'ajax_disable_2fa' ) );
+		add_action( 'wp_ajax_wpm2fa_save_user_setting', array( $this, 'ajax_save_user_setting' ) );
 		add_action( 'wp_ajax_wpm2fa_save_settings', array( $this, 'ajax_save_settings' ) );
 		add_action( 'wp_ajax_wpm2fa_send_test_email', array( $this, 'ajax_send_test_email' ) );
 	}
@@ -105,12 +106,12 @@ class WP_Mail_2FA_Ajax {
 	}
 
 	/**
-	 * Disable 2FA for a user.
+	 * Disable 2FA for a user (admin only).
 	 */
 	public function ajax_disable_2fa() {
 		check_ajax_referer( 'wpm2fa_nonce', 'nonce' );
 
-		if ( ! is_user_logged_in() && ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Не авторизован.', 'wp-mail-2fa' ) ) );
 		}
 
@@ -123,6 +124,31 @@ class WP_Mail_2FA_Ajax {
 		WP_Mail_2FA_User_Helper::get_instance()->disable( $user_id );
 
 		wp_send_json_success( array( 'message' => __( '2FA отключён.', 'wp-mail-2fa' ) ) );
+	}
+
+	/**
+	 * Enable 2FA for a user (admin only).
+	 */
+	public function ajax_save_user_setting() {
+		check_ajax_referer( 'wpm2fa_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Не авторизован.', 'wp-mail-2fa' ) ) );
+		}
+
+		$user_id = isset( $_POST['user_id'] ) ? absint( $_POST['user_id'] ) : 0;
+		$setting = isset( $_POST['setting'] ) ? sanitize_text_field( $_POST['setting'] ) : '';
+
+		if ( ! $user_id ) {
+			wp_send_json_error( array( 'message' => __( 'Неверный пользователь.', 'wp-mail-2fa' ) ) );
+		}
+
+		if ( 'enable' === $setting ) {
+			WP_Mail_2FA_User_Helper::get_instance()->enable( $user_id );
+			wp_send_json_success( array( 'message' => __( '2FA включён.', 'wp-mail-2fa' ) ) );
+		}
+
+		wp_send_json_error( array( 'message' => __( 'Неверное действие.', 'wp-mail-2fa' ) ) );
 	}
 
 	/**

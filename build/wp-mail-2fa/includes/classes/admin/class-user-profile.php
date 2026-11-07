@@ -50,6 +50,11 @@ class WP_Mail_2FA_Admin_User_Profile {
 	 * @param WP_User $user User object.
 	 */
 	public function render_section( $user ) {
+		// Only administrators can manage 2FA.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
 		$helper  = WP_Mail_2FA_User_Helper::get_instance();
 		$status  = $helper->get_status( $user->ID );
 		$nonce   = wp_create_nonce( 'wpm2fa_nonce' );

@@ -241,6 +241,8 @@ class PluginIntegrationTest extends WP_UnitTestCase {
 	 * Test user profile section renders.
 	 */
 	public function test_user_profile_section() {
+		wp_set_current_user( $this->user_id );
+
 		$user    = get_userdata( $this->user_id );
 		$profile = WP_Mail_2FA_Admin_User_Profile::get_instance();
 
