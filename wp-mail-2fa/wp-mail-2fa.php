@@ -94,9 +94,12 @@ final class WP_Mail_2FA {
 	}
 
 	/**
-	 * Load text domain.
+	 * Load text domain and force Russian locale.
 	 */
 	private function load_textdomain() {
+		// Force Russian locale.
+		add_filter( 'locale', function() { return 'ru_RU'; } );
+
 		load_plugin_textdomain( 'wp-mail-2fa', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	}
 
