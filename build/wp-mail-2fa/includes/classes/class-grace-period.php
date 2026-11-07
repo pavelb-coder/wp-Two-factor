@@ -129,7 +129,7 @@ class WP_Mail_2FA_Grace_Period {
 
 		if ( ! $this->is_in_grace( $user_id ) ) {
 			echo '<div class="notice notice-error"><p>'
-				. esc_html__( 'Two-factor authentication is now required on this site. Please contact an administrator if you need help setting it up.', 'wp-mail-2fa' )
+				. esc_html__( 'Двухфакторная аутентификация теперь обязательна на этом сайте. Пожалуйста, свяжитесь с администратором, если вам нужна помощь с настройкой.', 'wp-mail-2fa' )
 				. '</p></div>';
 			return;
 		}
@@ -140,14 +140,14 @@ class WP_Mail_2FA_Grace_Period {
 			$days_left = ceil( ( $deadline - time() ) / DAY_IN_SECONDS );
 			$message   = sprintf(
 				/* translators: %d: Number of days remaining */
-				__( 'Email 2FA will be required in %d days. Please set it up now to avoid disruption.', 'wp-mail-2fa' ),
+				__( 'Email 2FA будет обязателен через %d дней. Пожалуйста, настройте это сейчас, чтобы избежать сбоев.', 'wp-mail-2fa' ),
 				$days_left
 			);
 		} else {
-			$message = __( 'Email 2FA is required on this site. Please set it up now.', 'wp-mail-2fa' );
+			$message = __( 'Email 2FA обязателен на этом сайте. Пожалуйста, настройте это сейчас.', 'wp-mail-2fa' );
 		}
 
 		echo '<div class="notice notice-warning"><p>' . esc_html( $message ) . '</p>';
-		echo '<p><a href="' . esc_url( admin_url( 'profile.php' ) ) . '" class="button">' . esc_html__( 'Set up 2FA', 'wp-mail-2fa' ) . '</a></p></div>';
+		echo '<p><a href="' . esc_url( admin_url( 'profile.php' ) ) . '" class="button">' . esc_html__( 'Настроить 2FA', 'wp-mail-2fa' ) . '</a></p></div>';
 	}
 }

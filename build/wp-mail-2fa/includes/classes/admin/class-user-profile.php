@@ -55,30 +55,30 @@ class WP_Mail_2FA_Admin_User_Profile {
 		$nonce   = wp_create_nonce( 'wpm2fa_nonce' );
 
 		?>
-		<h2><?php esc_html_e( 'Email Two-Factor Authentication', 'wp-mail-2fa' ); ?></h2>
+		<h2><?php esc_html_e( 'Двухфакторная аутентификация по email', 'wp-mail-2fa' ); ?></h2>
 
 		<?php if ( $status['enabled'] ) : ?>
-			<p class="description"><?php esc_html_e( 'Email 2FA is enabled.', 'wp-mail-2fa' ); ?></p>
-			<p class="description"><?php echo esc_html( sprintf( __( 'Verification codes are sent to: %s', 'wp-mail-2fa' ), $status['email'] ) ); ?></p>
+			<p class="description"><?php esc_html_e( 'Email 2FA включён.', 'wp-mail-2fa' ); ?></p>
+			<p class="description"><?php echo esc_html( sprintf( __( 'Коды подтверждения отправляются на: %s', 'wp-mail-2fa' ), $status['email'] ) ); ?></p>
 
-			<h3><?php esc_html_e( 'Disable 2FA', 'wp-mail-2fa' ); ?></h3>
+			<h3><?php esc_html_e( 'Отключить 2FA', 'wp-mail-2fa' ); ?></h3>
 			<button type="button" class="button button-danger wpm2fa-disable" data-user-id="<?php echo esc_attr( $user->ID ); ?>" data-nonce="<?php echo esc_attr( $nonce ); ?>">
-				<?php esc_html_e( 'Disable 2FA', 'wp-mail-2fa' ); ?>
+				<?php esc_html_e( 'Отключить 2FA', 'wp-mail-2fa' ); ?>
 			</button>
 
 		<?php else : ?>
-			<p class="description"><?php esc_html_e( 'Email 2FA is not enabled for this user.', 'wp-mail-2fa' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Email 2FA не включён для этого пользователя.', 'wp-mail-2fa' ); ?></p>
 
-			<h3><?php esc_html_e( 'Enable Email 2FA', 'wp-mail-2fa' ); ?></h3>
-			<p class="description"><?php esc_html_e( 'When enabled, a verification code will be sent to your email on each login.', 'wp-mail-2fa' ); ?></p>
+			<h3><?php esc_html_e( 'Включить Email 2FA', 'wp-mail-2fa' ); ?></h3>
+			<p class="description"><?php esc_html_e( 'При включении код подтверждения будет отправляться на ваш email при каждом входе.', 'wp-mail-2fa' ); ?></p>
 			<button type="button" class="button button-primary wpm2fa-enable" data-user-id="<?php echo esc_attr( $user->ID ); ?>" data-nonce="<?php echo esc_attr( $nonce ); ?>">
-				<?php esc_html_e( 'Enable 2FA', 'wp-mail-2fa' ); ?>
+				<?php esc_html_e( 'Включить 2FA', 'wp-mail-2fa' ); ?>
 			</button>
 		<?php endif; ?>
 
-		<h3><?php esc_html_e( 'Send Test Email', 'wp-mail-2fa' ); ?></h3>
+		<h3><?php esc_html_e( 'Отправить тестовое email', 'wp-mail-2fa' ); ?></h3>
 		<button type="button" class="button wpm2fa-send-test" data-user-id="<?php echo esc_attr( $user->ID ); ?>" data-nonce="<?php echo esc_attr( $nonce ); ?>">
-			<?php esc_html_e( 'Send test code', 'wp-mail-2fa' ); ?>
+			<?php esc_html_e( 'Отправить тестовый код', 'wp-mail-2fa' ); ?>
 		</button>
 
 		<div id="wpm2fa-profile-message" style="display:none;"></div>

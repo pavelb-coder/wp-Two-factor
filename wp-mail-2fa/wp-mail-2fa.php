@@ -3,7 +3,7 @@
  * Plugin Name:       WP Mail 2FA
  * Plugin URI:        https://wordpress.org/
  * Description:       Two-factor authentication via email for WordPress. Users receive a one-time code on login that they enter to complete authentication.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 5.8
  * Requires PHP:      7.2
  * Author:            Arena
@@ -26,7 +26,7 @@ add_filter( 'locale', function() { return 'ru_RU'; } );
 /**
  * Core plugin constants.
  */
-define( 'WP_MAIL_2FA_VERSION', '1.0.0' );
+define( 'WP_MAIL_2FA_VERSION', '1.0.1' );
 define( 'WP_MAIL_2FA_PREFIX', 'wpm2fa_' );
 define( 'WP_MAIL_2FA_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WP_MAIL_2FA_URL', plugin_dir_url( __FILE__ ) );

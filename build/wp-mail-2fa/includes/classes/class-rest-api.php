@@ -115,7 +115,7 @@ class WP_Mail_2FA_REST_API {
 	 */
 	public function check_auth() {
 		if ( ! is_user_logged_in() ) {
-			return new WP_Error( 'wpm2fa_not_authenticated', __( 'Not authenticated.', 'wp-mail-2fa' ), array( 'status' => 401 ) );
+			return new WP_Error( 'wpm2fa_not_authenticated', __( 'Не авторизован.', 'wp-mail-2fa' ), array( 'status' => 401 ) );
 		}
 		return true;
 	}
@@ -127,7 +127,7 @@ class WP_Mail_2FA_REST_API {
 	 */
 	public function check_admin_auth() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			return new WP_Error( 'wpm2fa_not_authorized', __( 'Not authorized.', 'wp-mail-2fa' ), array( 'status' => 403 ) );
+			return new WP_Error( 'wpm2fa_not_authorized', __( 'Не авторизован.', 'wp-mail-2fa' ), array( 'status' => 403 ) );
 		}
 		return true;
 	}
@@ -142,17 +142,17 @@ class WP_Mail_2FA_REST_API {
 		$user_id = isset( $request['user_id'] ) ? absint( $request['user_id'] ) : get_current_user_id();
 
 		if ( ! $user_id ) {
-			return new WP_Error( 'wpm2fa_invalid_request', __( 'Invalid request.', 'wp-mail-2fa' ), array( 'status' => 400 ) );
+			return new WP_Error( 'wpm2fa_invalid_request', __( 'Неверный запрос.', 'wp-mail-2fa' ), array( 'status' => 400 ) );
 		}
 
 		$email   = WP_Mail_2FA_Email::get_instance();
 		$result  = $email->send_code( $user_id, 'login' );
 
 		if ( false === $result ) {
-			return new WP_Error( 'wpm2fa_failed', __( 'Failed to send email.', 'wp-mail-2fa' ), array( 'status' => 500 ) );
+			return new WP_Error( 'wpm2fa_failed', __( 'Не удалось отправить email.', 'wp-mail-2fa' ), array( 'status' => 500 ) );
 		}
 
-		return rest_ensure_response( array( 'message' => __( 'Verification code sent.', 'wp-mail-2fa' ) ) );
+		return rest_ensure_response( array( 'message' => __( 'Код подтверждения отправлен.', 'wp-mail-2fa' ) ) );
 	}
 
 	/**
@@ -166,7 +166,7 @@ class WP_Mail_2FA_REST_API {
 		$code    = $request->get_param( 'code' );
 
 		if ( empty( $code ) ) {
-			return new WP_Error( 'wpm2fa_invalid_request', __( 'Invalid request.', 'wp-mail-2fa' ), array( 'status' => 400 ) );
+			return new WP_Error( 'wpm2fa_invalid_request', __( 'Неверный запрос.', 'wp-mail-2fa' ), array( 'status' => 400 ) );
 		}
 
 		$auth   = WP_Mail_2FA_Authentication::get_instance();
@@ -176,7 +176,7 @@ class WP_Mail_2FA_REST_API {
 			return rest_ensure_response( array( 'valid' => true, 'method' => $result['method'] ) );
 		}
 
-		return new WP_Error( 'wpm2fa_invalid_code', __( 'Invalid code.', 'wp-mail-2fa' ), array( 'status' => 400 ) );
+		return new WP_Error( 'wpm2fa_invalid_code', __( 'Неверный код.', 'wp-mail-2fa' ), array( 'status' => 400 ) );
 	}
 
 	/**
@@ -215,12 +215,12 @@ class WP_Mail_2FA_REST_API {
 		$user_id = isset( $request['user_id'] ) ? absint( $request['user_id'] ) : get_current_user_id();
 
 		if ( ! $user_id ) {
-			return new WP_Error( 'wpm2fa_invalid_request', __( 'Invalid request.', 'wp-mail-2fa' ), array( 'status' => 400 ) );
+			return new WP_Error( 'wpm2fa_invalid_request', __( 'Неверный запрос.', 'wp-mail-2fa' ), array( 'status' => 400 ) );
 		}
 
 		WP_Mail_2FA_User_Helper::get_instance()->disable( $user_id );
 
-		return rest_ensure_response( array( 'message' => __( '2FA disabled.', 'wp-mail-2fa' ) ) );
+		return rest_ensure_response( array( 'message' => __( '2FA отключён.', 'wp-mail-2fa' ) ) );
 	}
 
 	/**
@@ -233,15 +233,15 @@ class WP_Mail_2FA_REST_API {
 		$settings = $request->get_param( 'settings' );
 
 		if ( empty( $settings ) ) {
-			return new WP_Error( 'wpm2fa_invalid_request', __( 'Invalid request.', 'wp-mail-2fa' ), array( 'status' => 400 ) );
+			return new WP_Error( 'wpm2fa_invalid_request', __( 'Неверный запрос.', 'wp-mail-2fa' ), array( 'status' => 400 ) );
 		}
 
 		$sanitized = WP_Mail_2FA_Settings::get_instance()->sanitize( $settings );
 
 		if ( WP_Mail_2FA_Settings::get_instance()->save( $sanitized ) ) {
-			return rest_ensure_response( array( 'message' => __( 'Settings saved.', 'wp-mail-2fa' ) ) );
+			return rest_ensure_response( array( 'message' => __( 'Настройки сохранены.', 'wp-mail-2fa' ) ) );
 		}
 
-		return new WP_Error( 'wpm2fa_failed', __( 'Failed to save settings.', 'wp-mail-2fa' ), array( 'status' => 500 ) );
+		return new WP_Error( 'wpm2fa_failed', __( 'Не удалось сохранить настройки.', 'wp-mail-2fa' ), array( 'status' => 500 ) );
 	}
 }

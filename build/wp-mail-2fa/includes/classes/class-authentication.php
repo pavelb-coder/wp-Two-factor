@@ -94,7 +94,7 @@ class WP_Mail_2FA_Authentication {
 		return array(
 			'email' => array(
 				'key'        => 'email',
-				'label'      => __( 'Email verification', 'wp-mail-2fa' ),
+				'label'      => __( 'Подтверждение по email', 'wp-mail-2fa' ),
 				'enabled'    => $helper->is_enabled( $user_id ),
 				'configured' => true,
 			),

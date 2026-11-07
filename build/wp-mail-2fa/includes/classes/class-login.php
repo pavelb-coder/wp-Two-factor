@@ -56,14 +56,14 @@ class WP_Mail_2FA_Login {
 
 		// Verify nonce.
 		if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'wpm2fa_verify' ) ) {
-			wp_die( esc_html__( 'Security check failed.', 'wp-mail-2fa' ) );
+			wp_die( esc_html__( 'Проверка безопасности не пройдена.', 'wp-mail-2fa' ) );
 		}
 
 		$user_id = isset( $_POST['wpm2fa_user_id'] ) ? absint( $_POST['wpm2fa_user_id'] ) : 0;
 		$code    = isset( $_POST['wpm2fa_code'] ) ? sanitize_text_field( $_POST['wpm2fa_code'] ) : '';
 
 		if ( ! $user_id ) {
-			wp_die( esc_html__( 'Invalid user.', 'wp-mail-2fa' ) );
+			wp_die( esc_html__( 'Неверный пользователь.', 'wp-mail-2fa' ) );
 		}
 
 		// Validate the code.
@@ -89,7 +89,7 @@ class WP_Mail_2FA_Login {
 	 * Show 2FA error message.
 	 */
 	public function show_2fa_error() {
-		echo '<div class="error"><p>' . esc_html__( 'Invalid verification code. Please try again.', 'wp-mail-2fa' ) . '</p></div>';
+		echo '<div class="error"><p>' . esc_html__( 'Неверный код подтверждения. Попробуйте снова.', 'wp-mail-2fa' ) . '</p></div>';
 	}
 
 	/**
@@ -121,7 +121,7 @@ class WP_Mail_2FA_Login {
 		// User has 2FA enabled — block login and show 2FA form.
 		return new WP_Error(
 			'wpm2fa_required',
-			__( 'Two-factor authentication is required to log in.', 'wp-mail-2fa' )
+			__( 'Для входа требуется двухфакторная аутентификация.', 'wp-mail-2fa' )
 		);
 	}
 
